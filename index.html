@@ -152,6 +152,15 @@
             line-height: 1.8;
         }
 
+        .hero-tagline {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1rem !important;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
         .hero-buttons {
             display: flex;
             gap: 1rem;
@@ -215,9 +224,8 @@
 
         /* Simple macOS-style Browser Mockups */
         .browser-mockup {
-            background: white;
+            background: transparent;
             border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             border: 1px solid #e1e5e9;
         }
@@ -417,17 +425,15 @@
             gap: 0.5rem;
         }
 
-        .module-features li::before {
-            content: "✓";
+        .module-features li i {
             color: var(--primary-color);
             font-weight: bold;
+            margin-right: 0.5rem;
+            width: 16px;
+            display: inline-block;
         }
 
         .module-visual {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: var(--shadow-lg);
             position: relative;
             overflow: hidden;
         }
@@ -438,52 +444,153 @@
             border-radius: 8px;
         }
 
-        /* Benefits Section */
-        .benefits {
+        /* Why Choose Us Section */
+        .why-choose-us {
+            padding: 5rem 2rem;
+            background: var(--bg-light);
+        }
+
+        .why-choose-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .why-choose-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            position: relative;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .why-choose-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .card-number {
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .why-choose-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .why-choose-card p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* About Section */
+        .about-section {
             padding: 5rem 2rem;
             background: var(--bg-white);
         }
 
-        .benefits-grid {
+        .about-container {
             max-width: 1200px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
         }
 
-        .benefit-card {
-            text-align: center;
-            padding: 2rem;
-            border-radius: 16px;
-            background: var(--bg-light);
-            transition: all 0.3s ease;
+        .about-content h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+            line-height: 1.3;
         }
 
-        .benefit-card:hover {
-            transform: translateY(-5px);
-            background: white;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .benefit-icon {
-            font-size: 3rem;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-        }
-
-        .benefit-card h4 {
+        .about-content p {
             font-size: 1.1rem;
-            margin-bottom: 0.5rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .ai-assistant-mockup {
+            position: relative;
+        }
+
+        .ai-assistant-content {
+            padding: 1.5rem;
+        }
+
+        .assistant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .likwid-logo {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .search-bar {
+            background: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .assistant-chat {
+            background: transparent;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .chat-message {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .message-header {
+            margin-bottom: 1rem;
             color: var(--text-dark);
         }
 
-        .benefit-card p {
-            font-size: 0.9rem;
+        .chat-message p {
             color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0;
         }
 
-                /* Pricing Section */
+        /* Pricing Section */
         .pricing {
             padding: 5rem 2rem;
             background: var(--bg-white);
@@ -639,15 +746,15 @@
         }
 
                  .plan-features {
-             list-style: none;
-             margin: 2rem 0;
-         }
+            list-style: none;
+            margin: 2rem 0;
+        }
 
          .plan-features li {
-             padding: 0.75rem 0;
-             color: var(--text-light);
-             display: flex;
-             align-items: center;
+            padding: 0.75rem 0;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
              gap: 0.75rem;
              font-size: 0.95rem;
              line-height: 1.5;
@@ -655,11 +762,11 @@
          }
 
          .plan-features li:last-child {
-             border-bottom: none;
-         }
+            border-bottom: none;
+        }
 
          .plan-features li i {
-             color: var(--primary-color);
+            color: var(--primary-color);
              font-size: 0.9rem;
              width: 16px;
              flex-shrink: 0;
@@ -778,10 +885,646 @@
             font-size: 1.2rem;
         }
 
-        .feature-text {
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
+                 .feature-text {
+             font-size: 0.9rem;
+             color: var(--text-light);
+         }
+
+         /* Recent Posts Section */
+         .recent-posts {
+             padding: 5rem 2rem;
+             background: var(--bg-light);
+         }
+
+         .posts-container {
+             max-width: 1200px;
+             margin: 0 auto;
+             display: grid;
+             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+             gap: 2rem;
+         }
+
+         .post-card {
+             background: white;
+             border-radius: 16px;
+             overflow: hidden;
+             box-shadow: var(--shadow-md);
+             transition: all 0.3s ease;
+         }
+
+         .post-card:hover {
+             transform: translateY(-5px);
+             box-shadow: var(--shadow-xl);
+         }
+
+         .post-image {
+             height: 200px;
+             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+             position: relative;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+         }
+
+         .post-date {
+             background: rgba(255, 255, 255, 0.9);
+             padding: 0.5rem 1rem;
+             border-radius: 20px;
+             font-weight: 600;
+             font-size: 0.8rem;
+             color: var(--primary-color);
+         }
+
+         .post-content {
+             padding: 1.5rem;
+         }
+
+         .post-content h3 {
+             font-size: 1.1rem;
+             font-weight: 600;
+             margin-bottom: 1rem;
+             color: var(--text-dark);
+             line-height: 1.4;
+         }
+
+         .post-meta {
+             display: flex;
+             gap: 1rem;
+             margin-bottom: 1rem;
+             font-size: 0.9rem;
+             color: var(--text-light);
+         }
+
+         .read-more {
+             color: var(--primary-color);
+             text-decoration: none;
+             font-weight: 600;
+             font-size: 0.9rem;
+             display: inline-flex;
+             align-items: center;
+             gap: 0.5rem;
+             transition: all 0.3s ease;
+         }
+
+         .read-more:hover {
+             gap: 0.75rem;
+         }
+
+         /* Newsletter Section */
+         .newsletter-section {
+             padding: 3rem 2rem;
+             background: var(--bg-white);
+             border-top: 1px solid #e5e7eb;
+         }
+
+         .newsletter-container {
+             max-width: 800px;
+             margin: 0 auto;
+             text-align: center;
+         }
+
+         .newsletter-container h2 {
+             font-size: 2rem;
+             font-weight: 700;
+             margin-bottom: 1rem;
+             color: var(--text-dark);
+         }
+
+         .newsletter-container p {
+             color: var(--text-light);
+             margin-bottom: 2rem;
+             font-size: 1.1rem;
+         }
+
+         .newsletter-form {
+             display: flex;
+             gap: 1rem;
+             max-width: 500px;
+             margin: 0 auto;
+         }
+
+         .newsletter-input {
+             flex: 1;
+             padding: 1rem;
+             border: 1px solid #e5e7eb;
+             border-radius: 8px;
+             font-size: 1rem;
+             outline: none;
+             transition: border-color 0.3s ease;
+         }
+
+         .newsletter-input:focus {
+             border-color: var(--primary-color);
+         }
+
+         .newsletter-button {
+             background: var(--primary-color);
+             color: white;
+             padding: 1rem 2rem;
+             border: none;
+             border-radius: 8px;
+             font-weight: 600;
+             cursor: pointer;
+             transition: all 0.3s ease;
+         }
+
+         .newsletter-button:hover {
+             background: var(--secondary-color);
+             transform: translateY(-2px);
+         }
+
+         /* User Count Selector in Pricing Cards */
+         .user-count-selector {
+             margin: 1.5rem 0;
+             padding: 1rem;
+             background: #f8f9fa;
+             border-radius: 8px;
+             border: 1px solid #e5e7eb;
+         }
+
+         .user-count-selector label {
+             display: block;
+             font-size: 0.9rem;
+             font-weight: 600;
+             color: var(--text-dark);
+             margin-bottom: 0.75rem;
+         }
+
+         .user-controls {
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             gap: 1rem;
+         }
+
+         .input-group {
+             margin-bottom: 2rem;
+         }
+
+         .input-group label {
+             display: block;
+             font-weight: 600;
+             margin-bottom: 1rem;
+             color: var(--text-dark);
+             font-size: 1.1rem;
+         }
+
+         .user-input-container {
+             display: flex;
+             align-items: center;
+             gap: 1rem;
+             margin-bottom: 1.5rem;
+         }
+
+         .user-btn {
+             width: 32px;
+             height: 32px;
+             border: 2px solid var(--primary-color);
+             background: white;
+             color: var(--primary-color);
+             border-radius: 50%;
+             font-size: 1rem;
+             font-weight: 700;
+             cursor: pointer;
+             transition: all 0.3s ease;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+         }
+
+         .user-btn:hover {
+             background: var(--primary-color);
+             color: white;
+         }
+
+         .user-count-input {
+             font-size: 1.2rem;
+             font-weight: 600;
+             color: var(--text-dark);
+             min-width: 60px;
+             width: 60px;
+             text-align: center;
+             border: 2px solid #e5e7eb;
+             border-radius: 6px;
+             padding: 0.25rem;
+             outline: none;
+             transition: all 0.3s ease;
+         }
+
+         .user-count-input:focus {
+             border-color: var(--primary-color);
+             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+         }
+
+         .user-count-input::-webkit-outer-spin-button,
+         .user-count-input::-webkit-inner-spin-button {
+             -webkit-appearance: none;
+             margin: 0;
+         }
+
+         .user-count-input[type=number] {
+             -moz-appearance: textfield;
+         }
+
+         .user-visualization {
+             margin-top: 0.75rem;
+             display: flex;
+             flex-wrap: wrap;
+             gap: 4px;
+             justify-content: center;
+             min-height: 30px;
+             align-items: center;
+         }
+
+         .user-visualization i {
+             color: var(--primary-color);
+             font-size: 14px;
+             opacity: 0.8;
+         }
+
+         .plan-recommendation {
+             margin-top: 0.5rem;
+             padding: 0.5rem;
+             background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+             border: 1px solid #f39c12;
+             border-radius: 6px;
+             font-size: 0.8rem;
+             text-align: center;
+             color: #856404;
+         }
+
+         .enterprise-recommendation {
+             margin-top: 2rem;
+             padding: 0;
+         }
+
+         .enterprise-card {
+             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+             border-radius: 12px;
+             padding: 2rem;
+             color: white;
+             text-align: center;
+             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+         }
+
+         .enterprise-icon {
+             font-size: 2.5rem;
+             margin-bottom: 1rem;
+             opacity: 0.9;
+         }
+
+         .enterprise-content h4 {
+             font-size: 1.5rem;
+             font-weight: 700;
+             margin-bottom: 0.75rem;
+         }
+
+         .enterprise-content p {
+             font-size: 1rem;
+             line-height: 1.5;
+             margin-bottom: 1.5rem;
+             opacity: 0.9;
+         }
+
+         .enterprise-cta {
+             display: inline-block;
+             padding: 0.75rem 1.5rem;
+             background: rgba(255, 255, 255, 0.2);
+             color: white;
+             text-decoration: none;
+             border-radius: 8px;
+             font-weight: 600;
+             border: 2px solid rgba(255, 255, 255, 0.3);
+             transition: all 0.3s ease;
+         }
+
+         .enterprise-cta:hover {
+             background: rgba(255, 255, 255, 0.3);
+             border-color: rgba(255, 255, 255, 0.5);
+             transform: translateY(-2px);
+         }
+
+         #user-count {
+             width: 80px;
+             padding: 0.75rem;
+             border: 2px solid #e5e7eb;
+             border-radius: 8px;
+             text-align: center;
+             font-size: 1.2rem;
+             font-weight: 600;
+             outline: none;
+             transition: border-color 0.3s ease;
+         }
+
+         #user-count:focus {
+             border-color: var(--primary-color);
+         }
+
+         .user-slider-container {
+             position: relative;
+         }
+
+         #user-slider {
+             width: 100%;
+             height: 6px;
+             border-radius: 3px;
+             background: #e5e7eb;
+             outline: none;
+             -webkit-appearance: none;
+         }
+
+         #user-slider::-webkit-slider-thumb {
+             -webkit-appearance: none;
+             appearance: none;
+             width: 20px;
+             height: 20px;
+             border-radius: 50%;
+             background: var(--primary-color);
+             cursor: pointer;
+         }
+
+         #user-slider::-moz-range-thumb {
+             width: 20px;
+             height: 20px;
+             border-radius: 50%;
+             background: var(--primary-color);
+             cursor: pointer;
+             border: none;
+         }
+
+         .slider-labels {
+             display: flex;
+             justify-content: space-between;
+             margin-top: 0.5rem;
+             font-size: 0.9rem;
+             color: var(--text-light);
+         }
+
+         .plan-selector h4 {
+             margin-bottom: 1rem;
+             color: var(--text-dark);
+             font-size: 1.1rem;
+             font-weight: 600;
+         }
+
+         .plan-options {
+             display: flex;
+             gap: 1rem;
+         }
+
+         .plan-option {
+             flex: 1;
+             padding: 1.5rem;
+             border: 2px solid #e5e7eb;
+             border-radius: 12px;
+             cursor: pointer;
+             transition: all 0.3s ease;
+             text-align: center;
+             position: relative;
+         }
+
+         .plan-option.active {
+             border-color: var(--primary-color);
+             background: rgba(91, 92, 255, 0.05);
+         }
+
+         .plan-option h5 {
+             font-size: 1rem;
+             font-weight: 600;
+             margin-bottom: 0.5rem;
+             color: var(--text-dark);
+         }
+
+         .plan-option p {
+             color: var(--text-light);
+             font-size: 0.9rem;
+             margin: 0;
+         }
+
+         .popular-tag {
+             position: absolute;
+             top: -8px;
+             right: -8px;
+             background: var(--accent-color);
+             color: white;
+             padding: 0.25rem 0.75rem;
+             border-radius: 12px;
+             font-size: 0.7rem;
+             font-weight: 600;
+         }
+
+         .billing-toggle {
+             display: flex;
+             background: #f8f9fa;
+             padding: 0.5rem;
+             border-radius: 12px;
+             margin-bottom: 2rem;
+         }
+
+         .billing-toggle .toggle-option {
+             flex: 1;
+             padding: 0.75rem;
+             text-align: center;
+             border-radius: 8px;
+             cursor: pointer;
+             transition: all 0.3s ease;
+             font-weight: 600;
+         }
+
+         .billing-toggle .toggle-option.active {
+             background: white;
+             color: var(--primary-color);
+             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+         }
+
+         .billing-toggle .toggle-option:not(.active) {
+             color: var(--text-light);
+         }
+
+         .price-breakdown {
+             margin-bottom: 2rem;
+         }
+
+         .price-label {
+             font-size: 0.9rem;
+             color: var(--text-light);
+             margin-bottom: 0.5rem;
+         }
+
+         .price-amount {
+             font-size: 2.5rem;
+             font-weight: 800;
+             color: var(--text-dark);
+             margin-bottom: 0.5rem;
+         }
+
+         .price-detail {
+             font-size: 0.9rem;
+             color: var(--text-light);
+         }
+
+         .savings-highlight {
+             background: linear-gradient(135deg, #22c55e, #16a34a);
+             color: white;
+             padding: 0.5rem 1rem;
+             border-radius: 20px;
+             font-size: 0.9rem;
+             font-weight: 600;
+             margin-top: 1rem;
+             display: inline-block;
+         }
+
+         .calculator-features {
+             margin-bottom: 2rem;
+         }
+
+         .calculator-features h5 {
+             margin-bottom: 1rem;
+             color: var(--text-dark);
+             font-weight: 600;
+         }
+
+         .calculator-features ul {
+             list-style: none;
+         }
+
+         .calculator-features li {
+             padding: 0.5rem 0;
+             display: flex;
+             align-items: center;
+             gap: 0.75rem;
+             color: var(--text-light);
+             font-size: 0.95rem;
+         }
+
+         .calculator-features li i {
+             color: var(--primary-color);
+             font-size: 0.9rem;
+         }
+
+         .calculator-cta {
+             text-align: center;
+         }
+
+         .calculator-btn {
+             width: 100%;
+             margin-bottom: 1rem;
+         }
+
+                  .trial-note {
+             font-size: 0.9rem;
+             color: var(--text-light);
+             margin: 0;
+         }
+
+         /* Problem-Solution Section */
+         .problem-solution {
+             padding: 5rem 2rem;
+             background: var(--bg-light);
+         }
+
+         .problem-container {
+             max-width: 1200px;
+             margin: 0 auto;
+         }
+
+         .problems-grid {
+             display: grid;
+             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+             gap: 2rem;
+             margin-top: 3rem;
+         }
+
+         .problem-card {
+             background: white;
+             border-radius: 16px;
+             padding: 2.5rem;
+             box-shadow: var(--shadow-md);
+             transition: all 0.3s ease;
+             border-left: 4px solid transparent;
+             position: relative;
+             overflow: hidden;
+         }
+
+         .problem-card::before {
+             content: '';
+             position: absolute;
+             top: 0;
+             left: 0;
+             width: 4px;
+             height: 100%;
+             background: var(--primary-color);
+             transform: scaleY(0);
+             transition: transform 0.3s ease;
+             transform-origin: bottom;
+         }
+
+         .problem-card:hover::before {
+             transform: scaleY(1);
+         }
+
+         .problem-card:hover {
+             transform: translateY(-8px);
+             box-shadow: var(--shadow-xl);
+         }
+
+         .problem-icon {
+             width: 60px;
+             height: 60px;
+             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+             border-radius: 12px;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             margin-bottom: 1.5rem;
+             font-size: 1.5rem;
+             color: white;
+             transition: all 0.3s ease;
+         }
+
+         .problem-card:hover .problem-icon {
+             transform: scale(1.1);
+         }
+
+         .problem-card h3 {
+             font-size: 1.4rem;
+             font-weight: 700;
+             margin-bottom: 1rem;
+             color: var(--text-dark);
+             line-height: 1.3;
+         }
+
+         .problem-card p {
+             color: var(--text-light);
+             line-height: 1.7;
+             margin-bottom: 1.5rem;
+             font-size: 0.95rem;
+         }
+
+         .read-more-btn {
+             color: var(--primary-color);
+             text-decoration: none;
+             font-weight: 600;
+             font-size: 0.9rem;
+             display: inline-flex;
+             align-items: center;
+             gap: 0.5rem;
+             transition: all 0.3s ease;
+             border-bottom: 2px solid transparent;
+         }
+
+         .read-more-btn:hover {
+             gap: 0.75rem;
+             border-bottom-color: var(--primary-color);
+         }
+
+         .read-more-btn i {
+             transition: transform 0.3s ease;
+         }
+
+         .read-more-btn:hover i {
+             transform: translateX(3px);
+         }
 
         /* CTA Section */
         .cta-section {
@@ -924,9 +1667,68 @@
                 direction: ltr;
             }
 
-            .pricing-card.featured {
-                transform: scale(1);
+            .about-container {
+                grid-template-columns: 1fr;
+                text-align: center;
             }
+
+            .posts-container {
+                grid-template-columns: 1fr;
+            }
+
+                         .newsletter-form {
+                 flex-direction: column;
+             }
+
+             .user-controls {
+                 flex-direction: row;
+                 gap: 0.75rem;
+             }
+
+             .user-btn {
+                 width: 28px;
+                 height: 28px;
+                 font-size: 0.9rem;
+             }
+
+             .user-count-input {
+                 min-width: 50px;
+                 width: 50px;
+                 font-size: 1rem;
+             }
+
+             .user-visualization {
+                 min-height: 25px;
+             }
+
+             .enterprise-card {
+                 padding: 1.5rem;
+             }
+
+             .enterprise-content h4 {
+                 font-size: 1.3rem;
+             }
+
+             .enterprise-content p {
+                 font-size: 0.9rem;
+             }
+
+                          .plan-options {
+                 flex-direction: column;
+             }
+
+             .problems-grid {
+                 grid-template-columns: 1fr;
+                 gap: 1.5rem;
+             }
+
+             .problem-card {
+                 padding: 2rem;
+             }
+
+             .pricing-card.featured {
+                 transform: scale(1);
+             }
         }
 
         /* Animations */
@@ -1010,8 +1812,9 @@
         <div class="bg-shape bg-shape-2"></div>
         <div class="hero-container">
             <div class="hero-content fade-in">
-                <h1>Transform Your Manufacturing with AI-Powered ERP</h1>
-                <p>Streamline operations, optimize inventory, and boost productivity with Likwid.AI - the intelligent ERP solution designed specifically for small and medium manufacturers.</p>
+                <h1>AI-Driven ERP: Smarter Decisions, Better Business</h1>
+                <p class="hero-tagline">Automate | Optimize | Integrate</p>
+                <p>AI-powered ERP tailored for SMBs and MSMEs to streamline operations, boost efficiency, and drive growth with intelligent automation designed specifically for manufacturing businesses.</p>
                 <div class="hero-buttons">
                     <a href="#" class="cta-button">Start 14-Day Free Trial</a>
                     <a href="#" class="secondary-button">
@@ -1117,11 +1920,11 @@
                     <h3>Rise.ai - Elevate Your Sales Game</h3>
                     <p>Transform your sales process with intelligent lead management and conversion optimization. Rise.ai centralizes your entire sales pipeline, providing real-time visibility and AI-powered insights.</p>
                     <ul class="module-features">
-                        <li>Automated lead capturing and qualification</li>
-                        <li>Sales pipeline visualization and tracking</li>
-                        <li>Performance analytics and forecasting</li>
-                        <li>Customer behavior insights and recommendations</li>
-                        <li>Integrated communication management</li>
+                        <li><i class="fas fa-magnet"></i> Automated lead capturing and qualification</li>
+                        <li><i class="fas fa-chart-line"></i> Sales pipeline visualization and tracking</li>
+                        <li><i class="fas fa-analytics"></i> Performance analytics and forecasting</li>
+                        <li><i class="fas fa-user-check"></i> Customer behavior insights and recommendations</li>
+                        <li><i class="fas fa-comments"></i> Integrated communication management</li>
                     </ul>
                     <a href="#" class="secondary-button" style="margin-top: 1.5rem;">Explore Rise.ai</a>
                 </div>
@@ -1145,11 +1948,11 @@
                     <h3>Flow.ai - Streamline Your Operations</h3>
                     <p>Take control of your inventory and orders with intelligent automation. Flow.ai provides real-time visibility across warehouses, automates reordering, and optimizes stock levels using AI.</p>
                     <ul class="module-features">
-                        <li>Real-time inventory tracking across locations</li>
-                        <li>ML-powered demand forecasting and indenting</li>
-                        <li>Automated purchase order management</li>
-                        <li>Vendor performance scoring and analytics</li>
-                        <li>Customizable workflow automation</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Real-time inventory tracking across locations</li>
+                        <li><i class="fas fa-brain"></i> ML-powered demand forecasting and indenting</li>
+                        <li><i class="fas fa-file-invoice"></i> Automated purchase order management</li>
+                        <li><i class="fas fa-star"></i> Vendor performance scoring and analytics</li>
+                        <li><i class="fas fa-cogs"></i> Customizable workflow automation</li>
                     </ul>
                     <a href="#" class="secondary-button" style="margin-top: 1.5rem;">Explore Flow.ai</a>
                 </div>
@@ -1173,11 +1976,11 @@
                     <h3>Spout.ai - Optimize Your Production</h3>
                     <p>Revolutionize your production planning with AI-driven insights. Spout.ai helps you maximize output, reduce waste, and ensure on-time delivery with intelligent scheduling and resource management.</p>
                     <ul class="module-features">
-                        <li>AI-powered production planning and scheduling</li>
-                        <li>Real-time production monitoring and alerts</li>
-                        <li>Material requirement planning (MRP)</li>
-                        <li>Resource utilization optimization</li>
-                        <li>Quality control and compliance tracking</li>
+                        <li><i class="fas fa-robot"></i> AI-powered production planning and scheduling</li>
+                        <li><i class="fas fa-eye"></i> Real-time production monitoring and alerts</li>
+                        <li><i class="fas fa-clipboard-list"></i> Material requirement planning (MRP)</li>
+                        <li><i class="fas fa-tachometer-alt"></i> Resource utilization optimization</li>
+                        <li><i class="fas fa-shield-alt"></i> Quality control and compliance tracking</li>
                     </ul>
                     <a href="#" class="secondary-button" style="margin-top: 1.5rem;">Explore Spout.ai</a>
                 </div>
@@ -1197,55 +2000,151 @@
         </div>
     </section>
 
-    <!-- Benefits Section -->
-    <section class="benefits" id="benefits">
+    <!-- Why Choose Us Section -->
+    <section class="why-choose-us" id="benefits">
         <div class="section-header fade-in">
-            <div class="section-label">Why Choose Likwid.AI</div>
-            <h2 class="section-title">Built for Manufacturers, By Manufacturing Experts</h2>
-            <p class="section-description">We understand the unique challenges of manufacturing businesses and have designed every feature to address them.</p>
+            <div class="section-label">LIKWID.AI PLATFORM</div>
+            <h2 class="section-title">Why Choose Us?</h2>
         </div>
-        <div class="benefits-grid">
-            <div class="benefit-card fade-in">
-                <div class="benefit-icon">
-                    <i class="fas fa-rocket"></i>
+        <div class="why-choose-grid">
+            <div class="why-choose-card fade-in">
+                <div class="card-number">1</div>
+                <h4>Easy-to-Use Interface</h4>
+                <p>Intuitive design that requires minimal training, allowing your team to be productive from day one.</p>
                 </div>
-                <h4>Quick Implementation</h4>
-                <p>Get up and running in just 45 days with our streamlined deployment process and dedicated support team.</p>
+            <div class="why-choose-card fade-in">
+                <div class="card-number">2</div>
+                <h4>In Depth Analytics</h4>
+                <p>Comprehensive insights and reporting to make data-driven decisions for your business growth.</p>
             </div>
-            <div class="benefit-card fade-in">
-                <div class="benefit-icon">
-                    <i class="fas fa-indian-rupee-sign"></i>
+            <div class="why-choose-card fade-in">
+                <div class="card-number">3</div>
+                <h4>India's #1st AI powered ERP solution</h4>
+                <p>Leading AI technology specifically designed for Indian manufacturing businesses and their unique needs.</p>
                 </div>
-                <h4>Affordable Pricing</h4>
-                <p>No hidden costs or complex licensing. Simple, transparent pricing that scales with your business.</p>
+            <div class="why-choose-card fade-in">
+                <div class="card-number">4</div>
+                <h4>User Defined Custom Processes</h4>
+                <p>Flexible workflows that adapt to your business processes, not the other way around.</p>
             </div>
-            <div class="benefit-card fade-in">
-                <div class="benefit-icon">
-                    <i class="fas fa-headset"></i>
+            <div class="why-choose-card fade-in">
+                <div class="card-number">5</div>
+                <h4>Go Live in less than 7 Days</h4>
+                <p>Rapid deployment with our streamlined implementation process and dedicated support team.</p>
                 </div>
-                <h4>24/7 Support</h4>
-                <p>Round-the-clock assistance from our expert team ensures you're never alone in your digital journey.</p>
+            <div class="why-choose-card fade-in">
+                <div class="card-number">6</div>
+                <h4>100% Secure on Google Cloud</h4>
+                <p>Enterprise-grade security with Google Cloud infrastructure ensuring your data is always protected.</p>
             </div>
-            <div class="benefit-card fade-in">
-                <div class="benefit-icon">
-                    <i class="fas fa-puzzle-piece"></i>
                 </div>
-                <h4>Easy Integration</h4>
-                <p>Seamlessly integrate with your existing tools and systems without disrupting your operations.</p>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section">
+        <div class="about-container">
+            <div class="about-content fade-in">
+                <div class="section-label">WHO WE ARE</div>
+                <h2>AI-powered ERP tailored for SMBs and MSMEs to streamline operations, boost efficiency, and drive growth.</h2>
+                <p>Designed specifically for small and medium-sized businesses (SMBs) and micro, small, and medium enterprises (MSMEs) to streamline and automate their entire order to cash process.</p>
+                <a href="#" class="secondary-button">Read More <i class="fas fa-arrow-right"></i></a>
             </div>
-            <div class="benefit-card fade-in">
-                <div class="benefit-icon">
-                    <i class="fas fa-graduation-cap"></i>
+            <div class="about-visual fade-in">
+                <div class="ai-assistant-mockup">
+                    <div class="browser-mockup">
+                        <div class="browser-header">
+                            <div class="traffic-lights">
+                                <div class="traffic-light red"></div>
+                                <div class="traffic-light yellow"></div>
+                                <div class="traffic-light green"></div>
                 </div>
-                <h4>Free Training</h4>
-                <p>Comprehensive onboarding and training for your entire team to ensure maximum adoption and ROI.</p>
             </div>
-            <div class="benefit-card fade-in">
-                <div class="benefit-icon">
-                    <i class="fas fa-cloud"></i>
+                        <div class="ai-assistant-content">
+                            <div class="assistant-header">
+                                <div class="likwid-logo">📊 Likwid.AI</div>
+                                <div class="search-bar">
+                                    <i class="fas fa-search"></i>
+                                    <span>Search...</span>
                 </div>
-                <h4>Cloud-First Design</h4>
-                <p>Access your business data from anywhere, anytime. No expensive hardware or IT infrastructure needed.</p>
+                            </div>
+                            <div class="assistant-chat">
+                                <div class="chat-message">
+                                    <div class="message-header">
+                                        <strong>Meet Jack, your AI assistant !</strong>
+                                    </div>
+                                    <p>Jack is the AI assistant integrated into the platform, designed to provide users with intelligent insights and support. It helps navigate the system, answers queries about data and processes on real-time analysis.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem-Solution Section -->
+    <section class="problem-solution">
+        <div class="problem-container">
+            <div class="section-header fade-in">
+                <div class="section-label">WHY LIKWID.AI ?</div>
+                <h2 class="section-title">Solving Real Manufacturing Problems</h2>
+                <p class="section-description">Choose Likwid.AI if you are looking to solve any of these problems in your daily operations:</p>
+            </div>
+            
+            <div class="problems-grid">
+                <div class="problem-card fade-in">
+                    <div class="problem-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Lead Management & Conversions</h3>
+                    <p>One of the most pressing MSME's problems is effectively managing leads through the sales funnel. Our solution that addresses this challenge head-on.</p>
+                    <a href="#" class="read-more-btn">Read More <i class="fas fa-arrow-right"></i></a>
+                </div>
+                
+                <div class="problem-card fade-in">
+                    <div class="problem-icon">
+                        <i class="fas fa-broadcast-tower"></i>
+                    </div>
+                    <h3>Real Time Data on Operations</h3>
+                    <p>MSME's struggle with real time data every single day. Likwid.AI is a true digital transformation platform for MSMEs. The platform collects and processes data continuously, giving businesses instant insights into their operations.</p>
+                    <a href="#" class="read-more-btn">Read More <i class="fas fa-arrow-right"></i></a>
+                </div>
+                
+                <div class="problem-card fade-in">
+                    <div class="problem-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Operational Efficiency</h3>
+                    <p>One of the significant MSME's problems is managing limited resources effectively. Likwid.AI addresses this by automating routine tasks. Automation reduces costs, accelerates processes, and ensures consistency across operations.</p>
+                    <a href="#" class="read-more-btn">Read More <i class="fas fa-arrow-right"></i></a>
+                </div>
+                
+                <div class="problem-card fade-in">
+                    <div class="problem-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <h3>Delayed Order Processing</h3>
+                    <p>MSME's struggle a lot in timely deliveries. Our AI powered ERP having user-friendly interface and customizable workflows enable businesses to tailor the system to their specific needs and ensure end-to-end live tracking & management.</p>
+                    <a href="#" class="read-more-btn">Read More <i class="fas fa-arrow-right"></i></a>
+                </div>
+                
+                <div class="problem-card fade-in">
+                    <div class="problem-icon">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+                    <h3>Inventory Mismanagement</h3>
+                    <p>Almost every MSME faces an inventory management issue. Our ERP solution addresses Inventory Mismanagement by providing real-time tracking, automated stock level monitoring, and intelligent demand forecasting.</p>
+                    <a href="#" class="read-more-btn">Read More <i class="fas fa-arrow-right"></i></a>
+                </div>
+                
+                <div class="problem-card fade-in">
+                    <div class="problem-icon">
+                        <i class="fas fa-digital-tachograph"></i>
+                    </div>
+                    <h3>Digital Transformation</h3>
+                    <p>Our ERP solution facilitates Digital Transformation by integrating all business processes into a unified, centralized platform. It replaces manual, paper-based workflows with streamlined digital processes, providing real-time data access, analytics, and intelligent automation.</p>
+                    <a href="#" class="read-more-btn">Read More <i class="fas fa-arrow-right"></i></a>
+                </div>
             </div>
         </div>
     </section>
@@ -1260,7 +2159,7 @@
             <div class="pricing-toggle">
                 <div class="toggle-option active" data-period="monthly">
                     Monthly
-                </div>
+        </div>
                 <div class="toggle-option" data-period="annual">
                     Annual
                     <span class="discount-badge">Save 16%</span>
@@ -1269,26 +2168,41 @@
         </div>
         
         <div class="pricing-cards">
-            <div class="pricing-card fade-in">
+                        <div class="pricing-card fade-in">
                 <h3 class="plan-name">Starter</h3>
                 <p class="plan-description">Perfect for small teams getting started</p>
-                <div class="price-display">
-                    <div class="monthly-pricing">
-                        <div class="price-main">
-                            <span class="currency">₹</span>
-                            <span class="amount">999</span>
-                            <span class="period">/user/month</span>
-                        </div>
-                        <div class="price-note">Billed monthly</div>
+                
+                <!-- User Count Selector -->
+                <div class="user-count-selector">
+                    <label>Team Size</label>
+                    <div class="user-controls">
+                        <button class="user-btn" onclick="changeUsers('starter', -1)">-</button>
+                        <input type="number" class="user-count-input" id="starter-users" value="1" min="1" max="1000" onchange="updateUserCount('starter')" oninput="updateUserCount('starter')">
+                        <button class="user-btn" onclick="changeUsers('starter', 1)">+</button>
                     </div>
-                    <div class="annual-pricing" style="display: none;">
+                    <div class="user-visualization" id="starter-viz">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="plan-recommendation" id="starter-recommendation" style="display: none;"></div>
+                </div>
+                
+                <div class="price-display">
+                    <div class="monthly-pricing" style="display: none;">
                         <div class="price-main">
                             <span class="currency">₹</span>
-                            <span class="amount">839</span>
-                            <span class="period">/user/month</span>
+                            <span class="amount" id="starter-monthly-total">999</span>
+                            <span class="period">/month</span>
                         </div>
-                        <div class="price-note">₹10,068 billed annually</div>
-                        <div class="annual-saving">Save ₹1,920 per year</div>
+                        <div class="price-note">₹999 per user monthly</div>
+                    </div>
+                    <div class="annual-pricing">
+                        <div class="price-main">
+                            <span class="currency">₹</span>
+                            <span class="amount" id="starter-annual-total">10,068</span>
+                            <span class="period">/year</span>
+                        </div>
+                        <div class="price-note">₹839 per user monthly</div>
+                        <div class="annual-saving" id="starter-savings">Save ₹1,920 per year</div>
                     </div>
                 </div>
                 <ul class="plan-features">
@@ -1302,27 +2216,42 @@
                 <a href="#" class="plan-button secondary">Try free for 14 days</a>
             </div>
 
-            <div class="pricing-card featured fade-in">
+                        <div class="pricing-card featured fade-in">
                 <div class="popular-badge">Most Popular</div>
                 <h3 class="plan-name">Growth</h3>
                 <p class="plan-description">Best for growing businesses with advanced needs</p>
-                <div class="price-display">
-                    <div class="monthly-pricing">
-                        <div class="price-main">
-                            <span class="currency">₹</span>
-                            <span class="amount">1,299</span>
-                            <span class="period">/user/month</span>
-                        </div>
-                        <div class="price-note">Billed monthly</div>
+                
+                <!-- User Count Selector -->
+                <div class="user-count-selector">
+                    <label>Team Size</label>
+                    <div class="user-controls">
+                        <button class="user-btn" onclick="changeUsers('growth', -1)">-</button>
+                        <input type="number" class="user-count-input" id="growth-users" value="1" min="1" max="1000" onchange="updateUserCount('growth')" oninput="updateUserCount('growth')">
+                        <button class="user-btn" onclick="changeUsers('growth', 1)">+</button>
                     </div>
-                    <div class="annual-pricing" style="display: none;">
+                    <div class="user-visualization" id="growth-viz">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="plan-recommendation" id="growth-recommendation" style="display: none;"></div>
+                </div>
+                
+                <div class="price-display">
+                    <div class="monthly-pricing" style="display: none;">
                         <div class="price-main">
                             <span class="currency">₹</span>
-                            <span class="amount">1,091</span>
-                            <span class="period">/user/month</span>
+                            <span class="amount" id="growth-monthly-total">1,299</span>
+                            <span class="period">/month</span>
                         </div>
-                        <div class="price-note">₹13,092 billed annually</div>
-                        <div class="annual-saving">Save ₹2,496 per year</div>
+                        <div class="price-note">₹1,299 per user monthly</div>
+                    </div>
+                    <div class="annual-pricing">
+                        <div class="price-main">
+                            <span class="currency">₹</span>
+                            <span class="amount" id="growth-annual-total">13,092</span>
+                            <span class="period">/year</span>
+                        </div>
+                        <div class="price-note">₹1,091 per user monthly</div>
+                        <div class="annual-saving" id="growth-savings">Save ₹2,496 per year</div>
                     </div>
                 </div>
                 <ul class="plan-features">
@@ -1343,7 +2272,7 @@
                 <div class="price-display">
                     <div class="price-main">
                         <span class="amount" style="font-size: 2.5rem;">Custom</span>
-                    </div>
+                </div>
                     <div class="price-note">Tailored to your needs</div>
                 </div>
                 <ul class="plan-features">
@@ -1356,6 +2285,20 @@
                     <li><i class="fas fa-palette"></i> White-label options</li>
                 </ul>
                 <a href="#" class="plan-button secondary">Contact sales</a>
+            </div>
+            
+            <!-- Enterprise Recommendation -->
+            <div class="enterprise-recommendation" id="enterprise-recommendation" style="display: none;">
+                <div class="enterprise-card">
+                    <div class="enterprise-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="enterprise-content">
+                        <h4>Consider Enterprise</h4>
+                        <p>For teams of 25+ users, our Enterprise plan offers better value with custom pricing, dedicated support, and advanced features.</p>
+                        <a href="#" class="enterprise-cta">Get Custom Quote</a>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1478,6 +2421,82 @@
                     <div class="feature-value"><i class="fas fa-times cross-icon"></i></div>
                     <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
                 </div>
+                        </div>
+            
+                <!-- Enterprise Recommendation -->
+                <div class="enterprise-recommendation" id="enterprise-recommendation" style="display: none;">
+                    <div class="enterprise-card">
+                        <div class="enterprise-icon">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="enterprise-content">
+                            <h4>Consider Enterprise</h4>
+                            <p>For teams of 25+ users, our Enterprise plan offers better value with custom pricing, dedicated support, and advanced features.</p>
+                            <a href="#" class="enterprise-cta">Get Custom Quote</a>
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+    </section>
+
+    <!-- Recent Posts Section -->
+    <section class="recent-posts">
+        <div class="section-header fade-in">
+            <div class="section-label">RECENT POSTS</div>
+            <h2 class="section-title">Latest Insights</h2>
+        </div>
+        <div class="posts-container">
+            <div class="post-card fade-in">
+                <div class="post-image">
+                    <div class="post-date">JULY 4, 2025</div>
+                </div>
+                <div class="post-content">
+                    <h3>Understanding Made-to-Stock Manufacturing: Industries, Implementation, and the Role of ERP in Demand Forecasting</h3>
+                    <div class="post-meta">
+                        <span class="author">Sidharth Sharma</span>
+                        <span class="category">Manufacturing</span>
+                    </div>
+                    <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="post-card fade-in">
+                <div class="post-image">
+                    <div class="post-date">MAY 4, 2025</div>
+                </div>
+                <div class="post-content">
+                    <h3>How Does Likwid.AI Help Manufacturers Achieve Just-in-Time Management</h3>
+                    <div class="post-meta">
+                        <span class="author">Sidharth Sharma</span>
+                        <span class="category">Manufacturing</span>
+                    </div>
+                    <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="post-card fade-in">
+                <div class="post-image">
+                    <div class="post-date">APRIL 24, 2025</div>
+                </div>
+                <div class="post-content">
+                    <h3>WOE Part 5: What on earth is Just-in-Time Management for Manufacturing?</h3>
+                    <div class="post-meta">
+                        <span class="author">Sidharth Sharma</span>
+                        <span class="category">General</span>
+                    </div>
+                    <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter-section">
+        <div class="newsletter-container fade-in">
+            <h2>Join Our Newsletter</h2>
+            <p>Subscribe to our newsletter and receive the latest news about our products and services!</p>
+            <div class="newsletter-form">
+                <input type="email" placeholder="Enter your email address" class="newsletter-input">
+                <button class="newsletter-button">Subscribe</button>
             </div>
         </div>
     </section>
@@ -1663,9 +2682,142 @@
                 } else {
                     monthlyPricing.forEach(pricing => pricing.style.display = 'block');
                     annualPricing.forEach(pricing => pricing.style.display = 'none');
-                }
-            });
-        });
+                                 }
+             });
+         });
+
+         // Pricing Calculator functionality
+         let currentBilling = 'annual';
+         let globalUserCount = 1;
+
+         const planPricing = {
+             starter: { monthly: 999, annual: 839 },
+             growth: { monthly: 1299, annual: 1091 }
+         };
+
+         function changeUsers(plan, delta) {
+             globalUserCount = Math.max(1, Math.min(1000, globalUserCount + delta));
+             syncAllUserCounts();
+         }
+
+         function updateUserCount(plan) {
+             const inputElement = document.getElementById(`${plan}-users`);
+             const newValue = Math.max(1, Math.min(1000, parseInt(inputElement.value) || 1));
+             
+             // Update the input to show the corrected value
+             inputElement.value = newValue;
+             globalUserCount = newValue;
+             syncAllUserCounts();
+         }
+
+         function syncAllUserCounts() {
+             // Update all input fields
+             document.getElementById('starter-users').value = globalUserCount;
+             document.getElementById('growth-users').value = globalUserCount;
+             
+             // Update visualizations and pricing for all plans
+             updateUserVisualization('starter');
+             updateUserVisualization('growth');
+             updatePlanPricing('starter');
+             updatePlanPricing('growth');
+             updateRecommendations();
+         }
+
+         function updateUserVisualization(plan) {
+             const users = globalUserCount;
+             const vizElement = document.getElementById(`${plan}-viz`);
+             
+             // Limit visual representation to 20 icons max for readability
+             const iconsToShow = Math.min(users, 20);
+             let iconsHtml = '';
+             
+             for (let i = 0; i < iconsToShow; i++) {
+                 iconsHtml += '<i class="fas fa-user"></i>';
+             }
+             
+             if (users > 20) {
+                 iconsHtml += `<span style="color: var(--primary-color); font-weight: 600; margin-left: 8px;">+${users - 20}</span>`;
+             }
+             
+             vizElement.innerHTML = iconsHtml;
+         }
+
+         function updateRecommendations() {
+             const users = globalUserCount;
+             const enterpriseRecommendation = document.getElementById('enterprise-recommendation');
+             
+             // Show enterprise recommendation if user count exceeds 25
+             if (users > 25) {
+                 if (enterpriseRecommendation) {
+                     enterpriseRecommendation.style.display = 'block';
+                 }
+             } else {
+                 if (enterpriseRecommendation) {
+                     enterpriseRecommendation.style.display = 'none';
+                 }
+             }
+             
+             // Show individual plan recommendations
+             updatePlanRecommendation('starter');
+             updatePlanRecommendation('growth');
+         }
+
+         function updatePlanRecommendation(plan) {
+             const users = globalUserCount;
+             const recommendationElement = document.getElementById(`${plan}-recommendation`);
+             
+             if (users <= 5) {
+                 if (plan === 'starter') {
+                     recommendationElement.innerHTML = '👍 Perfect for small teams';
+                     recommendationElement.style.display = 'block';
+                 } else {
+                     recommendationElement.style.display = 'none';
+                 }
+             } else if (users <= 15) {
+                 if (plan === 'growth') {
+                     recommendationElement.innerHTML = '⭐ Recommended for growing teams';
+                     recommendationElement.style.display = 'block';
+                 } else {
+                     recommendationElement.innerHTML = '💡 Consider Growth plan for better features';
+                     recommendationElement.style.display = 'block';
+                 }
+             } else if (users <= 25) {
+                 if (plan === 'growth') {
+                     recommendationElement.innerHTML = '🚀 Great choice for medium teams';
+                     recommendationElement.style.display = 'block';
+                 } else {
+                     recommendationElement.innerHTML = '💡 Growth plan recommended for this size';
+                     recommendationElement.style.display = 'block';
+                 }
+             } else {
+                 recommendationElement.innerHTML = '🏢 Consider Enterprise for 25+ users';
+                 recommendationElement.style.display = 'block';
+             }
+         }
+
+         function updatePlanPricing(plan) {
+             const users = globalUserCount;
+             const pricing = planPricing[plan];
+             
+             // Update monthly totals
+             const monthlyTotal = pricing.monthly * users;
+             document.getElementById(`${plan}-monthly-total`).textContent = monthlyTotal.toLocaleString();
+             
+             // Update annual totals and savings
+             const annualTotal = pricing.annual * users * 12;
+             const annualSavings = (pricing.monthly * 12 - pricing.annual * 12) * users;
+             document.getElementById(`${plan}-annual-total`).textContent = annualTotal.toLocaleString();
+             document.getElementById(`${plan}-savings`).textContent = `Save ₹${annualSavings.toLocaleString()} per year`;
+         }
+
+         function updateAllPricing() {
+             syncAllUserCounts();
+         }
+
+         // Initialize pricing
+         document.addEventListener('DOMContentLoaded', function() {
+             updateAllPricing();
+         });
     </script>
 </body>
 </html> 
