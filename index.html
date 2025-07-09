@@ -213,6 +213,53 @@
             filter: drop-shadow(0 20px 40px rgba(91, 92, 255, 0.2));
         }
 
+        /* Simple macOS-style Browser Mockups */
+        .browser-mockup {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid #e1e5e9;
+        }
+
+        .browser-header {
+            background: #f6f8fa;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid #e1e5e9;
+        }
+
+        .traffic-lights {
+            display: flex;
+            gap: 8px;
+        }
+
+        .traffic-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .traffic-light.red {
+            background: #ff5f57;
+        }
+
+        .traffic-light.yellow {
+            background: #ffbd2e;
+        }
+
+        .traffic-light.green {
+            background: #28ca42;
+        }
+
+        .browser-mockup img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
         /* Animated Background Elements */
         .bg-shape {
             position: absolute;
@@ -436,17 +483,63 @@
             color: var(--text-light);
         }
 
-        /* Pricing Section */
+                /* Pricing Section */
         .pricing {
             padding: 5rem 2rem;
-            background: var(--bg-light);
+            background: var(--bg-white);
         }
 
-        .pricing-container {
+        .pricing-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0 4rem;
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 12px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .toggle-option {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .toggle-option.active {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .toggle-option:not(.active) {
+            color: var(--text-light);
+        }
+
+        .discount-badge {
+            background: var(--gradient-accent);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            position: absolute;
+            top: -8px;
+            right: -8px;
+        }
+
+        .pricing-cards {
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 0 auto 5rem;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 2rem;
         }
 
@@ -454,7 +547,7 @@
             background: white;
             border-radius: 16px;
             padding: 2.5rem;
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             position: relative;
             transition: all 0.3s ease;
             border: 2px solid transparent;
@@ -462,65 +555,232 @@
 
         .pricing-card.featured {
             border-color: var(--primary-color);
-            transform: scale(1.05);
+            transform: scale(1.02);
         }
 
         .pricing-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-xl);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
         }
 
-        .pricing-badge {
+        .pricing-card.featured:hover {
+            transform: translateY(-8px) scale(1.04);
+        }
+
+        .popular-badge {
             position: absolute;
             top: -12px;
-            right: 20px;
-            background: var(--gradient-accent);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-color);
             color: white;
-            padding: 0.25rem 1rem;
+            padding: 0.5rem 1.5rem;
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .pricing-header h3 {
+        .plan-name {
             font-size: 1.5rem;
+            font-weight: 700;
             margin-bottom: 0.5rem;
             color: var(--text-dark);
         }
 
-        .pricing-price {
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--primary-color);
-            margin: 1rem 0;
-        }
-
-        .pricing-price span {
-            font-size: 1rem;
-            font-weight: 400;
+        .plan-description {
             color: var(--text-light);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
         }
 
-        .pricing-features {
-            list-style: none;
-            margin: 2rem 0;
+        .price-display {
+            margin-bottom: 2rem;
         }
 
-        .pricing-features li {
-            padding: 0.75rem 0;
-            color: var(--text-light);
+        .price-main {
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border-bottom: 1px solid #E5E7EB;
+            align-items: baseline;
+            justify-content: center;
+            margin-bottom: 0.5rem;
         }
 
-        .pricing-features li:last-child {
+        .currency {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .amount {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin: 0 0.25rem;
+        }
+
+        .period {
+            font-size: 1rem;
+            color: var(--text-light);
+        }
+
+        .price-note {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .annual-saving {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #22c55e;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+                 .plan-features {
+             list-style: none;
+             margin: 2rem 0;
+         }
+
+         .plan-features li {
+             padding: 0.75rem 0;
+             color: var(--text-light);
+             display: flex;
+             align-items: center;
+             gap: 0.75rem;
+             font-size: 0.95rem;
+             line-height: 1.5;
+             border-bottom: 1px solid #f1f3f4;
+         }
+
+         .plan-features li:last-child {
+             border-bottom: none;
+         }
+
+         .plan-features li i {
+             color: var(--primary-color);
+             font-size: 0.9rem;
+             width: 16px;
+             flex-shrink: 0;
+         }
+
+         .plan-button {
+             width: 100%;
+             padding: 1rem;
+             border-radius: 12px;
+             font-weight: 600;
+             text-decoration: none;
+             text-align: center;
+             transition: all 0.3s ease;
+             display: block;
+             font-size: 1rem;
+             margin-top: 2rem;
+         }
+
+        .plan-button.primary {
+            background: var(--primary-color);
+            color: white;
+            border: 2px solid var(--primary-color);
+        }
+
+        .plan-button.primary:hover {
+            background: var(--secondary-color);
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .plan-button.secondary {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .plan-button.secondary:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Comparison Table */
+        .comparison-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 3rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .comparison-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .comparison-header h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .table-header {
+            background: #f8f9fa;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 1.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f3f4;
+            align-items: center;
+        }
+
+        .table-row:last-child {
             border-bottom: none;
         }
 
-        .pricing-features li i {
-            color: var(--primary-color);
+        .table-row:nth-child(even) {
+            background: #fafbfc;
+        }
+
+        .feature-name {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .feature-value {
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .check-icon {
+            color: #22c55e;
+            font-size: 1.2rem;
+        }
+
+        .cross-icon {
+            color: #ef4444;
+            font-size: 1.2rem;
+        }
+
+        .feature-text {
+            font-size: 0.9rem;
+            color: var(--text-light);
         }
 
         /* CTA Section */
@@ -775,7 +1035,16 @@
                 </div>
             </div>
             <div class="hero-visual fade-in">
-                <img src="https://cdn.dribbble.com/users/1355613/screenshots/15252730/media/28f348daf9654c440f5dcf398d8e097a.png?compress=1&resize=1000x750" alt="Dashboard Preview">
+                <div class="browser-mockup">
+                    <div class="browser-header">
+                        <div class="traffic-lights">
+                            <div class="traffic-light red"></div>
+                            <div class="traffic-light yellow"></div>
+                            <div class="traffic-light green"></div>
+                        </div>
+                    </div>
+                    <img src="assets/screenshots/main_dashboard.png" alt="Likwid.AI Main Dashboard Preview">
+                </div>
             </div>
         </div>
     </section>
@@ -857,7 +1126,16 @@
                     <a href="#" class="secondary-button" style="margin-top: 1.5rem;">Explore Rise.ai</a>
                 </div>
                 <div class="module-visual">
-                    <img src="https://cdn.dribbble.com/users/1615584/screenshots/15710463/media/9c5b2e96b6d454a15e7cf0528c36e752.jpg?compress=1&resize=800x600" alt="Rise.ai Dashboard">
+                    <div class="browser-mockup">
+                        <div class="browser-header">
+                            <div class="traffic-lights">
+                                <div class="traffic-light red"></div>
+                                <div class="traffic-light yellow"></div>
+                                <div class="traffic-light green"></div>
+                            </div>
+                        </div>
+                        <img src="assets/screenshots/rise_dashboard.png" alt="Rise.ai CRM Dashboard">
+                    </div>
                 </div>
             </div>
 
@@ -876,7 +1154,16 @@
                     <a href="#" class="secondary-button" style="margin-top: 1.5rem;">Explore Flow.ai</a>
                 </div>
                 <div class="module-visual">
-                    <img src="https://cdn.dribbble.com/users/1615584/screenshots/14130984/media/d2b66e7e30497bb68e67536acf008334.jpg?compress=1&resize=800x600" alt="Flow.ai Dashboard">
+                    <div class="browser-mockup">
+                        <div class="browser-header">
+                            <div class="traffic-lights">
+                                <div class="traffic-light red"></div>
+                                <div class="traffic-light yellow"></div>
+                                <div class="traffic-light green"></div>
+                            </div>
+                        </div>
+                        <img src="assets/screenshots/flow_dashboard.png" alt="Flow.ai Inventory Management Dashboard">
+                    </div>
                 </div>
             </div>
 
@@ -895,7 +1182,16 @@
                     <a href="#" class="secondary-button" style="margin-top: 1.5rem;">Explore Spout.ai</a>
                 </div>
                 <div class="module-visual">
-                    <img src="https://cdn.dribbble.com/users/1615584/screenshots/15665354/media/0d09cf2b0625b3c9c95d913e73861e73.jpg?compress=1&resize=800x600" alt="Spout.ai Dashboard">
+                    <div class="browser-mockup">
+                        <div class="browser-header">
+                            <div class="traffic-lights">
+                                <div class="traffic-light red"></div>
+                                <div class="traffic-light yellow"></div>
+                                <div class="traffic-light green"></div>
+                            </div>
+                        </div>
+                        <img src="assets/screenshots/spout_dashboard.png" alt="Spout.ai Production Planning Dashboard">
+                    </div>
                 </div>
             </div>
         </div>
@@ -958,68 +1254,230 @@
     <section class="pricing" id="pricing">
         <div class="section-header fade-in">
             <div class="section-label">Pricing Plans</div>
-            <h2 class="section-title">Simple, Transparent Pricing for Every Business</h2>
-            <p class="section-description">Choose the perfect plan for your manufacturing business. All plans include all three modules.</p>
+            <h2 class="section-title">Simple, transparent pricing</h2>
+            <p class="section-description">No contracts. No surprise fees.</p>
+            
+            <div class="pricing-toggle">
+                <div class="toggle-option active" data-period="monthly">
+                    Monthly
+                </div>
+                <div class="toggle-option" data-period="annual">
+                    Annual
+                    <span class="discount-badge">Save 16%</span>
+                </div>
+            </div>
         </div>
-        <div class="pricing-container">
+        
+        <div class="pricing-cards">
             <div class="pricing-card fade-in">
-                <div class="pricing-header">
-                    <h3>Starter</h3>
-                    <p>Perfect for small manufacturers</p>
+                <h3 class="plan-name">Starter</h3>
+                <p class="plan-description">Perfect for small teams getting started</p>
+                <div class="price-display">
+                    <div class="monthly-pricing">
+                        <div class="price-main">
+                            <span class="currency">₹</span>
+                            <span class="amount">999</span>
+                            <span class="period">/user/month</span>
+                        </div>
+                        <div class="price-note">Billed monthly</div>
+                    </div>
+                    <div class="annual-pricing" style="display: none;">
+                        <div class="price-main">
+                            <span class="currency">₹</span>
+                            <span class="amount">839</span>
+                            <span class="period">/user/month</span>
+                        </div>
+                        <div class="price-note">₹10,068 billed annually</div>
+                        <div class="annual-saving">Save ₹1,920 per year</div>
+                    </div>
                 </div>
-                <div class="pricing-price">
-                    ₹8,499 <span>/month</span>
-                </div>
-                <ul class="pricing-features">
+                <ul class="plan-features">
                     <li><i class="fas fa-check"></i> All 3 Modules (Rise, Flow, Spout)</li>
-                    <li><i class="fas fa-check"></i> 10 Free Users</li>
-                    <li><i class="fas fa-check"></i> 25GB Cloud Storage</li>
-                    <li><i class="fas fa-check"></i> Basic Analytics & Reports</li>
-                    <li><i class="fas fa-check"></i> Email Support</li>
-                    <li><i class="fas fa-check"></i> Mobile App Access</li>
+                    <li><i class="fas fa-check"></i> Real-time synchronization</li>
+                    <li><i class="fas fa-check"></i> Basic analytics & reports</li>
+                    <li><i class="fas fa-check"></i> Email support</li>
+                    <li><i class="fas fa-check"></i> Mobile app access</li>
+                    <li><i class="fas fa-check"></i> 25GB cloud storage</li>
                 </ul>
-                <a href="#" class="cta-button" style="width: 100%; text-align: center;">Start Free Trial</a>
+                <a href="#" class="plan-button secondary">Try free for 14 days</a>
             </div>
 
             <div class="pricing-card featured fade-in">
-                <div class="pricing-badge">Most Popular</div>
-                <div class="pricing-header">
-                    <h3>Growth</h3>
-                    <p>For growing manufacturers</p>
+                <div class="popular-badge">Most Popular</div>
+                <h3 class="plan-name">Growth</h3>
+                <p class="plan-description">Best for growing businesses with advanced needs</p>
+                <div class="price-display">
+                    <div class="monthly-pricing">
+                        <div class="price-main">
+                            <span class="currency">₹</span>
+                            <span class="amount">1,299</span>
+                            <span class="period">/user/month</span>
+                        </div>
+                        <div class="price-note">Billed monthly</div>
+                    </div>
+                    <div class="annual-pricing" style="display: none;">
+                        <div class="price-main">
+                            <span class="currency">₹</span>
+                            <span class="amount">1,091</span>
+                            <span class="period">/user/month</span>
+                        </div>
+                        <div class="price-note">₹13,092 billed annually</div>
+                        <div class="annual-saving">Save ₹2,496 per year</div>
+                    </div>
                 </div>
-                <div class="pricing-price">
-                    ₹11,999 <span>/month</span>
-                </div>
-                <ul class="pricing-features">
-                    <li><i class="fas fa-check"></i> All 3 Modules (Rise, Flow, Spout)</li>
-                    <li><i class="fas fa-check"></i> 15 Free Users</li>
-                    <li><i class="fas fa-check"></i> 50GB Cloud Storage</li>
-                    <li><i class="fas fa-check"></i> Advanced Analytics & AI Reports</li>
-                    <li><i class="fas fa-check"></i> Priority Phone & Email Support</li>
-                    <li><i class="fas fa-check"></i> Custom Dashboards</li>
-                    <li><i class="fas fa-check"></i> API Access</li>
+                <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> Everything in Starter</li>
+                    <li><i class="fas fa-star"></i> AI-powered procurement</li>
+                    <li><i class="fas fa-chart-line"></i> Advanced analytics & insights</li>
+                    <li><i class="fas fa-headset"></i> Priority phone & email support</li>
+                    <li><i class="fas fa-tachometer-alt"></i> Custom dashboards</li>
+                    <li><i class="fas fa-code"></i> API access</li>
+                    <li><i class="fas fa-hdd"></i> 100GB cloud storage</li>
                 </ul>
-                <a href="#" class="cta-button" style="width: 100%; text-align: center;">Start Free Trial</a>
+                <a href="#" class="plan-button primary">Try free for 14 days</a>
             </div>
 
             <div class="pricing-card fade-in">
-                <div class="pricing-header">
-                    <h3>Enterprise</h3>
-                    <p>For large-scale operations</p>
+                <h3 class="plan-name">Enterprise</h3>
+                <p class="plan-description">Custom solutions for large organizations</p>
+                <div class="price-display">
+                    <div class="price-main">
+                        <span class="amount" style="font-size: 2.5rem;">Custom</span>
+                    </div>
+                    <div class="price-note">Tailored to your needs</div>
                 </div>
-                <div class="pricing-price">
-                    Custom
-                </div>
-                <ul class="pricing-features">
-                    <li><i class="fas fa-check"></i> All 3 Modules (Rise, Flow, Spout)</li>
-                    <li><i class="fas fa-check"></i> Unlimited Users</li>
-                    <li><i class="fas fa-check"></i> Dedicated Database</li>
-                    <li><i class="fas fa-check"></i> Custom Development</li>
-                    <li><i class="fas fa-check"></i> 24/7 Dedicated Support</li>
-                    <li><i class="fas fa-check"></i> On-Premise Deployment Option</li>
-                    <li><i class="fas fa-check"></i> SLA Guarantee</li>
+                <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> Everything in Growth</li>
+                    <li><i class="fas fa-users"></i> Unlimited users</li>
+                    <li><i class="fas fa-puzzle-piece"></i> Custom integrations</li>
+                    <li><i class="fas fa-user-tie"></i> Dedicated account manager</li>
+                    <li><i class="fas fa-server"></i> On-premise deployment</li>
+                    <li><i class="fas fa-shield-alt"></i> SLA guarantee</li>
+                    <li><i class="fas fa-palette"></i> White-label options</li>
                 </ul>
-                <a href="#" class="secondary-button" style="width: 100%; text-align: center; border-color: var(--primary-color);">Contact Sales</a>
+                <a href="#" class="plan-button secondary">Contact sales</a>
+            </div>
+        </div>
+
+        <!-- Feature Comparison Table -->
+        <div class="comparison-section fade-in">
+            <div class="comparison-header">
+                <h3>Compare Plans</h3>
+                <p style="color: var(--text-light); font-size: 1.1rem;">See which plan is right for your business</p>
+            </div>
+            
+            <div class="comparison-table">
+                <div class="table-header">
+                    <div>Features</div>
+                    <div>Starter</div>
+                    <div>Growth</div>
+                    <div>Enterprise</div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-name">Core Modules</div>
+                    <div class="feature-value"><span class="feature-text">All 3 modules</span></div>
+                    <div class="feature-value"><span class="feature-text">All 3 modules</span></div>
+                    <div class="feature-value"><span class="feature-text">All 3 modules</span></div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-name">Users Included</div>
+                    <div class="feature-value"><span class="feature-text">Pay per user</span></div>
+                    <div class="feature-value"><span class="feature-text">Pay per user</span></div>
+                    <div class="feature-value"><span class="feature-text">Unlimited</span></div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-name">Cloud Storage</div>
+                    <div class="feature-value"><span class="feature-text">25GB</span></div>
+                    <div class="feature-value"><span class="feature-text">100GB</span></div>
+                    <div class="feature-value"><span class="feature-text">Unlimited</span></div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-name">Real-time Synchronization</div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-name">Basic Analytics & Reports</div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-name">Mobile App Access</div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-name">AI-Powered Procurement</div>
+                    <div class="feature-value"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-name">Advanced Analytics & Insights</div>
+                    <div class="feature-value"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-name">Custom Dashboards</div>
+                    <div class="feature-value"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-name">API Access</div>
+                    <div class="feature-value"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-name">Priority Support</div>
+                    <div class="feature-value"><span class="feature-text">Email only</span></div>
+                    <div class="feature-value"><span class="feature-text">Phone & Email</span></div>
+                    <div class="feature-value"><span class="feature-text">24/7 Dedicated</span></div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-name">Custom Integrations</div>
+                    <div class="feature-value"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-name">On-Premise Deployment</div>
+                    <div class="feature-value"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-name">Dedicated Account Manager</div>
+                    <div class="feature-value"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-name">SLA Guarantee</div>
+                    <div class="feature-value"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-times cross-icon"></i></div>
+                    <div class="feature-value"><i class="fas fa-check check-icon"></i></div>
+                </div>
             </div>
         </div>
     </section>
@@ -1184,6 +1642,30 @@
         }, { threshold: 0.5 });
 
         stats.forEach(stat => statsObserver.observe(stat));
+
+        // Pricing toggle functionality
+        const toggleOptions = document.querySelectorAll('.toggle-option');
+        const monthlyPricing = document.querySelectorAll('.monthly-pricing');
+        const annualPricing = document.querySelectorAll('.annual-pricing');
+
+        toggleOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const period = this.dataset.period;
+                
+                // Update active states
+                toggleOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show/hide pricing
+                if (period === 'annual') {
+                    monthlyPricing.forEach(pricing => pricing.style.display = 'none');
+                    annualPricing.forEach(pricing => pricing.style.display = 'block');
+                } else {
+                    monthlyPricing.forEach(pricing => pricing.style.display = 'block');
+                    annualPricing.forEach(pricing => pricing.style.display = 'none');
+                }
+            });
+        });
     </script>
 </body>
 </html> 
