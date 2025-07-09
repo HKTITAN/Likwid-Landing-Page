@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Likwid.AI - AI-Powered ERP & CRM for Manufacturers. Streamline operations, boost efficiency, and drive growth with intelligent automation.">
+    <title>Likwid.AI - AI-Powered ERP for Smart Manufacturing</title>
+    <link rel="icon" type="image/svg+xml" href="assets/Likwid.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #5B5CFF;
+            --secondary-color: #7B7FFF;
+            --accent-color: #FF5B94;
+            --text-dark: #1A1B3A;
+            --text-light: #6B7280;
+            --bg-light: #F8F9FF;
+            --bg-white: #FFFFFF;
+            --gradient-primary: linear-gradient(135deg, #5B5CFF 0%, #7B7FFF 100%);
+            --gradient-accent: linear-gradient(135deg, #FF5B94 0%, #FF7BAE 100%);
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--bg-white);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .cta-button {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .mobile-menu {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #F8F9FF 0%, #E8E9FF 100%);
+            padding: 8rem 2rem 4rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .secondary-button {
+            background: white;
+            color: var(--primary-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: 2px solid var(--primary-color);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .secondary-button:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .hero-visual {
+            position: relative;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero-visual img {
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 20px 40px rgba(91, 92, 255, 0.2));
+        }
+
+        /* Animated Background Elements */
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            opacity: 0.1;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-shape-1 {
+            width: 300px;
+            height: 300px;
+            top: -150px;
+            right: -150px;
+        }
+
+        .bg-shape-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -100px;
+            left: -100px;
+            animation-delay: 5s;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 2rem;
+            background: var(--bg-white);
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 4rem;
+        }
+
+        .section-label {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .section-description {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+
+        .features-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            border: 1px solid #E5E7EB;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-color);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Modules Section */
+        .modules {
+            padding: 5rem 2rem;
+            background: var(--bg-light);
+        }
+
+        .modules-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .module {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            margin-bottom: 5rem;
+        }
+
+        .module:nth-child(even) {
+            direction: rtl;
+        }
+
+        .module:nth-child(even) .module-content {
+            direction: ltr;
+        }
+
+        .module-content h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .module-label {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .module-features {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+
+        .module-features li {
+            padding: 0.5rem 0;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .module-features li::before {
+            content: "✓";
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .module-visual {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-visual img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        /* Benefits Section */
+        .benefits {
+            padding: 5rem 2rem;
+            background: var(--bg-white);
+        }
+
+        .benefits-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .benefit-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 16px;
+            background: var(--bg-light);
+            transition: all 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            background: white;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .benefit-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .benefit-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .benefit-card p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 5rem 2rem;
+            background: var(--bg-light);
+        }
+
+        .pricing-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: var(--gradient-accent);
+            color: white;
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .pricing-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin: 1rem 0;
+        }
+
+        .pricing-price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-light);
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .pricing-features li {
+            padding: 0.75rem 0;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li i {
+            color: var(--primary-color);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 5rem 2rem;
+            background: var(--gradient-primary);
+            color: white;
+            text-align: center;
+        }
+
+        .cta-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-white {
+            background: white;
+            color: var(--primary-color);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .cta-white:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 3rem 2rem 1rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section a {
+            color: #94A3B8;
+            text-decoration: none;
+            line-height: 2;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #334155;
+            color: #94A3B8;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: #334155;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .hero-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .hero-stats {
+                justify-content: center;
+            }
+
+            .module {
+                grid-template-columns: 1fr;
+            }
+
+            .module:nth-child(even) {
+                direction: ltr;
+            }
+
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .loader-logo {
+            width: 100px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loader -->
+    <div class="loader" id="loader">
+        <div class="loader-content">
+            <img src="assets/Likwid.svg" alt="Likwid.AI" class="loader-logo">
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <img src="assets/Logo_Typography.png" alt="Likwid.AI">
+            </a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#modules">Modules</a></li>
+                <li><a href="#benefits">Benefits</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#" class="cta-button">Start Free Trial</a></li>
+            </ul>
+            <div class="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="bg-shape bg-shape-1"></div>
+        <div class="bg-shape bg-shape-2"></div>
+        <div class="hero-container">
+            <div class="hero-content fade-in">
+                <h1>Transform Your Manufacturing with AI-Powered ERP</h1>
+                <p>Streamline operations, optimize inventory, and boost productivity with Likwid.AI - the intelligent ERP solution designed specifically for small and medium manufacturers.</p>
+                <div class="hero-buttons">
+                    <a href="#" class="cta-button">Start 14-Day Free Trial</a>
+                    <a href="#" class="secondary-button">
+                        <i class="fas fa-play-circle"></i>
+                        Watch Demo
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number">50%</div>
+                        <div class="stat-label">Reduced Manual Work</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">3x</div>
+                        <div class="stat-label">Faster Operations</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">99.9%</div>
+                        <div class="stat-label">Inventory Accuracy</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual fade-in">
+                <img src="https://cdn.dribbble.com/users/1355613/screenshots/15252730/media/28f348daf9654c440f5dcf398d8e097a.png?compress=1&resize=1000x750" alt="Dashboard Preview">
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-header fade-in">
+            <div class="section-label">Features</div>
+            <h2 class="section-title">Everything You Need to Scale Your Manufacturing Business</h2>
+            <p class="section-description">Powerful tools and intelligent automation to help you focus on growth while we handle the complexity.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card fade-in">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>AI-Powered Intelligence</h3>
+                <p>Leverage machine learning for demand forecasting, inventory optimization, and predictive analytics to make smarter business decisions.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <h3>Real-Time Synchronization</h3>
+                <p>Keep all departments connected with instant updates across sales, inventory, production, and logistics operations.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h3>Workflow Automation</h3>
+                <p>Automate repetitive tasks from lead capturing to order processing, reducing manual errors and saving valuable time.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Advanced Analytics</h3>
+                <p>Get actionable insights with customizable dashboards, real-time reporting, and predictive analytics for data-driven decisions.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Enterprise Security</h3>
+                <p>Bank-grade encryption and compliance with industry standards ensure your business data is always protected and secure.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                </div>
+                <h3>Infinitely Scalable</h3>
+                <p>Grow without limits. Our modular architecture scales seamlessly as your business expands, from startup to enterprise.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modules Section -->
+    <section class="modules" id="modules">
+        <div class="modules-container">
+            <div class="section-header fade-in">
+                <div class="section-label">Our Modules</div>
+                <h2 class="section-title">Comprehensive Solutions for Every Manufacturing Need</h2>
+                <p class="section-description">Three powerful modules working in perfect harmony to digitize your entire manufacturing operation.</p>
+            </div>
+
+            <div class="module fade-in">
+                <div class="module-content">
+                    <div class="module-label">CRM & Sales Management</div>
+                    <h3>Rise.ai - Elevate Your Sales Game</h3>
+                    <p>Transform your sales process with intelligent lead management and conversion optimization. Rise.ai centralizes your entire sales pipeline, providing real-time visibility and AI-powered insights.</p>
+                    <ul class="module-features">
+                        <li>Automated lead capturing and qualification</li>
+                        <li>Sales pipeline visualization and tracking</li>
+                        <li>Performance analytics and forecasting</li>
+                        <li>Customer behavior insights and recommendations</li>
+                        <li>Integrated communication management</li>
+                    </ul>
+                    <a href="#" class="secondary-button" style="margin-top: 1.5rem;">Explore Rise.ai</a>
+                </div>
+                <div class="module-visual">
+                    <img src="https://cdn.dribbble.com/users/1615584/screenshots/15710463/media/9c5b2e96b6d454a15e7cf0528c36e752.jpg?compress=1&resize=800x600" alt="Rise.ai Dashboard">
+                </div>
+            </div>
+
+            <div class="module fade-in">
+                <div class="module-content">
+                    <div class="module-label">Inventory & Order Management</div>
+                    <h3>Flow.ai - Streamline Your Operations</h3>
+                    <p>Take control of your inventory and orders with intelligent automation. Flow.ai provides real-time visibility across warehouses, automates reordering, and optimizes stock levels using AI.</p>
+                    <ul class="module-features">
+                        <li>Real-time inventory tracking across locations</li>
+                        <li>ML-powered demand forecasting and indenting</li>
+                        <li>Automated purchase order management</li>
+                        <li>Vendor performance scoring and analytics</li>
+                        <li>Customizable workflow automation</li>
+                    </ul>
+                    <a href="#" class="secondary-button" style="margin-top: 1.5rem;">Explore Flow.ai</a>
+                </div>
+                <div class="module-visual">
+                    <img src="https://cdn.dribbble.com/users/1615584/screenshots/14130984/media/d2b66e7e30497bb68e67536acf008334.jpg?compress=1&resize=800x600" alt="Flow.ai Dashboard">
+                </div>
+            </div>
+
+            <div class="module fade-in">
+                <div class="module-content">
+                    <div class="module-label">Production Planning & Management</div>
+                    <h3>Spout.ai - Optimize Your Production</h3>
+                    <p>Revolutionize your production planning with AI-driven insights. Spout.ai helps you maximize output, reduce waste, and ensure on-time delivery with intelligent scheduling and resource management.</p>
+                    <ul class="module-features">
+                        <li>AI-powered production planning and scheduling</li>
+                        <li>Real-time production monitoring and alerts</li>
+                        <li>Material requirement planning (MRP)</li>
+                        <li>Resource utilization optimization</li>
+                        <li>Quality control and compliance tracking</li>
+                    </ul>
+                    <a href="#" class="secondary-button" style="margin-top: 1.5rem;">Explore Spout.ai</a>
+                </div>
+                <div class="module-visual">
+                    <img src="https://cdn.dribbble.com/users/1615584/screenshots/15665354/media/0d09cf2b0625b3c9c95d913e73861e73.jpg?compress=1&resize=800x600" alt="Spout.ai Dashboard">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits" id="benefits">
+        <div class="section-header fade-in">
+            <div class="section-label">Why Choose Likwid.AI</div>
+            <h2 class="section-title">Built for Manufacturers, By Manufacturing Experts</h2>
+            <p class="section-description">We understand the unique challenges of manufacturing businesses and have designed every feature to address them.</p>
+        </div>
+        <div class="benefits-grid">
+            <div class="benefit-card fade-in">
+                <div class="benefit-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h4>Quick Implementation</h4>
+                <p>Get up and running in just 45 days with our streamlined deployment process and dedicated support team.</p>
+            </div>
+            <div class="benefit-card fade-in">
+                <div class="benefit-icon">
+                    <i class="fas fa-indian-rupee-sign"></i>
+                </div>
+                <h4>Affordable Pricing</h4>
+                <p>No hidden costs or complex licensing. Simple, transparent pricing that scales with your business.</p>
+            </div>
+            <div class="benefit-card fade-in">
+                <div class="benefit-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h4>24/7 Support</h4>
+                <p>Round-the-clock assistance from our expert team ensures you're never alone in your digital journey.</p>
+            </div>
+            <div class="benefit-card fade-in">
+                <div class="benefit-icon">
+                    <i class="fas fa-puzzle-piece"></i>
+                </div>
+                <h4>Easy Integration</h4>
+                <p>Seamlessly integrate with your existing tools and systems without disrupting your operations.</p>
+            </div>
+            <div class="benefit-card fade-in">
+                <div class="benefit-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h4>Free Training</h4>
+                <p>Comprehensive onboarding and training for your entire team to ensure maximum adoption and ROI.</p>
+            </div>
+            <div class="benefit-card fade-in">
+                <div class="benefit-icon">
+                    <i class="fas fa-cloud"></i>
+                </div>
+                <h4>Cloud-First Design</h4>
+                <p>Access your business data from anywhere, anytime. No expensive hardware or IT infrastructure needed.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="section-header fade-in">
+            <div class="section-label">Pricing Plans</div>
+            <h2 class="section-title">Simple, Transparent Pricing for Every Business</h2>
+            <p class="section-description">Choose the perfect plan for your manufacturing business. All plans include all three modules.</p>
+        </div>
+        <div class="pricing-container">
+            <div class="pricing-card fade-in">
+                <div class="pricing-header">
+                    <h3>Starter</h3>
+                    <p>Perfect for small manufacturers</p>
+                </div>
+                <div class="pricing-price">
+                    ₹8,499 <span>/month</span>
+                </div>
+                <ul class="pricing-features">
+                    <li><i class="fas fa-check"></i> All 3 Modules (Rise, Flow, Spout)</li>
+                    <li><i class="fas fa-check"></i> 10 Free Users</li>
+                    <li><i class="fas fa-check"></i> 25GB Cloud Storage</li>
+                    <li><i class="fas fa-check"></i> Basic Analytics & Reports</li>
+                    <li><i class="fas fa-check"></i> Email Support</li>
+                    <li><i class="fas fa-check"></i> Mobile App Access</li>
+                </ul>
+                <a href="#" class="cta-button" style="width: 100%; text-align: center;">Start Free Trial</a>
+            </div>
+
+            <div class="pricing-card featured fade-in">
+                <div class="pricing-badge">Most Popular</div>
+                <div class="pricing-header">
+                    <h3>Growth</h3>
+                    <p>For growing manufacturers</p>
+                </div>
+                <div class="pricing-price">
+                    ₹11,999 <span>/month</span>
+                </div>
+                <ul class="pricing-features">
+                    <li><i class="fas fa-check"></i> All 3 Modules (Rise, Flow, Spout)</li>
+                    <li><i class="fas fa-check"></i> 15 Free Users</li>
+                    <li><i class="fas fa-check"></i> 50GB Cloud Storage</li>
+                    <li><i class="fas fa-check"></i> Advanced Analytics & AI Reports</li>
+                    <li><i class="fas fa-check"></i> Priority Phone & Email Support</li>
+                    <li><i class="fas fa-check"></i> Custom Dashboards</li>
+                    <li><i class="fas fa-check"></i> API Access</li>
+                </ul>
+                <a href="#" class="cta-button" style="width: 100%; text-align: center;">Start Free Trial</a>
+            </div>
+
+            <div class="pricing-card fade-in">
+                <div class="pricing-header">
+                    <h3>Enterprise</h3>
+                    <p>For large-scale operations</p>
+                </div>
+                <div class="pricing-price">
+                    Custom
+                </div>
+                <ul class="pricing-features">
+                    <li><i class="fas fa-check"></i> All 3 Modules (Rise, Flow, Spout)</li>
+                    <li><i class="fas fa-check"></i> Unlimited Users</li>
+                    <li><i class="fas fa-check"></i> Dedicated Database</li>
+                    <li><i class="fas fa-check"></i> Custom Development</li>
+                    <li><i class="fas fa-check"></i> 24/7 Dedicated Support</li>
+                    <li><i class="fas fa-check"></i> On-Premise Deployment Option</li>
+                    <li><i class="fas fa-check"></i> SLA Guarantee</li>
+                </ul>
+                <a href="#" class="secondary-button" style="width: 100%; text-align: center; border-color: var(--primary-color);">Contact Sales</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-container fade-in">
+            <h2>Ready to Transform Your Manufacturing Business?</h2>
+            <p>Join hundreds of manufacturers who are already experiencing the power of AI-driven operations.</p>
+            <a href="#" class="cta-white">Start Your 14-Day Free Trial</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <img src="assets/Logo_Typography.png" alt="Likwid.AI" style="height: 40px; margin-bottom: 1rem; filter: brightness(0) invert(1);">
+                <p style="color: #94A3B8; line-height: 1.6;">AI-powered ERP solution designed specifically for small and medium manufacturers.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">Rise.ai</a></li>
+                    <li><a href="#">Flow.ai</a></li>
+                    <li><a href="#">Spout.ai</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">API Documentation</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Partners</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">Video Tutorials</a></li>
+                    <li><a href="#">Community Forum</a></li>
+                    <li><a href="#">Status Page</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Likwid.AI. All rights reserved. | <a href="#" style="color: #94A3B8;">Privacy Policy</a> | <a href="#" style="color: #94A3B8;">Terms of Service</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Loader
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 1000);
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Mobile menu toggle
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const navLinks = document.querySelector('.nav-links');
+        let isMenuOpen = false;
+
+        mobileMenu.addEventListener('click', () => {
+            isMenuOpen = !isMenuOpen;
+            if (isMenuOpen) {
+                navLinks.style.display = 'flex';
+                navLinks.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '100%';
+                navLinks.style.left = '0';
+                navLinks.style.right = '0';
+                navLinks.style.background = 'white';
+                navLinks.style.padding = '2rem';
+                navLinks.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+                mobileMenu.innerHTML = '<i class="fas fa-times"></i>';
+            } else {
+                navLinks.style.display = 'none';
+                mobileMenu.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+        });
+
+        // Counter animation for stats
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current) + (element.textContent.includes('%') ? '%' : element.textContent.includes('x') ? 'x' : '');
+            }, 30);
+        }
+
+        // Trigger counter animation when stats are visible
+        const stats = document.querySelectorAll('.stat-number');
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                    entry.target.classList.add('animated');
+                    const value = parseInt(entry.target.textContent);
+                    animateCounter(entry.target, value);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        stats.forEach(stat => statsObserver.observe(stat));
+    </script>
+</body>
+</html> 
