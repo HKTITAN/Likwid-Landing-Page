@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started with Likwid.AI</title>
+    <link rel="icon" type="image/svg+xml" href="assets/Likwid.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #7E44EE;
+            --secondary-color: #0059FC;
+            --text-dark: #1A1B3A;
+            --text-light: #6B7280;
+            --bg-light: #F8F9FF;
+            --bg-white: #FFFFFF;
+            --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #fafbff 0%, #f0f2ff 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .onboarding-background {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .gradient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            animation: float 20s ease-in-out infinite;
+        }
+        .orb-1 { width: 600px; height: 600px; background: var(--primary-color); top: -20%; right: -20%; }
+        .orb-2 { width: 500px; height: 500px; background: var(--secondary-color); bottom: -30%; left: -25%; animation-delay: 7s; }
+
+        .onboarding-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .onboarding-header {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+        }
+
+        .header-logo img {
+            height: 35px;
+        }
+        
+        .onboarding-progress {
+            flex-grow: 1;
+            max-width: 400px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            width: 20%;
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .onboarding-content {
+            flex-grow: 1;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .onboarding-step {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .onboarding-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .step-header {
+            margin-bottom: 3rem;
+        }
+
+        .step-header h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .gradient-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .step-header p {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            justify-content: center;
+        }
+
+        .selection-card {
+            background: var(--bg-white);
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .selection-card:hover {
+            transform: translateY(-5px);
+            border-color: #d1d5db;
+        }
+        
+        .selection-card.selected {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+
+        .selection-card .card-check {
+            position: absolute; top: 1rem; right: 1rem; font-size: 1.2rem; color: var(--primary-color); opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .selection-card.selected .card-check { opacity: 1; }
+        
+        .card-illustration img {
+            height: 80px;
+            margin-bottom: 1.5rem;
+        }
+        .selection-card h3 { font-size: 1.2rem; }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            text-align: left;
+        }
+        
+        .form-group {
+            position: relative;
+        }
+        .form-group label { display: block; font-weight: 500; margin-bottom: 0.5rem; }
+        .form-control {
+            width: 100%;
+            padding: 1rem;
+            background: var(--bg-white);
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(126, 68, 238, 0.2);
+        }
+
+        .onboarding-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav-buttons-container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background: var(--bg-white);
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+        .btn-next { background: var(--gradient-primary); color: white; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-back { visibility: hidden; }
+        .btn-back.visible { visibility: visible; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="onboarding-background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+    </div>
+
+    <div class="onboarding-container">
+        <header class="onboarding-header">
+            <div class="header-logo">
+                <img src="assets/Logo_Typography_Dark.png" alt="Likwid.AI">
+            </div>
+            <div class="onboarding-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+        </header>
+
+        <main class="onboarding-content">
+            <div id="step1" class="onboarding-step active">
+                <div class="step-header">
+                    <h2>How will you use <span class="gradient-text">Likwid?</span></h2>
+                    <p>This helps us personalize your workspace from day one.</p>
+                </div>
+                <div class="selection-grid">
+                     <div class="selection-card" onclick="selectCard(this, 1)">
+                        <i class="fas fa-check-circle card-check"></i>
+                        <div class="card-illustration"><img src="assets/illustrations/undraw_logistics_xpdj 1.svg" alt="Distribution"></div>
+                        <h3>Distribution</h3>
+                    </div>
+                    <div class="selection-card" onclick="selectCard(this, 1)">
+                        <i class="fas fa-check-circle card-check"></i>
+                        <div class="card-illustration"><img src="assets/illustrations/undraw_factory_4d61.svg" alt="Manufacturing"></div>
+                        <h3>Manufacturing</h3>
+                    </div>
+                     <div class="selection-card" onclick="selectCard(this, 1)">
+                        <i class="fas fa-check-circle card-check"></i>
+                        <div class="card-illustration"><img src="assets/illustrations/undraw_groceries_4via 1.svg" alt="Retail"></div>
+                        <h3>Retail</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step2" class="onboarding-step">
+                 <div class="step-header">
+                    <h2>What is your <span class="gradient-text">industry?</span></h2>
+                    <p>We fine-tune our AI models based on your industry for unparalleled accuracy.</p>
+                </div>
+                <div class="selection-grid">
+                     <div class="selection-card" onclick="selectCard(this, 2)">
+                        <i class="fas fa-check-circle card-check"></i>
+                        <h3>Automotive</h3>
+                    </div>
+                    <div class="selection-card" onclick="selectCard(this, 2)">
+                        <i class="fas fa-check-circle card-check"></i>
+                        <h3>Electronics</h3>
+                    </div>
+                    <div class="selection-card" onclick="selectCard(this, 2)">
+                        <i class="fas fa-check-circle card-check"></i>
+                        <h3>Pharmaceutical</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="step3" class="onboarding-step">
+                <div class="step-header">
+                    <h2>What's your primary <span class="gradient-text">focus?</span></h2>
+                    <p>Tell us your role so we can highlight the features that matter most to you.</p>
+                </div>
+                <div class="selection-grid" style="max-width: 400px; margin: 0 auto;">
+                    <div class="selection-card" onclick="selectCard(this, 3)">
+                        <i class="fas fa-check-circle card-check"></i>
+                        <h3>Founder / C-Level</h3>
+                    </div>
+                    <div class="selection-card" onclick="selectCard(this, 3)">
+                        <i class="fas fa-check-circle card-check"></i>
+                        <h3>Manager / Head</h3>
+                    </div>
+                     <div class="selection-card" onclick="selectCard(this, 3)">
+                        <i class="fas fa-check-circle card-check"></i>
+                        <h3>Team Member</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step4" class="onboarding-step">
+                <div class="step-header">
+                    <h2>Tell us about your <span class="gradient-text">company.</span></h2>
+                    <p>Let's get your workspace set up and ready to go.</p>
+                </div>
+                <div class="form-grid" style="max-width: 600px; margin: 0 auto;">
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label for="companyName">Company Name</label>
+                        <input type="text" id="companyName" class="form-control" placeholder="Your Company Inc.">
+                    </div>
+                    <div class="form-group">
+                        <label for="employees">Number of Employees</label>
+                        <select id="employees" class="form-control">
+                             <option value="">Select team size</option>
+                             <option value="1-10">1-10</option>
+                             <option value="11-50">11-50</option>
+                        </select>
+                    </div>
+                     <div class="form-group">
+                        <label for="country">Country</label>
+                        <select id="country" class="form-control">
+                            <option value="">Select your country</option>
+                            <option value="IN">India</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step5" class="onboarding-step">
+                 <div class="step-header">
+                    <h2 id="step5-title">Create your <span class="gradient-text">account.</span></h2>
+                    <p>You're one step away from transforming your business.</p>
+                </div>
+                <div class="form-grid" style="max-width: 600px; margin: 0 auto;">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" class="form-control" placeholder="e.g. Jane">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" class="form-control" placeholder="e.g. Doe">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label for="workEmail">Work Email</label>
+                        <input type="email" id="workEmail" class="form-control" placeholder="name@company.com">
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="onboarding-nav">
+            <div class="nav-buttons-container">
+                <button class="btn btn-back" id="backButton" onclick="previousStep()">Back</button>
+                <button class="btn btn-next" id="nextButton" onclick="nextStep()" disabled>Continue</button>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 5;
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                showStep(currentStep);
+            } else {
+                alert('Onboarding Complete!');
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+        
+        function showStep(step) {
+            document.querySelectorAll('.onboarding-step').forEach(s => s.classList.remove('active'));
+            document.getElementById(`step${step}`).classList.add('active');
+            
+            const progress = (step / totalSteps) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            
+            document.getElementById('backButton').classList.toggle('visible', step > 1);
+            document.getElementById('nextButton').textContent = step === totalSteps ? 'Complete Setup' : 'Continue';
+            
+            validateStep();
+        }
+        
+        function selectCard(element, step) {
+            document.querySelectorAll(`#step${step} .selection-card`).forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+            validateStep();
+        }
+
+        function validateStep() {
+            const nextButton = document.getElementById('nextButton');
+            let isValid = false;
+
+            if (currentStep === 1 || currentStep === 2 || currentStep === 3) {
+                isValid = !!document.querySelector(`#step${currentStep} .selection-card.selected`);
+            } else if (currentStep === 4) {
+                const companyName = document.getElementById('companyName').value;
+                isValid = companyName.length > 0 && document.getElementById('employees').value && document.getElementById('country').value;
+            } else if (currentStep === 5) {
+                const firstName = document.getElementById('firstName').value;
+                document.getElementById('step5-title').innerHTML = firstName ? `Welcome, <span class="gradient-text">${firstName}!</span>` : "Create your <span class='gradient-text'>account.</span>";
+                isValid = ['firstName', 'lastName', 'workEmail'].every(id => document.getElementById(id).value.length > 0);
+            }
+            
+            nextButton.disabled = !isValid;
+        }
+
+        document.querySelectorAll('.form-control, .selection-card').forEach(input => {
+            input.addEventListener('input', validateStep);
+            input.addEventListener('click', validateStep);
+        });
+
+        showStep(currentStep);
+
+    </script>
+</body>
+</html> 
