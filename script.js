@@ -1,4 +1,3 @@
-
 // Loader
 window.addEventListener('load', () => {
     setTimeout(() => {
@@ -1091,24 +1090,7 @@ function startWorkflowDemo() {
     }, 100); // Speed up for demo
 }
 
-// Module switching functionality
-function switchModule(moduleId) {
-    // Hide all module contents
-    document.querySelectorAll('.module-content').forEach(content => {
-        content.classList.remove('active');
-    });
-    
-    // Remove active from all nav items
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    
-    // Show selected module content
-    document.querySelector(`[data-module="${moduleId}"]`).classList.add('active');
-    
-    // Add active to clicked nav item
-    document.querySelector(`.nav-item[data-module="${moduleId}"]`).classList.add('active');
-}
+// Module switching is now handled in initModules() function above
 
 // Scenario tab switching
 function switchScenario(scenario) {
@@ -1122,16 +1104,9 @@ function switchScenario(scenario) {
     startWorkflowDemo();
 }
 
-// Add event listeners when DOM is loaded
+// Module navigation event listeners are now handled in initModules()
+// Scenario tabs event listeners
 document.addEventListener('DOMContentLoaded', function() {
-    // Module navigation
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const moduleId = this.getAttribute('data-module');
-            switchModule(moduleId);
-        });
-    });
-
     // Scenario tabs
     document.querySelectorAll('.scenario-tab').forEach(tab => {
         tab.addEventListener('click', function() {
@@ -1153,5 +1128,67 @@ document.addEventListener('DOMContentLoaded', function() {
     const workflowDemo = document.querySelector('.workflow-demo');
     if (workflowDemo) {
         observer.observe(workflowDemo);
+    }
+});
+
+// Demo functionality for Rise module
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle demo link clicks
+    const demoLinks = document.querySelectorAll('.demo-link');
+    
+    demoLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Check if this is the Rise module demo
+            const riseModule = this.closest('[data-module="rise"]');
+            if (riseModule) {
+                toggleRiseDemo(riseModule);
+            }
+        });
+    });
+    
+    function toggleRiseDemo(riseModule) {
+        const dashboardFrame = riseModule.querySelector('.dashboard-frame');
+        const demoLink = riseModule.querySelector('.demo-link');
+        
+        if (!dashboardFrame || !demoLink) return;
+        
+        // Check if demo is currently showing
+        const currentContent = dashboardFrame.innerHTML;
+        const isShowingDemo = currentContent.includes('supademo.com');
+        
+        if (isShowingDemo) {
+            // Switch back to screenshot with frame
+            dashboardFrame.innerHTML = `
+                <div class="frame-header">
+                    <div class="frame-controls">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <div class="frame-title">Rise Dashboard</div>
+                </div>
+                <div class="frame-content">
+                    <img src="assets/screenshots/rise_dashboard.png" alt="Rise CRM Dashboard">
+                </div>
+            `;
+            demoLink.textContent = 'View Demo';
+            demoLink.classList.remove('showing-demo');
+        } else {
+            // Switch to interactive demo without any container
+            dashboardFrame.innerHTML = `
+                <iframe src="https://app.supademo.com/embed/cmd8gcbfx7ma7c4kjzlk05sj9?embed_v=2" 
+                        loading="lazy" 
+                        title="How to manage your leads and quotations effectively" 
+                        allow="clipboard-write" 
+                        frameborder="0" 
+                        webkitallowfullscreen="true" 
+                        mozallowfullscreen="true" 
+                        allowfullscreen 
+                        style="width: 100%; height: 100%; min-height: 400px; border: none; border-radius: 16px; display: block;">
+                </iframe>
+            `;
+            demoLink.textContent = 'View Screenshot';
+            demoLink.classList.add('showing-demo');
+        }
     }
 });

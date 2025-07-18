@@ -3068,6 +3068,37 @@ nav.scrolled {
     transform: translateX(3px);
 }
 
+.demo-link.showing-demo {
+    color: var(--accent-color);
+}
+
+.demo-link.showing-demo::after {
+    content: '←';
+}
+
+/* Ensure iframe demo displays properly */
+.frame-content iframe {
+    border-radius: 8px;
+}
+
+.frame-content > div {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Dashboard Frame with demo styling */
+.dashboard-frame iframe {
+    border: none !important;
+    border-radius: 16px !important;
+    background: white;
+}
+
+.dashboard-frame > div {
+    border-radius: 16px;
+    overflow: hidden;
+    background: white;
+}
+
 /* Dashboard Frame */
 .dashboard-frame {
     background: white;
