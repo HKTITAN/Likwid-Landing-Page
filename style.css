@@ -14,6 +14,97 @@
     --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
 }
 
+/* Custom Cursor Implementation */
+* {
+    cursor: url('assets/arrowhead-rounded-outline.svg') 12 12, auto;
+}
+
+/* Dynamic cursor sizing for smooth transitions */
+body {
+    --cursor-size: 24px;
+}
+
+/* Hover state - larger cursor */
+*:hover {
+    cursor: url('assets/arrowhead-rounded-outline.svg') 16 16, auto;
+}
+
+/* Active/Click state - smaller cursor */
+*:active {
+    cursor: url('assets/arrowhead-rounded-outline.svg') 8 8, auto;
+}
+
+/* Interactive elements - medium cursor with pointer fallback */
+button, 
+a, 
+input, 
+textarea, 
+select,
+.nav-item,
+.business-type-card,
+.module-cta,
+.demo-link,
+.primary-cta,
+.secondary-cta,
+.cta-button {
+    cursor: url('assets/arrowhead-rounded-outline.svg') 14 14, pointer !important;
+    transition: transform 0.2s ease;
+}
+
+/* Interactive elements hover - larger cursor */
+button:hover, 
+a:hover, 
+.nav-item:hover,
+.business-type-card:hover,
+.module-cta:hover,
+.demo-link:hover,
+.primary-cta:hover,
+.secondary-cta:hover,
+.cta-button:hover {
+    cursor: url('assets/arrowhead-rounded-outline.svg') 18 18, pointer !important;
+    transform: scale(1.05);
+}
+
+/* Interactive elements active - smaller cursor */
+button:active, 
+a:active,
+.nav-item:active,
+.business-type-card:active,
+.module-cta:active,
+.demo-link:active,
+.primary-cta:active,
+.secondary-cta:active,
+.cta-button:active {
+    cursor: url('assets/arrowhead-rounded-outline.svg') 10 10, pointer !important;
+    transform: scale(0.95);
+}
+
+/* Hide custom cursor on Supademo and show native cursor */
+iframe[src*="supademo.com"],
+iframe[src*="supademo.com"] * {
+    cursor: none !important;
+}
+
+/* Supademo container hover - hide custom cursor */
+div[style*="supademo"]:hover {
+    cursor: none !important;
+}
+
+/* Text inputs - text cursor with custom sizing */
+input[type="text"], 
+input[type="email"], 
+input[type="password"], 
+textarea {
+    cursor: text !important;
+}
+
+input[type="text"]:focus, 
+input[type="email"]:focus, 
+input[type="password"]:focus, 
+textarea:focus {
+    cursor: text !important;
+}
+
 /* Enhanced Integration Section Styles */
 .trigger-icon-enhanced {
     width: 80px;
