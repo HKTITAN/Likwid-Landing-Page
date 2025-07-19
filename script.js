@@ -1192,3 +1192,536 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// Enhanced AI Intelligence Hub with Organic Flow Layout
+class OrganicFlowAIHub {
+    constructor() {
+        this.isActive = false;
+        this.updateIntervals = [];
+        this.animationFrames = [];
+        
+        // Enhanced data sets
+        this.feedMessages = [
+            { action: 'Production line 3 efficiency ↑ 12%', impact: '+₹3,600 gain', time: null },
+            { action: 'Raw material procurement optimized', impact: '-₹8,200 saved', time: null },
+            { action: 'Defect prediction model updated', impact: '+4.7% quality', time: null },
+            { action: 'Predictive maintenance scheduled', impact: '48hrs prevented', time: null },
+            { action: 'Auto-reorder triggered for Steel A', impact: 'Zero stockout', time: null },
+            { action: 'Power consumption optimized', impact: '-₹1,800 saved', time: null },
+            { action: 'Production schedule rebalanced', impact: '+6% throughput', time: null },
+            { action: 'Alternative supplier activated', impact: '15% faster', time: null }
+        ];
+        
+        this.predictions = [
+            { label: 'Machine B2 Maintenance', time: '68 hours', confidence: 96, icon: 'fas fa-wrench' },
+            { label: 'Seasonal Demand Peak', time: 'Next month', confidence: 89, icon: 'fas fa-chart-trending-up' },
+            { label: 'Supply Chain Disruption', time: '12 days', confidence: 93, icon: 'fas fa-truck' },
+            { label: 'Quality Issue - Batch 447', time: '4 hours', confidence: 87, icon: 'fas fa-exclamation-triangle' },
+            { label: 'Energy Cost Spike', time: 'Tomorrow 2PM', confidence: 91, icon: 'fas fa-bolt' }
+        ];
+        
+        this.automationTasks = [
+            { name: 'Production Schedule', status: 'executing', progress: 67 },
+            { name: 'Material Reorder', status: 'pending', progress: 0 },
+            { name: 'Quality Analysis', status: 'completed', progress: 100 },
+            { name: 'Maintenance Windows', status: 'executing', progress: 23 },
+            { name: 'Workload Balance', status: 'pending', progress: 0 }
+        ];
+        
+        this.metrics = {
+            decisionsPerMin: 2847,
+            responseTime: 247,
+            revenue: 47200,
+            efficiency: 18.5
+        };
+        
+        this.init();
+    }
+
+    init() {
+        this.setupIntersectionObserver();
+        this.initializeTimestamps();
+        this.setupInteractiveElements();
+        this.startParticleAnimations();
+        this.setupHoverEffects();
+    }
+
+    setupIntersectionObserver() {
+        const flowContainer = document.querySelector('.intelligence-flow-container');
+        if (!flowContainer) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !this.isActive) {
+                    this.startRealTimeUpdates();
+                    this.startFlowAnimations();
+                } else if (!entry.isIntersecting && this.isActive) {
+                    this.stopRealTimeUpdates();
+                    this.stopFlowAnimations();
+                }
+            });
+        }, { threshold: 0.2 });
+
+        observer.observe(flowContainer);
+    }
+
+    initializeTimestamps() {
+        this.feedMessages.forEach((message, index) => {
+            message.time = this.generateTime(index * 30);
+        });
+    }
+
+    generateTime(secondsAgo = 0) {
+        const now = new Date();
+        now.setSeconds(now.getSeconds() - secondsAgo);
+        return now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    setupInteractiveElements() {
+        // Hub core interaction
+        const hubCore = document.querySelector('.hub-core');
+        if (hubCore) {
+            hubCore.addEventListener('click', () => this.activateHubPulse());
+        }
+
+        // Node interactions
+        const nodes = document.querySelectorAll('.intelligence-node');
+        nodes.forEach((node, index) => {
+            node.addEventListener('click', () => this.handleNodeClick(node, index));
+            node.addEventListener('mouseenter', () => this.handleNodeHover(node));
+        });
+
+        // Floating panel interactions
+        const panel = document.querySelector('.floating-status-panel');
+        if (panel) {
+            panel.addEventListener('click', () => this.refreshAllMetrics());
+        }
+    }
+
+    startParticleAnimations() {
+        this.animateParticles();
+        this.animateStreamPaths();
+    }
+
+    animateParticles() {
+        const particles = document.querySelectorAll('.particle');
+        particles.forEach((particle, index) => {
+            const animate = () => {
+                if (!this.isActive) return;
+                
+                const time = Date.now() * 0.001 + index * 2;
+                const x = Math.sin(time * 0.5) * 30;
+                const y = Math.cos(time * 0.3) * 20;
+                const opacity = 0.4 + Math.sin(time * 2) * 0.3;
+                
+                particle.style.transform = `translate(${x}px, ${y}px)`;
+                particle.style.opacity = opacity;
+                
+                this.animationFrames.push(requestAnimationFrame(animate));
+            };
+            setTimeout(animate, index * 1000);
+        });
+    }
+
+    animateStreamPaths() {
+        const paths = document.querySelectorAll('.stream-path');
+        paths.forEach((path, index) => {
+            const animate = () => {
+                if (!this.isActive) return;
+                
+                const time = Date.now() * 0.002 + index * 1.5;
+                const intensity = 0.6 + Math.sin(time) * 0.4;
+                const scale = 1 + Math.sin(time * 1.5) * 0.2;
+                
+                path.style.opacity = intensity;
+                path.style.transform = `translate(-50%, -50%) scaleX(${scale})`;
+                
+                this.animationFrames.push(requestAnimationFrame(animate));
+            };
+            animate();
+        });
+    }
+
+    setupHoverEffects() {
+        const nodes = document.querySelectorAll('.intelligence-node');
+        nodes.forEach(node => {
+            const glow = node.querySelector('.node-glow');
+            node.addEventListener('mousemove', (e) => {
+                const rect = node.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                
+                if (glow) {
+                    glow.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(126, 68, 238, 0.2) 0%, transparent 60%)`;
+                }
+            });
+        });
+    }
+
+    handleNodeClick(node, index) {
+        // Create ripple effect
+        const ripple = document.createElement('div');
+        ripple.style.position = 'absolute';
+        ripple.style.top = '50%';
+        ripple.style.left = '50%';
+        ripple.style.width = '0';
+        ripple.style.height = '0';
+        ripple.style.background = 'rgba(126, 68, 238, 0.3)';
+        ripple.style.borderRadius = '50%';
+        ripple.style.transform = 'translate(-50%, -50%)';
+        ripple.style.pointerEvents = 'none';
+        ripple.style.animation = 'rippleExpand 0.6s ease-out forwards';
+        
+        node.style.position = 'relative';
+        node.appendChild(ripple);
+        
+        setTimeout(() => ripple.remove(), 600);
+        
+        // Trigger specific updates
+        this.triggerNodeUpdate(index);
+    }
+
+    handleNodeHover(node) {
+        const icon = node.querySelector('.node-icon');
+        if (icon) {
+            icon.style.transform = 'scale(1.1) rotate(5deg)';
+            icon.style.transition = 'all 0.3s ease';
+            
+            setTimeout(() => {
+                icon.style.transform = 'scale(1) rotate(0deg)';
+            }, 300);
+        }
+    }
+
+    activateHubPulse() {
+        const hubCore = document.querySelector('.hub-core');
+        const rings = document.querySelectorAll('.pulse-ring');
+        
+        if (hubCore) {
+            hubCore.style.transform = 'scale(1.15)';
+            hubCore.style.boxShadow = '0 30px 60px rgba(126, 68, 238, 0.8)';
+            
+            rings.forEach((ring, index) => {
+                setTimeout(() => {
+                    ring.style.animation = 'pulseRing 1s ease-out forwards';
+                }, index * 200);
+            });
+            
+            setTimeout(() => {
+                hubCore.style.transform = 'scale(1)';
+                hubCore.style.boxShadow = '0 20px 40px rgba(126, 68, 238, 0.4)';
+            }, 800);
+        }
+    }
+
+    startRealTimeUpdates() {
+        this.isActive = true;
+        
+        // Staggered updates for natural feel
+        this.updateIntervals.push(setInterval(() => this.updateLiveFeed(), 5000));
+        this.updateIntervals.push(setInterval(() => this.updatePredictions(), 10000));
+        this.updateIntervals.push(setInterval(() => this.updateAutomation(), 7000));
+        this.updateIntervals.push(setInterval(() => this.updateMetrics(), 8000));
+        this.updateIntervals.push(setInterval(() => this.updatePanelMetrics(), 3000));
+        
+        // Initial updates
+        setTimeout(() => this.updateLiveFeed(), 1000);
+        setTimeout(() => this.updatePredictions(), 2000);
+        setTimeout(() => this.updateAutomation(), 3000);
+    }
+
+    startFlowAnimations() {
+        this.animateFlowIndicators();
+        this.animateNodeGlows();
+    }
+
+    animateFlowIndicators() {
+        const indicators = document.querySelectorAll('.flow-indicator');
+        indicators.forEach(indicator => {
+            const animate = () => {
+                if (!this.isActive) return;
+                
+                const time = Date.now() * 0.001;
+                const opacity = 0.6 + Math.sin(time * 3) * 0.3;
+                indicator.style.opacity = opacity;
+                
+                this.animationFrames.push(requestAnimationFrame(animate));
+            };
+            animate();
+        });
+    }
+
+    animateNodeGlows() {
+        const nodes = document.querySelectorAll('.intelligence-node');
+        nodes.forEach((node, index) => {
+            const glow = node.querySelector('.node-glow');
+            if (!glow) return;
+            
+            const animate = () => {
+                if (!this.isActive) return;
+                
+                const time = Date.now() * 0.001 + index * 2;
+                const rotation = time * 20;
+                glow.style.transform = `rotate(${rotation}deg)`;
+                
+                this.animationFrames.push(requestAnimationFrame(animate));
+            };
+            animate();
+        });
+    }
+
+    stopRealTimeUpdates() {
+        this.isActive = false;
+        this.updateIntervals.forEach(interval => clearInterval(interval));
+        this.updateIntervals = [];
+    }
+
+    stopFlowAnimations() {
+        this.animationFrames.forEach(frame => cancelAnimationFrame(frame));
+        this.animationFrames = [];
+    }
+
+    updateLiveFeed() {
+        const feedContainer = document.querySelector('.live-feed-flow');
+        if (!feedContainer) return;
+
+        const randomMessage = this.feedMessages[Math.floor(Math.random() * this.feedMessages.length)];
+        randomMessage.time = this.generateTime(Math.floor(Math.random() * 60));
+
+        const newBubble = document.createElement('div');
+        newBubble.className = 'feed-bubble active';
+        newBubble.innerHTML = `
+            <div class="bubble-content">
+                <div class="action">${randomMessage.action}</div>
+                <div class="impact positive">${randomMessage.impact}</div>
+            </div>
+            <div class="bubble-time">${randomMessage.time}</div>
+        `;
+
+        // Animate entrance
+        newBubble.style.opacity = '0';
+        newBubble.style.transform = 'translateY(-20px)';
+        feedContainer.insertBefore(newBubble, feedContainer.firstChild);
+        
+        requestAnimationFrame(() => {
+            newBubble.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+            newBubble.style.opacity = '1';
+            newBubble.style.transform = 'translateY(0)';
+        });
+
+        // Remove old bubbles
+        const bubbles = feedContainer.querySelectorAll('.feed-bubble');
+        if (bubbles.length > 2) {
+            bubbles[bubbles.length - 1].style.transition = 'all 0.3s ease';
+            bubbles[bubbles.length - 1].style.opacity = '0';
+            bubbles[bubbles.length - 1].style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                if (bubbles[bubbles.length - 1].parentNode) {
+                    bubbles[bubbles.length - 1].remove();
+                }
+            }, 300);
+        }
+    }
+
+    updatePredictions() {
+        const predictionBubbles = document.querySelectorAll('.prediction-bubble');
+        
+        predictionBubbles.forEach((bubble, index) => {
+            if (this.predictions[index]) {
+                const prediction = this.predictions[index];
+                prediction.confidence += (Math.random() - 0.5) * 2;
+                prediction.confidence = Math.max(85, Math.min(97, prediction.confidence));
+                
+                const confBar = bubble.querySelector('.conf-bar');
+                const confText = bubble.querySelector('.confidence-indicator span');
+                
+                if (confBar && confText) {
+                    confBar.style.width = `${prediction.confidence}%`;
+                    confText.textContent = `${Math.round(prediction.confidence)}%`;
+                    
+                    // Add glow effect
+                    bubble.style.boxShadow = '0 8px 25px rgba(126, 68, 238, 0.3)';
+                    setTimeout(() => {
+                        bubble.style.boxShadow = '';
+                    }, 1000);
+                }
+            }
+        });
+    }
+
+    updateAutomation() {
+        this.automationTasks.forEach(task => {
+            if (task.status === 'executing') {
+                task.progress += Math.random() * 10 + 2;
+                if (task.progress >= 100) {
+                    task.progress = 100;
+                    task.status = 'completed';
+                }
+            }
+        });
+
+        // Start new tasks randomly
+        if (Math.random() < 0.3) {
+            const pendingTasks = this.automationTasks.filter(task => task.status === 'pending');
+            if (pendingTasks.length > 0) {
+                pendingTasks[0].status = 'executing';
+                pendingTasks[0].progress = Math.random() * 15;
+            }
+        }
+
+        // Update DOM
+        const automationTasks = document.querySelectorAll('.automation-task');
+        automationTasks.forEach((taskElement, index) => {
+            if (this.automationTasks[index]) {
+                const task = this.automationTasks[index];
+                const waveDiv = taskElement.querySelector('.wave-fill');
+                const progressText = taskElement.querySelector('.progress-text');
+                const taskIcon = taskElement.querySelector('.task-icon');
+                
+                taskElement.className = `automation-task ${task.status}`;
+                
+                if (task.status === 'executing' && waveDiv && progressText) {
+                    waveDiv.style.width = `${task.progress}%`;
+                    progressText.textContent = `${Math.round(task.progress)}%`;
+                    taskIcon.innerHTML = '<i class="fas fa-cog fa-spin"></i>';
+                } else if (task.status === 'completed') {
+                    taskIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                } else {
+                    taskIcon.innerHTML = '<i class="fas fa-clock"></i>';
+                }
+            }
+        });
+    }
+
+    updateMetrics() {
+        // Update metric bubbles
+        this.metrics.revenue += Math.floor(Math.random() * 2000) + 500;
+        this.metrics.efficiency += (Math.random() - 0.5) * 1;
+        this.metrics.efficiency = Math.max(16, Math.min(22, this.metrics.efficiency));
+
+        const metricBubbles = document.querySelectorAll('.metric-bubble');
+        metricBubbles.forEach(bubble => {
+            const value = bubble.querySelector('.metric-value');
+            if (value && value.textContent.includes('₹')) {
+                value.textContent = `+₹${this.metrics.revenue.toLocaleString()}`;
+                this.animateMetricUpdate(value);
+            } else if (value && value.textContent.includes('%')) {
+                value.textContent = `+${this.metrics.efficiency.toFixed(1)}%`;
+                this.animateMetricUpdate(value);
+            }
+        });
+    }
+
+    updatePanelMetrics() {
+        this.metrics.decisionsPerMin += Math.floor(Math.random() * 30) - 15;
+        this.metrics.decisionsPerMin = Math.max(2500, Math.min(3200, this.metrics.decisionsPerMin));
+        
+        this.metrics.responseTime += Math.floor(Math.random() * 20) - 10;
+        this.metrics.responseTime = Math.max(200, Math.min(300, this.metrics.responseTime));
+
+        const decisionsCounter = document.getElementById('decisions-count-flow');
+        const responseCounter = document.getElementById('response-time-flow');
+
+        if (decisionsCounter) {
+            decisionsCounter.textContent = this.metrics.decisionsPerMin.toLocaleString();
+            this.animateMetricUpdate(decisionsCounter);
+        }
+
+        if (responseCounter) {
+            responseCounter.textContent = `${this.metrics.responseTime}ms`;
+            this.animateMetricUpdate(responseCounter);
+        }
+    }
+
+    animateMetricUpdate(element) {
+        element.style.transform = 'scale(1.1)';
+        element.style.color = '#10b981';
+        element.style.transition = 'all 0.3s ease';
+        
+        setTimeout(() => {
+            element.style.transform = 'scale(1)';
+            element.style.color = '';
+        }, 300);
+    }
+
+    triggerNodeUpdate(index) {
+        switch(index) {
+            case 0:
+                this.updateLiveFeed();
+                break;
+            case 1:
+                this.updatePredictions();
+                break;
+            case 2:
+                this.updateAutomation();
+                break;
+            case 3:
+                this.updateMetrics();
+                break;
+        }
+    }
+
+    refreshAllMetrics() {
+        this.updateLiveFeed();
+        this.updatePredictions();
+        this.updateAutomation();
+        this.updateMetrics();
+        this.updatePanelMetrics();
+        
+        // Visual feedback
+        const panel = document.querySelector('.floating-status-panel');
+        if (panel) {
+            panel.style.transform = 'scale(1.05)';
+            panel.style.boxShadow = '0 20px 40px rgba(126, 68, 238, 0.2)';
+            setTimeout(() => {
+                panel.style.transform = 'scale(1)';
+                panel.style.boxShadow = '';
+            }, 300);
+        }
+    }
+}
+
+// Initialize Organic Flow AI Hub when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new OrganicFlowAIHub();
+    
+    // Enhanced node hover effects
+    const nodes = document.querySelectorAll('.intelligence-node');
+    nodes.forEach(node => {
+        node.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-12px) scale(1.05)';
+            this.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+        });
+        
+        node.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(-10px) scale(1.05)';
+        });
+    });
+    
+    // Floating panel hover effect
+    const panel = document.querySelector('.floating-status-panel');
+    if (panel) {
+        panel.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.02)';
+            this.style.transition = 'all 0.3s ease';
+        });
+        
+        panel.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    }
+    
+    // Hub core enhanced interaction
+    const hubCore = document.querySelector('.hub-core');
+    if (hubCore) {
+        hubCore.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.1)';
+            this.style.boxShadow = '0 25px 50px rgba(126, 68, 238, 0.5)';
+        });
+        
+        hubCore.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+            this.style.boxShadow = '0 20px 40px rgba(126, 68, 238, 0.4)';
+        });
+    }
+});
