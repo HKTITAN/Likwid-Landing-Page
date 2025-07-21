@@ -247,6 +247,55 @@
             50% { transform: translateY(-20px); }
             100% { transform: translateY(0px); }
         }
+
+        /* New styles for floating icons */
+        .floating-icons-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .floating-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 120px; /* Adjust as needed */
+            height: 120px; /* Adjust as needed */
+            background: var(--bg-white);
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .floating-icon:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+
+        .floating-icon.selected {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+
+        .floating-icon img {
+            width: 60px; /* Adjust as needed */
+            height: 60px; /* Adjust as needed */
+            margin-bottom: 0.5rem;
+        }
+
+        .floating-icon div {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -268,118 +317,90 @@
         </header>
 
         <main class="onboarding-content">
+            <!-- Step 1: Industry -->
             <div id="step1" class="onboarding-step active">
                 <div class="step-header">
-                    <h2>How will you use <span class="gradient-text">Likwid?</span></h2>
-                    <p>This helps us personalize your workspace from day one.</p>
+                    <h2>Which <span class="gradient-text">industry</span> best describes your business?</h2>
                 </div>
                 <div class="selection-grid">
-                     <div class="selection-card" onclick="selectCard(this, 1)">
-                        <i class="fas fa-check-circle card-check"></i>
-                        <div class="card-illustration"><img src="assets/illustrations/undraw_logistics_xpdj 1.svg" alt="Distribution"></div>
-                        <h3>Distribution</h3>
-                    </div>
-                    <div class="selection-card" onclick="selectCard(this, 1)">
-                        <i class="fas fa-check-circle card-check"></i>
-                        <div class="card-illustration"><img src="assets/illustrations/undraw_factory_4d61.svg" alt="Manufacturing"></div>
-                        <h3>Manufacturing</h3>
-                    </div>
-                     <div class="selection-card" onclick="selectCard(this, 1)">
-                        <i class="fas fa-check-circle card-check"></i>
-                        <div class="card-illustration"><img src="assets/illustrations/undraw_groceries_4via 1.svg" alt="Retail"></div>
-                        <h3>Retail</h3>
-                    </div>
+                    <div class="selection-card" onclick="selectCard(this, 1, 'industry', 'Manufacturing')">🏭<h3>Manufacturing</h3></div>
+                    <div class="selection-card" onclick="selectCard(this, 1, 'industry', 'Distribution')">🚚<h3>Distribution</h3></div>
+                    <div class="selection-card" onclick="selectCard(this, 1, 'industry', 'Retail')">🛒<h3>Retail</h3></div>
+                    <div class="selection-card" onclick="selectCard(this, 1, 'industry', 'Services')">💼<h3>Services</h3></div>
+                    <div class="selection-card" onclick="selectCard(this, 1, 'industry', 'Other')">✨<h3>Other</h3></div>
                 </div>
             </div>
 
+            <!-- Step 2: Business Type (dynamic if Other is chosen) -->
             <div id="step2" class="onboarding-step">
-                 <div class="step-header">
-                    <h2>What is your <span class="gradient-text">industry?</span></h2>
-                    <p>We fine-tune our AI models based on your industry for unparalleled accuracy.</p>
+                <div class="step-header">
+                    <h2>What type of business are you?</h2>
                 </div>
-                <div class="selection-grid">
-                     <div class="selection-card" onclick="selectCard(this, 2)">
-                        <i class="fas fa-check-circle card-check"></i>
-                        <h3>Automotive</h3>
-                    </div>
-                    <div class="selection-card" onclick="selectCard(this, 2)">
-                        <i class="fas fa-check-circle card-check"></i>
-                        <h3>Electronics</h3>
-                    </div>
-                    <div class="selection-card" onclick="selectCard(this, 2)">
-                        <i class="fas fa-check-circle card-check"></i>
-                        <h3>Pharmaceutical</h3>
-                    </div>
+                <div class="selection-grid" id="businessTypeOptions">
+                    <!-- Dynamically filled if 'Other' is chosen in step 1 -->
                 </div>
             </div>
-            
+
+            <!-- Step 3: Key Goal -->
             <div id="step3" class="onboarding-step">
                 <div class="step-header">
-                    <h2>What's your primary <span class="gradient-text">focus?</span></h2>
-                    <p>Tell us your role so we can highlight the features that matter most to you.</p>
+                    <h2>What is your <span class="gradient-text">main goal</span> right now?</h2>
                 </div>
-                <div class="selection-grid" style="max-width: 400px; margin: 0 auto;">
-                    <div class="selection-card" onclick="selectCard(this, 3)">
-                        <i class="fas fa-check-circle card-check"></i>
-                        <h3>Founder / C-Level</h3>
-                    </div>
-                    <div class="selection-card" onclick="selectCard(this, 3)">
-                        <i class="fas fa-check-circle card-check"></i>
-                        <h3>Manager / Head</h3>
-                    </div>
-                     <div class="selection-card" onclick="selectCard(this, 3)">
-                        <i class="fas fa-check-circle card-check"></i>
-                        <h3>Team Member</h3>
-                    </div>
+                <div class="selection-grid">
+                    <div class="selection-card" onclick="selectCard(this, 3, 'goal', 'Increase Sales')">📈<h3>Increase Sales</h3></div>
+                    <div class="selection-card" onclick="selectCard(this, 3, 'goal', 'Reduce Costs')">💸<h3>Reduce Costs</h3></div>
+                    <div class="selection-card" onclick="selectCard(this, 3, 'goal', 'Improve Efficiency')">⚡<h3>Improve Efficiency</h3></div>
+                    <div class="selection-card" onclick="selectCard(this, 3, 'goal', 'Better Reporting')">📊<h3>Better Reporting</h3></div>
+                    <div class="selection-card" onclick="selectCard(this, 3, 'goal', 'Automate Workflows')">🤖<h3>Automate Workflows</h3></div>
+                    <div class="selection-card" onclick="selectCard(this, 3, 'goal', 'Other')">✨<h3>Other</h3></div>
                 </div>
             </div>
 
+            <!-- Step 4: Main Tools Used (multi-select icons) -->
             <div id="step4" class="onboarding-step">
                 <div class="step-header">
-                    <h2>Tell us about your <span class="gradient-text">company.</span></h2>
-                    <p>Let's get your workspace set up and ready to go.</p>
+                    <h2>Which <span class="gradient-text">tools</span> do you use?</h2>
+                    <p>Select all that apply.</p>
                 </div>
-                <div class="form-grid" style="max-width: 600px; margin: 0 auto;">
-                    <div class="form-group" style="grid-column: 1 / -1;">
-                        <label for="companyName">Company Name</label>
-                        <input type="text" id="companyName" class="form-control" placeholder="Your Company Inc.">
-                    </div>
-                    <div class="form-group">
-                        <label for="employees">Number of Employees</label>
-                        <select id="employees" class="form-control">
-                             <option value="">Select team size</option>
-                             <option value="1-10">1-10</option>
-                             <option value="11-50">11-50</option>
-                        </select>
-                    </div>
-                     <div class="form-group">
-                        <label for="country">Country</label>
-                        <select id="country" class="form-control">
-                            <option value="">Select your country</option>
-                            <option value="IN">India</option>
-                        </select>
-                    </div>
+                <div class="floating-icons-grid">
+                    <div class="floating-icon selectable" data-tool="Google Sheets" onclick="toggleMultiSelect(this, 'tools')"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/googlesheets.svg" alt="Google Sheets"><div>Sheets</div></div>
+                    <div class="floating-icon selectable" data-tool="Excel" onclick="toggleMultiSelect(this, 'tools')"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/microsoftexcel.svg" alt="Excel"><div>Excel</div></div>
+                    <div class="floating-icon selectable" data-tool="QuickBooks" onclick="toggleMultiSelect(this, 'tools')"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/intuitquickbooks.svg" alt="QuickBooks"><div>QuickBooks</div></div>
+                    <div class="floating-icon selectable" data-tool="Shopify" onclick="toggleMultiSelect(this, 'tools')"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/shopify.svg" alt="Shopify"><div>Shopify</div></div>
+                    <div class="floating-icon selectable" data-tool="Notion" onclick="toggleMultiSelect(this, 'tools')"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/notion.svg" alt="Notion"><div>Notion</div></div>
+                    <div class="floating-icon selectable" data-tool="Tally" onclick="toggleMultiSelect(this, 'tools')"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tally.svg" alt="Tally"><div>Tally</div></div>
+                    <div class="floating-icon selectable" data-tool="SAP" onclick="toggleMultiSelect(this, 'tools')"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/sap.svg" alt="SAP"><div>SAP</div></div>
+                    <div class="floating-icon selectable" data-tool="Other" onclick="toggleMultiSelect(this, 'tools')"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/api.svg" alt="Other"><div>Other</div></div>
                 </div>
             </div>
 
+            <!-- Step 5: Modules of Interest (multi-select) -->
             <div id="step5" class="onboarding-step">
-                 <div class="step-header">
-                    <h2 id="step5-title">Create your <span class="gradient-text">account.</span></h2>
-                    <p>You're one step away from transforming your business.</p>
+                <div class="step-header">
+                    <h2>Which <span class="gradient-text">modules</span> are you interested in?</h2>
+                    <p>Select all that apply.</p>
                 </div>
-                <div class="form-grid" style="max-width: 600px; margin: 0 auto;">
-                    <div class="form-group">
-                        <label for="firstName">First Name</label>
-                        <input type="text" id="firstName" class="form-control" placeholder="e.g. Jane">
-                    </div>
-                    <div class="form-group">
-                        <label for="lastName">Last Name</label>
-                        <input type="text" id="lastName" class="form-control" placeholder="e.g. Doe">
-                    </div>
-                    <div class="form-group" style="grid-column: 1 / -1;">
-                        <label for="workEmail">Work Email</label>
-                        <input type="email" id="workEmail" class="form-control" placeholder="name@company.com">
-                    </div>
+                <div class="selection-grid">
+                    <div class="selection-card multi" onclick="toggleMultiSelect(this, 'modules')">🧑‍💼<h3>CRM & Sales</h3></div>
+                    <div class="selection-card multi" onclick="toggleMultiSelect(this, 'modules')">📦<h3>Inventory</h3></div>
+                    <div class="selection-card multi" onclick="toggleMultiSelect(this, 'modules')">⚙️<h3>Operations</h3></div>
+                    <div class="selection-card multi" onclick="toggleMultiSelect(this, 'modules')">📊<h3>Analytics</h3></div>
+                    <div class="selection-card multi" onclick="toggleMultiSelect(this, 'modules')">💰<h3>Finance</h3></div>
+                    <div class="selection-card multi" onclick="toggleMultiSelect(this, 'modules')">🧑‍💻<h3>HR</h3></div>
+                    <div class="selection-card multi" onclick="toggleMultiSelect(this, 'modules')">✨<h3>Other</h3></div>
+                </div>
+            </div>
+
+            <!-- Step 6: Team Size -->
+            <div id="step6" class="onboarding-step">
+                <div class="step-header">
+                    <h2>How big is your <span class="gradient-text">team</span>?</h2>
+                </div>
+                <div class="selection-grid">
+                    <div class="selection-card" onclick="selectCard(this, 6, 'teamSize', '1-10')">👤<h3>1-10</h3></div>
+                    <div class="selection-card" onclick="selectCard(this, 6, 'teamSize', '11-50')">👥<h3>11-50</h3></div>
+                    <div class="selection-card" onclick="selectCard(this, 6, 'teamSize', '51-200')">👨‍👩‍👧‍👦<h3>51-200</h3></div>
+                    <div class="selection-card" onclick="selectCard(this, 6, 'teamSize', '200+')">🏢<h3>200+</h3></div>
                 </div>
             </div>
         </main>
@@ -394,7 +415,8 @@
 
     <script>
         let currentStep = 1;
-        const totalSteps = 5;
+        const totalSteps = 6; // Updated total steps
+        let selectedOptions = {}; // To store selected options for summary
 
         function nextStep() {
             if (currentStep < totalSteps) {
@@ -416,7 +438,7 @@
             document.querySelectorAll('.onboarding-step').forEach(s => s.classList.remove('active'));
             document.getElementById(`step${step}`).classList.add('active');
             
-            const progress = (step / totalSteps) * 100;
+            const progress = ((step - 1) / (totalSteps - 1)) * 100; // Adjusted progress calculation
             document.getElementById('progressFill').style.width = `${progress}%`;
             
             document.getElementById('backButton').classList.toggle('visible', step > 1);
@@ -425,9 +447,24 @@
             validateStep();
         }
         
-        function selectCard(element, step) {
+        function selectCard(element, step, type, value) {
             document.querySelectorAll(`#step${step} .selection-card`).forEach(card => card.classList.remove('selected'));
             element.classList.add('selected');
+            selectedOptions[type] = value; // Store selected value
+            validateStep();
+        }
+
+        function toggleMultiSelect(element, type) {
+            const selectedCards = document.querySelectorAll(`#step${currentStep} .selection-card.multi.selected`);
+            const isSelected = element.classList.contains('selected');
+
+            if (isSelected) {
+                element.classList.remove('selected');
+                selectedOptions[type] = selectedOptions[type].filter(val => val !== element.getAttribute('data-value'));
+            } else {
+                element.classList.add('selected');
+                selectedOptions[type].push(element.getAttribute('data-value'));
+            }
             validateStep();
         }
 
@@ -435,15 +472,42 @@
             const nextButton = document.getElementById('nextButton');
             let isValid = false;
 
-            if (currentStep === 1 || currentStep === 2 || currentStep === 3) {
+            if (currentStep === 1) {
                 isValid = !!document.querySelector(`#step${currentStep} .selection-card.selected`);
+            } else if (currentStep === 2) {
+                const industry = document.getElementById('industry').value;
+                if (industry === 'Other') {
+                    const businessTypeOptions = document.getElementById('businessTypeOptions');
+                    const otherOption = document.querySelector('#step2 .selection-card.selected[data-value="Other"]');
+                    if (otherOption) {
+                        isValid = true;
+                    } else {
+                        isValid = false;
+                    }
+                } else {
+                    isValid = industry.length > 0;
+                }
+            } else if (currentStep === 3) {
+                const goal = document.getElementById('goal').value;
+                if (goal === 'Other') {
+                    const otherOption = document.querySelector('#step3 .selection-card.selected[data-value="Other"]');
+                    if (otherOption) {
+                        isValid = true;
+                    } else {
+                        isValid = false;
+                    }
+                } else {
+                    isValid = goal.length > 0;
+                }
             } else if (currentStep === 4) {
-                const companyName = document.getElementById('companyName').value;
-                isValid = companyName.length > 0 && document.getElementById('employees').value && document.getElementById('country').value;
+                const tools = selectedOptions['tools'];
+                isValid = tools.length > 0;
             } else if (currentStep === 5) {
-                const firstName = document.getElementById('firstName').value;
-                document.getElementById('step5-title').innerHTML = firstName ? `Welcome, <span class="gradient-text">${firstName}!</span>` : "Create your <span class='gradient-text'>account.</span>";
-                isValid = ['firstName', 'lastName', 'workEmail'].every(id => document.getElementById(id).value.length > 0);
+                const modules = selectedOptions['modules'];
+                isValid = modules.length > 0;
+            } else if (currentStep === 6) {
+                const teamSize = document.getElementById('teamSize').value;
+                isValid = teamSize.length > 0;
             }
             
             nextButton.disabled = !isValid;
@@ -455,6 +519,43 @@
         });
 
         showStep(currentStep);
+
+        // Function to generate and display the summary
+        function generateSummary() {
+            const summaryContent = document.getElementById('summaryContent');
+            summaryContent.innerHTML = ''; // Clear previous content
+
+            const steps = [
+                { id: 'step1', title: 'Industry', selected: selectedOptions['industry'] },
+                { id: 'step2', title: 'Business Type', selected: selectedOptions['businessType'] },
+                { id: 'step3', title: 'Key Goal', selected: selectedOptions['goal'] },
+                { id: 'step4', title: 'Main Tools Used', selected: selectedOptions['tools'].join(', ') },
+                { id: 'step5', title: 'Modules of Interest', selected: selectedOptions['modules'].join(', ') },
+                { id: 'step6', title: 'Team Size', selected: selectedOptions['teamSize'] }
+            ];
+
+            steps.forEach(step => {
+                const stepDiv = document.getElementById(`step${step.id}`);
+                if (stepDiv && stepDiv.classList.contains('active')) {
+                    summaryContent.innerHTML += `
+                        <h3>${step.title}</h3>
+                        <p>${step.selected}</p>
+                        <hr>
+                    `;
+                }
+            });
+        }
+
+        // Show summary when the last step is reached
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.onboarding-step').forEach(step => {
+                step.addEventListener('transitionend', (event) => {
+                    if (event.target.classList.contains('active') && event.target.id === `step${totalSteps}`) {
+                        generateSummary();
+                    }
+                });
+            });
+        });
 
     </script>
 </body>
