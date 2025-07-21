@@ -1031,44 +1031,9 @@ function initInsightsSection() {
     });
 }
 // Onboarding Flow
-function openOnboarding() {
-    document.getElementById('onboardingModal').style.display = 'block';
-    document.getElementById('step1').classList.add('active');
-    document.getElementById('progressFill').style.width = '33%';
-}
-
-function closeOnboarding() {
-    document.getElementById('onboardingModal').style.display = 'none';
-    // Reset state
-    document.querySelectorAll('.business-type-card').forEach(card => {
-        card.classList.remove('selected');
-    });
-    document.querySelector('.btn-continue').disabled = true;
-    document.getElementById('progressFill').style.width = '0';
-}
-
-function selectBusinessType(type) {
-    document.querySelectorAll('.business-type-card').forEach(card => {
-        card.classList.remove('selected');
-    });
-    const selectedCard = document.querySelector(`.business-type-card[onclick*="${type}"]`);
-    selectedCard.classList.add('selected');
-    document.querySelector('.btn-continue').disabled = false;
-}
-
-function nextStep() {
-    // For now, just close the modal since we only have step 1
-    // In a full implementation, you would show the next step
-    closeOnboarding();
-}
-
+// Remove modal logic, only keep redirect logic for onboarding triggers
 // Add click event listener to all "Start Free Trial" buttons
-document.querySelectorAll('.cta-button, .primary-cta').forEach(button => {
-    button.addEventListener('click', function(e) {
-        e.preventDefault();
-        window.location.href = 'onboarding.html';
-    });
-});
+// (Handled by inline onclick in index.html now, so this can be removed)
 
 // Workflow Demo Animation
 function startWorkflowDemo() {
