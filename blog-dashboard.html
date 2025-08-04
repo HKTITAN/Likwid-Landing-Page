@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Dashboard - Likwid AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="blog-manager.js"></script>
+    <script src="post-storage.js"></script>
+    <script src="ai-service.js"></script>
+    <style>
+        :root {
+            /* Notion-inspired color palette */
+            --notion-bg: #ffffff;
+            --notion-bg-secondary: #fafafa;
+            --notion-bg-tertiary: #f7f6f3;
+            --notion-text: #37352f;
+            --notion-text-light: #6f6f6f;
+            --notion-text-lighter: #9b9a97;
+            --notion-border: #e9e9e7;
+            --notion-border-light: #f1f1ef;
+            --notion-hover: #f7f6f3;
+            --notion-blue: #2383e2;
+            --notion-purple: #9065b0;
+            --notion-pink: #e255a1;
+            --notion-orange: #d9730d;
+            --notion-green: #448361;
+            --notion-yellow: #c99221;
+            --notion-red: #e03e3e;
+            
+            /* Likwid brand colors */
+            --primary-color: #7E44EE;
+            --secondary-color: #0059FC;
+            --accent-color: #FFD700;
+            
+            /* Enhanced shadows for depth */
+            --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-strong: 0 8px 32px rgba(0, 0, 0, 0.12);
+            
+            /* Smooth transitions */
+            --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-medium: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Custom Cursor Implementation */
+        * {
+            cursor: url('assets/arrowhead-rounded-outline.svg') 12 12, auto;
+        }
+
+        *:hover {
+            cursor: url('assets/arrowhead-rounded-outline.svg') 16 16, auto;
+        }
+
+        button, a, input, textarea, select, .clickable {
+            cursor: url('assets/arrowhead-rounded-outline.svg') 14 14, pointer !important;
+            transition: transform 0.2s ease;
+        }
+
+        button:hover, a:hover, .clickable:hover {
+            cursor: url('assets/arrowhead-rounded-outline.svg') 18 18, pointer !important;
+            transform: scale(1.02);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+            background: var(--notion-bg);
+            color: var(--notion-text);
+            line-height: 1.5;
+            font-size: 16px;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--notion-bg);
+            border-bottom: 1px solid var(--notion-border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--notion-text);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-subtitle {
+            color: var(--notion-text-light);
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notion-btn {
+            background: var(--notion-bg);
+            border: 1px solid var(--notion-border);
+            color: var(--notion-text);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .notion-btn:hover {
+            background: var(--notion-hover);
+        }
+
+        .notion-btn.primary {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .notion-btn.primary:hover {
+            background: #6d3bcc;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* AI Content Suggestion */
+        .ai-content-suggestion {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-content-suggestion::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse-glow 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .ai-input-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.95);
+            color: var(--notion-text);
+        }
+
+        .ai-generate-btn {
+            padding: 1rem 2rem;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ai-generate-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        /* Dashboard Stats */
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--notion-bg);
+            border: 1px solid var(--notion-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--notion-text);
+        }
+
+        .stat-description {
+            font-size: 0.75rem;
+            color: var(--notion-text-light);
+            margin-top: 0.25rem;
+        }
+
+        /* Content Database */
+        .database-container {
+            background: var(--notion-bg);
+            border-radius: 8px;
+            border: 1px solid var(--notion-border);
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .database-header {
+            background: var(--notion-bg-secondary);
+            padding: 1rem;
+            border-bottom: 1px solid var(--notion-border);
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--notion-text);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .database-header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .database-header-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .database-table-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr 120px;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
+            background: var(--notion-bg-secondary);
+            border-bottom: 1px solid var(--notion-border);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--notion-text-light);
+            text-transform: uppercase;
+        }
+
+        .database-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr 120px;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--notion-border-light);
+            align-items: center;
+            transition: background-color var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .database-row:hover {
+            background: var(--notion-hover);
+        }
+
+        .database-row:last-child {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-published {
+            background: rgba(68, 131, 97, 0.1);
+            color: var(--notion-green);
+        }
+
+        .status-draft {
+            background: rgba(155, 154, 151, 0.1);
+            color: var(--notion-text-lighter);
+        }
+
+        .score-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .score-excellent {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .score-good {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .score-poor {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .action-btn.edit {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .action-btn.delete {
+            background: var(--notion-red);
+            color: white;
+        }
+
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+
+        .empty-state {
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--notion-text-light);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            opacity: 0.3;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.25rem;
+            color: var(--notion-text);
+        }
+
+        .empty-state p {
+            margin: 0 0 1.5rem 0;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="login-section">
+        <div style="max-width: 450px; margin: 6rem auto; background: white; padding: 3rem; border-radius: 20px; box-shadow: var(--shadow-medium); border: 1px solid var(--notion-border);">
+            <h2 style="text-align: center; margin-bottom: 2rem; color: var(--notion-text); font-size: 1.8rem; font-weight: 700;">
+                <i class="fas fa-brain" style="color: var(--primary-color);"></i>
+                Blog Dashboard Login
+            </h2>
+            <form id="login-form">
+                <div style="margin-bottom: 1.5rem;">
+                    <input type="password" id="password" placeholder="Enter admin password" required
+                           style="width: 100%; padding: 1rem; border: 1px solid var(--notion-border); border-radius: 8px; font-size: 1rem;">
+                </div>
+                <button type="submit" class="notion-btn primary" style="width: 100%; justify-content: center; padding: 1rem;">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Access Dashboard
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard-section" style="display: none;">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div>
+                    <h1 class="header-title">
+                        <i class="fas fa-brain" style="color: var(--primary-color);"></i>
+                        Likwid Blog Dashboard
+                    </h1>
+                    <p class="header-subtitle">AI-Powered Content Management</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button onclick="createNewPost()" class="notion-btn primary">
+                    <i class="fas fa-plus"></i>
+                    New Post
+                </button>
+                <button onclick="logout()" class="notion-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="container">
+            <!-- AI Content Suggestion -->
+            <div class="ai-content-suggestion">
+                <div style="position: relative; z-index: 2;">
+                    <h2 style="margin: 0 0 1rem 0; font-size: 1.5rem; font-weight: 700;">
+                        <i class="fas fa-magic"></i>
+                        What would you like to write about today?
+                    </h2>
+                    <p style="margin: 0 0 1.5rem 0; opacity: 0.9;">
+                        Tell me your topic and I'll create a complete, SEO-optimized blog post for you
+                    </p>
+                    <div class="ai-input-group">
+                        <input type="text" class="ai-input" id="content-suggestion-input" 
+                               placeholder="e.g., How AI is transforming manufacturing processes...">
+                        <button type="button" class="ai-generate-btn" onclick="generateCompletePost()">
+                            <i class="fas fa-wand-magic-sparkles"></i>
+                            Generate Post
+                        </button>
+                    </div>
+                    <div id="generation-status" style="margin-top: 1rem; display: none;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span id="generation-text">Creating your blog post...</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); border-radius: 4px; margin-top: 0.5rem; height: 4px; overflow: hidden;">
+                            <div id="generation-progress" style="background: white; height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Statistics -->
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-number" style="color: var(--primary-color);" id="total-posts">0</div>
+                    <div class="stat-label">Total Posts</div>
+                    <div class="stat-description">Published & Drafts</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number" style="color: var(--notion-green);" id="published-posts">0</div>
+                    <div class="stat-label">Published</div>
+                    <div class="stat-description">Live on website</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number" style="color: var(--notion-orange);" id="draft-posts">0</div>
+                    <div class="stat-label">Drafts</div>
+                    <div class="stat-description">Work in progress</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number" style="color: var(--notion-purple);" id="avg-seo-score">0</div>
+                    <div class="stat-label">Avg SEO Score</div>
+                    <div class="stat-description">Content quality</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-number" style="color: var(--notion-blue);" id="keyword-usage">0/0</div>
+                    <div class="stat-label">CSV Keywords Used</div>
+                    <div class="stat-description">Strategy implementation</div>
+                </div>
+            </div>
+
+            <!-- Content Database -->
+            <div style="margin-bottom: 2rem;">
+                <h1 style="font-size: 2rem; font-weight: 700; margin: 0 0 0.5rem 0; color: var(--notion-text);">Content Database</h1>
+                <p style="color: var(--notion-text-light); margin: 0;">Manage and overview all your blog content</p>
+            </div>
+
+            <div class="database-container">
+                <div class="database-header">
+                    <div class="database-header-left">
+                        <i class="fas fa-database"></i>
+                        Blog Posts
+                    </div>
+                    <div class="database-header-right">
+                        <a href="blog-editor.html" class="notion-btn primary">
+                            <i class="fas fa-plus"></i>
+                            New Post
+                        </a>
+                        <div style="display: flex; gap: 0.5rem; align-items: center; font-size: 0.75rem; color: var(--notion-text-light);">
+                            <span id="posts-count">0 posts</span>
+                            <button onclick="refreshPosts()" style="background: none; border: none; color: var(--notion-text-light); cursor: pointer; padding: 0.25rem;">
+                                <i class="fas fa-refresh"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="database-table-header">
+                    <div>Title</div>
+                    <div>Status</div>
+                    <div>Category</div>
+                    <div>SEO Score</div>
+                    <div>Updated</div>
+                    <div>Actions</div>
+                </div>
+                
+                <div id="posts-database-rows">
+                    <!-- Posts will be loaded here -->
+                    <div class="empty-state">
+                        <i class="fas fa-file-text"></i>
+                        <h3>No posts yet</h3>
+                        <p>Start by describing what you'd like to write about above, or create a new post from scratch</p>
+                        <a href="blog-editor.html" class="notion-btn primary">
+                            <i class="fas fa-plus"></i>
+                            Create Your First Post
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Authentication
+        function checkAuth() {
+            if (!blogManager.isAuthenticated()) {
+                document.getElementById('login-section').style.display = 'block';
+                document.getElementById('dashboard-section').style.display = 'none';
+                return false;
+            }
+            
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('dashboard-section').style.display = 'block';
+            return true;
+        }
+
+        // Login
+        async function login() {
+            const password = document.getElementById('password').value;
+            
+            if (!password) {
+                alert('Please enter a password');
+                return;
+            }
+            
+            try {
+                const result = await blogManager.login(password);
+                
+                if (result.success) {
+                    checkAuth();
+                    loadDashboard();
+                    showNotification('Login successful!', 'success');
+                } else {
+                    showNotification(result.message || 'Invalid password', 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showNotification('Login failed: ' + error.message, 'error');
+            }
+        }
+
+        // Logout
+        function logout() {
+            blogManager.logout();
+            checkAuth();
+            showNotification('Logged out successfully', 'success');
+        }
+
+        // Create new post and save to backend
+        async function createNewPost() {
+            try {
+                const postId = Date.now();
+                const newPost = {
+                    id: postId,
+                    title: 'New Post',
+                    content: JSON.stringify({
+                        blocks: [
+                            {
+                                type: "header",
+                                data: { text: "Start writing your post...", level: 1 }
+                            },
+                            {
+                                type: "paragraph",
+                                data: { text: "Begin creating your content here." }
+                            }
+                        ]
+                    }),
+                    excerpt: 'A new blog post draft',
+                    category: 'Technology',
+                    keywords: '',
+                    meta_title: 'New Post',
+                    meta_description: 'A new blog post draft',
+                    status: 'draft',
+                    author_name: 'Content Creator',
+                    author_title: 'Writer',
+                    author_avatar: 'User',
+                    slug: `new-post-${postId}`,
+                    seo_score: 0,
+                    created: new Date().toISOString(),
+                    updated: new Date().toISOString()
+                };
+
+                // Initialize PostStorageService if not available
+                if (!window.postStorageService) {
+                    window.postStorageService = new PostStorageService();
+                }
+
+                // Save to backend first
+                await window.postStorageService.savePost(newPost);
+                console.log('✅ New post saved to backend successfully');
+                
+                // Also save to localStorage for backward compatibility
+                if (window.blogManager && typeof window.blogManager.createPost === 'function') {
+                    blogManager.createPost(newPost);
+                } else {
+                    const posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || 
+                                           localStorage.getItem('blog_posts') || '[]');
+                    posts.push(newPost);
+                    localStorage.setItem('likwid_blog_posts', JSON.stringify(posts));
+                }
+
+                showNotification('New post created successfully!', 'success');
+                
+                // Redirect to editor
+                window.location.href = `blog-editor.html?id=${postId}`;
+                
+            } catch (error) {
+                console.error('Error creating new post:', error);
+                showNotification('Failed to create new post: ' + error.message, 'error');
+            }
+        }
+
+        // Load dashboard data
+        function loadDashboard() {
+            loadDashboardStats();
+            loadPostsDatabase();
+        }
+
+        // Load dashboard statistics
+        function loadDashboardStats() {
+            // Use blogManager to get posts, with fallback to direct localStorage access
+            let posts = [];
+            
+            if (window.blogManager && typeof window.blogManager.getPosts === 'function') {
+                posts = blogManager.getPosts();
+            } else {
+                // Fallback: try different possible localStorage keys
+                posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || 
+                                 localStorage.getItem('blog_posts') || '[]');
+            }
+            
+            const totalPosts = posts.length;
+            const publishedPosts = posts.filter(post => post.status === 'published').length;
+            const draftPosts = posts.filter(post => post.status === 'draft').length;
+            const avgSeoScore = totalPosts > 0 ? 
+                Math.round(posts.reduce((sum, post) => sum + (post.seo_score || 0), 0) / totalPosts) : 0;
+            
+            // Calculate CSV keyword usage across all posts
+            let totalKeywordUsage = 0;
+            let totalCsvKeywords = 0;
+            let keywordDashboard = null;
+            
+            if (window.aiService) {
+                // Get comprehensive keyword dashboard
+                keywordDashboard = aiService.getKeywordDashboard(posts);
+                
+                posts.forEach(post => {
+                    const content = aiService.extractTextFromContent(post.content || '');
+                    const allText = (post.title || '') + ' ' + content + ' ' + (post.keywords || '');
+                    const keywordAnalysis = aiService.countCSVKeywords(allText);
+                    totalKeywordUsage += keywordAnalysis.count;
+                });
+                totalCsvKeywords = aiService.keywords.length;
+            }
+            
+            document.getElementById('total-posts').textContent = totalPosts;
+            document.getElementById('published-posts').textContent = publishedPosts;
+            document.getElementById('draft-posts').textContent = draftPosts;
+            document.getElementById('avg-seo-score').textContent = avgSeoScore;
+            
+            // Update keyword usage if element exists
+            const keywordUsageElement = document.getElementById('keyword-usage');
+            if (keywordUsageElement && keywordDashboard) {
+                const usedKeywords = keywordDashboard.globalUsage.used.size;
+                const coverage = keywordDashboard.globalUsage.coverage;
+                keywordUsageElement.textContent = `${usedKeywords}/${totalCsvKeywords}`;
+                keywordUsageElement.style.color = coverage > 15 ? 'var(--notion-green)' : coverage > 5 ? 'var(--notion-orange)' : 'var(--notion-red)';
+                
+                // Update keyword insights dashboard
+                updateKeywordInsightsDashboard(keywordDashboard);
+            }
+        }
+
+        // Load posts database
+        function loadPostsDatabase() {
+            // Use blogManager to get posts, with fallback to direct localStorage access
+            let posts = [];
+            
+            if (window.blogManager && typeof window.blogManager.getPosts === 'function') {
+                posts = blogManager.getPosts();
+            } else {
+                // Fallback: try different possible localStorage keys
+                posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || 
+                                 localStorage.getItem('blog_posts') || '[]');
+            }
+            
+            const container = document.getElementById('posts-database-rows');
+            const countElement = document.getElementById('posts-count');
+            
+            countElement.textContent = `${posts.length} post${posts.length !== 1 ? 's' : ''}`;
+            
+            if (posts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-file-text"></i>
+                        <h3>No posts yet</h3>
+                        <p>Start by describing what you'd like to write about above, or create a new post from scratch</p>
+                        <a href="blog-editor.html" class="notion-btn primary">
+                            <i class="fas fa-plus"></i>
+                            Create Your First Post
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = posts.map(post => {
+                const seoScoreClass = post.seo_score >= 80 ? 'score-excellent' : post.seo_score >= 60 ? 'score-good' : 'score-poor';
+                const statusBadge = post.status === 'published' ? 
+                    '<span class="status-badge status-published">✅ Published</span>' : 
+                    '<span class="status-badge status-draft">📝 Draft</span>';
+                
+                return `
+                    <div class="database-row" onclick="editPost(${post.id})">
+                        <div style="font-weight: 500; color: var(--notion-text);">${post.title}</div>
+                        <div>${statusBadge}</div>
+                        <div style="text-transform: capitalize; color: var(--notion-text-light);">${post.category}</div>
+                        <div>
+                            <div class="score-circle ${seoScoreClass}">${post.seo_score}</div>
+                        </div>
+                        <div style="color: var(--notion-text-light); font-size: 0.875rem;">${new Date(post.updated).toLocaleDateString()}</div>
+                        <div style="display: flex; gap: 0.25rem;">
+                            <button onclick="event.stopPropagation(); editPost(${post.id})" class="action-btn edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="event.stopPropagation(); deletePost(${post.id})" class="action-btn delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Edit post
+        function editPost(id) {
+            window.location.href = `blog-editor.html?id=${id}`;
+        }
+
+        // Delete post
+        function deletePost(id) {
+            if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) return;
+            
+            try {
+                // Try using blogManager first
+                if (window.blogManager && typeof window.blogManager.deletePost === 'function') {
+                    const result = blogManager.deletePost(id);
+                    if (result.success) {
+                        loadDashboard();
+                        showNotification('Post deleted successfully', 'success');
+                        return;
+                    }
+                }
+                
+                // Fallback: Direct localStorage manipulation
+                const posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || '[]');
+                const filteredPosts = posts.filter(post => post.id != id);
+                
+                if (filteredPosts.length === posts.length) {
+                    showNotification('Post not found', 'error');
+                    return;
+                }
+                
+                localStorage.setItem('likwid_blog_posts', JSON.stringify(filteredPosts));
+                loadDashboard();
+                showNotification('Post deleted successfully', 'success');
+                
+            } catch (error) {
+                console.error('Delete post error:', error);
+                showNotification('Failed to delete post: ' + error.message, 'error');
+            }
+        }
+
+        // Refresh posts
+        function refreshPosts() {
+            loadDashboard();
+        }
+
+        // Generate complete post
+        async function generateCompletePost() {
+            const topic = document.getElementById('content-suggestion-input').value;
+            if (!topic) {
+                showNotification('Please enter a topic', 'error');
+                return;
+            }
+
+            try {
+                // Show progress
+                const statusDiv = document.getElementById('generation-status');
+                const progressBar = document.getElementById('generation-progress');
+                const statusText = document.getElementById('generation-text');
+                
+                statusDiv.style.display = 'block';
+                progressBar.style.width = '20%';
+                statusText.textContent = 'AI is analyzing the topic...';
+
+                // Generate post with AI
+                const postData = await aiService.generateBlogPost(topic);
+                
+                progressBar.style.width = '60%';
+                statusText.textContent = 'Creating post structure...';
+
+                // Create a new post with the AI-generated content
+                const postId = Date.now();
+                const newPost = {
+                    id: postId,
+                    title: postData.title,
+                    content: JSON.stringify(postData.content),
+                    excerpt: postData.excerpt,
+                    category: postData.category,
+                    keywords: postData.keywords,
+                    meta_title: postData.meta_title,
+                    meta_description: postData.meta_description,
+                    status: 'draft',
+                    author_name: 'AI Assistant',
+                    author_title: 'Content Generator',
+                    author_avatar: 'AI',
+                    slug: postData.title.toLowerCase().replace(/[^a-z0-9 -]/g, '').replace(/\s+/g, '-'),
+                    seo_score: 75, // Initial AI-generated score
+                    created: new Date().toISOString(),
+                    updated: new Date().toISOString()
+                };
+
+                progressBar.style.width = '90%';
+                statusText.textContent = 'Saving to backend...';
+
+                // Initialize PostStorageService if not available
+                if (!window.postStorageService) {
+                    window.postStorageService = new PostStorageService();
+                }
+
+                // Save to backend first
+                await window.postStorageService.savePost(newPost);
+                console.log('✅ AI-generated post saved to backend successfully');
+
+                // Also save to localStorage for backward compatibility
+                if (window.blogManager && typeof window.blogManager.createPost === 'function') {
+                    // Use blogManager if available
+                    blogManager.createPost(newPost);
+                } else {
+                    // Fallback: Direct localStorage manipulation
+                    const posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || 
+                                           localStorage.getItem('blog_posts') || '[]');
+                    posts.push(newPost);
+                    localStorage.setItem('likwid_blog_posts', JSON.stringify(posts));
+                }
+                
+                progressBar.style.width = '100%';
+                statusText.textContent = 'Complete! Redirecting to editor...';
+                
+                setTimeout(() => {
+                    window.location.href = `blog-editor.html?id=${postId}`;
+                }, 1000);
+
+            } catch (error) {
+                console.error('AI generation error:', error);
+                document.getElementById('generation-status').style.display = 'none';
+                showNotification('Failed to generate post: ' + error.message, 'error');
+                
+                // Fallback: create basic post
+                const postId = Date.now();
+                const newPost = {
+                    id: postId,
+                    title: topic,
+                    content: JSON.stringify({
+                        blocks: [
+                            {
+                                type: "header",
+                                data: { text: topic, level: 1 }
+                            },
+                            {
+                                type: "paragraph",
+                                data: { text: "Start writing your content here..." }
+                            }
+                        ]
+                    }),
+                    excerpt: `A blog post about ${topic}`,
+                    category: 'Technology',
+                    keywords: topic.toLowerCase().replace(/\s+/g, ', '),
+                    meta_title: topic,
+                    meta_description: `Learn about ${topic} in manufacturing operations`,
+                    status: 'draft',
+                    author_name: 'Content Creator',
+                    author_title: 'Writer',
+                    author_avatar: 'User',
+                    slug: topic.toLowerCase().replace(/[^a-z0-9 -]/g, '').replace(/\s+/g, '-'),
+                    seo_score: 0,
+                    created: new Date().toISOString(),
+                    updated: new Date().toISOString()
+                };
+
+                try {
+                    // Initialize PostStorageService if not available
+                    if (!window.postStorageService) {
+                        window.postStorageService = new PostStorageService();
+                    }
+
+                    // Save to backend first
+                    await window.postStorageService.savePost(newPost);
+                    console.log('✅ Fallback post saved to backend successfully');
+                } catch (backendError) {
+                    console.error('Failed to save fallback post to backend:', backendError);
+                    // Continue with localStorage only if backend fails
+                }
+
+                // Also save to localStorage for backward compatibility
+                if (window.blogManager && typeof window.blogManager.createPost === 'function') {
+                    blogManager.createPost(newPost);
+                } else {
+                    const posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || 
+                                           localStorage.getItem('blog_posts') || '[]');
+                    posts.push(newPost);
+                    localStorage.setItem('likwid_blog_posts', JSON.stringify(posts));
+                }
+                
+                window.location.href = `blog-editor.html?id=${postId}`;
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                font-weight: 500;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+            `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // Login form submission
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            login();
+        });
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Debug: Check what's available
+            console.log('Page loaded. Checking services...');
+            console.log('BlogManager available:', !!window.blogManager);
+            console.log('AI Service available:', !!window.aiService);
+            
+            // Initialize PostStorageService
+            try {
+                if (!window.postStorageService) {
+                    window.postStorageService = new PostStorageService();
+                    console.log('PostStorageService initialized successfully');
+                }
+            } catch (error) {
+                console.error('Failed to initialize PostStorageService:', error);
+            }
+            
+            if (window.blogManager) {
+                console.log('BlogManager methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(window.blogManager)));
+                
+                // Test loading posts
+                try {
+                    const testPosts = window.blogManager.getPosts();
+                    console.log('BlogManager can load posts:', testPosts.length, 'posts found');
+                } catch (error) {
+                    console.error('BlogManager error loading posts:', error);
+                }
+            }
+            
+            if (checkAuth()) {
+                loadDashboard();
+                
+                // Initialize keyword tracking
+                if (window.aiService) {
+                    console.log('AI Service loaded with', aiService.keywords.length, 'keywords');
+                    
+                    // Wait for keywords to load then update dashboard
+                    setTimeout(() => {
+                        loadDashboardStats();
+                    }, 1000);
+                }
+            }
+        });
+
+        // Enhanced keyword insights dashboard
+        function updateKeywordInsightsDashboard(keywordDashboard) {
+            if (!keywordDashboard) return;
+
+            console.log('Keyword Dashboard Data:', {
+                totalKeywords: keywordDashboard.totalKeywords,
+                coverage: keywordDashboard.globalUsage.coverage,
+                usedKeywords: keywordDashboard.globalUsage.used.size,
+                recommendations: keywordDashboard.recommendations.length
+            });
+
+            // Create or update keyword insights section
+            let insightsSection = document.getElementById('keyword-insights-section');
+            if (!insightsSection) {
+                insightsSection = document.createElement('div');
+                insightsSection.id = 'keyword-insights-section';
+                insightsSection.innerHTML = `
+                    <div class="dashboard-section" style="margin-top: 2rem;">
+                        <div class="section-header">
+                            <h2><i class="fas fa-chart-line"></i> Keyword Strategy Insights</h2>
+                        </div>
+                        <div id="keyword-insights-content" class="section-content">
+                            <!-- Content will be populated by JavaScript -->
+                        </div>
+                    </div>
+                `;
+                
+                // Insert before posts database section
+                const postsSection = document.querySelector('.dashboard-section');
+                if (postsSection && postsSection.parentNode) {
+                    postsSection.parentNode.insertBefore(insightsSection, postsSection);
+                }
+            }
+
+            const contentDiv = document.getElementById('keyword-insights-content');
+            if (!contentDiv) return;
+
+            // Generate insights content
+            let insightsHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: var(--notion-blue);">${keywordDashboard.globalUsage.coverage}%</div>
+                        <div class="stat-label">Keyword Coverage</div>
+                        <div class="stat-description">${keywordDashboard.globalUsage.used.size}/${keywordDashboard.totalKeywords} keywords used</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: var(--notion-green);">${keywordDashboard.globalUsage.unused.length}</div>
+                        <div class="stat-label">Untapped Keywords</div>
+                        <div class="stat-description">Ready for new content</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number" style="color: var(--notion-purple);">${keywordDashboard.recommendations.length}</div>
+                        <div class="stat-label">AI Recommendations</div>
+                        <div class="stat-description">Strategy improvements</div>
+                    </div>
+                </div>
+            `;
+
+            // Add recommendations
+            if (keywordDashboard.recommendations.length > 0) {
+                insightsHTML += `
+                    <div style="margin-bottom: 1.5rem;">
+                        <h3 style="margin-bottom: 1rem; color: var(--notion-text);">Strategic Recommendations</h3>
+                        <div style="display: grid; gap: 1rem;">
+                `;
+                
+                keywordDashboard.recommendations.forEach(rec => {
+                    const priorityColor = rec.priority === 'high' ? 'var(--notion-red)' : 
+                                        rec.priority === 'medium' ? 'var(--notion-orange)' : 'var(--notion-blue)';
+                    
+                    insightsHTML += `
+                        <div style="border: 1px solid var(--notion-border); border-radius: 8px; padding: 1rem; background: var(--notion-bg-secondary);">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <h4 style="margin: 0; color: var(--notion-text);">${rec.title}</h4>
+                                <span style="background: ${priorityColor}; color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem; text-transform: uppercase;">${rec.priority}</span>
+                            </div>
+                            <p style="margin: 0.5rem 0; color: var(--notion-text-light); font-size: 0.875rem;">${rec.description}</p>
+                            <div style="font-size: 0.75rem; color: var(--notion-text-lighter); margin-bottom: 0.5rem;">Action: ${rec.action}</div>
+                            ${rec.keywords && rec.keywords.length > 0 ? `
+                                <div style="display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.5rem;">
+                                    ${rec.keywords.slice(0, 8).map(keyword => 
+                                        `<span style="background: ${priorityColor}; color: white; padding: 0.125rem 0.375rem; border-radius: 8px; font-size: 0.625rem;">${keyword}</span>`
+                                    ).join('')}
+                                    ${rec.keywords.length > 8 ? `<span style="color: var(--notion-text-lighter); font-size: 0.625rem;">+${rec.keywords.length - 8} more</span>` : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                
+                insightsHTML += '</div></div>';
+            }
+
+            // Add top performing keywords
+            const topKeywords = Object.entries(keywordDashboard.globalUsage.topKeywords)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            if (topKeywords.length > 0) {
+                insightsHTML += `
+                    <div>
+                        <h3 style="margin-bottom: 1rem; color: var(--notion-text);">Top Performing Keywords</h3>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                            ${topKeywords.map(([keyword, count]) => 
+                                `<span style="background: var(--notion-green); color: white; padding: 0.375rem 0.75rem; border-radius: 16px; font-size: 0.75rem; display: flex; align-items: center; gap: 0.25rem;">
+                                    ${keyword} <span style="background: rgba(255,255,255,0.3); padding: 0.125rem 0.375rem; border-radius: 8px; font-size: 0.625rem;">${count}</span>
+                                </span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            contentDiv.innerHTML = insightsHTML;
+        }
+    </script>
+</body>
+</html>

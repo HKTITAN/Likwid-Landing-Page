@@ -1,0 +1,35 @@
+{
+  "id": "1754309607880",
+  "title": "Untitled",
+  "content": {
+    "time": 1754309669605,
+    "blocks": [
+      {
+        "id": "LknVYUsEUK",
+        "type": "paragraph",
+        "data": {
+          "text": ""
+        }
+      }
+    ],
+    "version": "2.29.1"
+  },
+  "status": "draft",
+  "category": "Technology",
+  "excerpt": "",
+  "featuredImage": "",
+  "is_featured": 0,
+  "author": "Admin",
+  "author_title": "Content Creator",
+  "author_avatar": "AD",
+  "slug": "untitled",
+  "meta_title": "",
+  "meta_description": "",
+  "keywords": "",
+  "imageAlt": "",
+  "readTime": 1,
+  "canonical_url": "",
+  "seo_score": 0,
+  "createdAt": "2025-08-04T12:13:59.099Z",
+  "updatedAt": "2025-08-04T12:14:29.612Z"
+}

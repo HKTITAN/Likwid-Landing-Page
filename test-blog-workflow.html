@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Workflow Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        
+        .test-section h2 {
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .test-data {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .navigation a {
+            color: white;
+            text-decoration: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin: 0 10px;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        
+        .navigation a:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Blog Workflow Test Suite</h1>
+        
+        <div class="test-section">
+            <h2>1. BlogManager Initialization</h2>
+            <button onclick="testBlogManagerInit()">Test BlogManager</button>
+            <div id="blogManagerResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. Create Post Test</h2>
+            <button onclick="testCreatePost()">Create Test Post</button>
+            <div id="createPostResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>3. Load Posts Test</h2>
+            <button onclick="testLoadPosts()">Load All Posts</button>
+            <div id="loadPostsResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>4. Get Single Post Test</h2>
+            <button onclick="testGetPost()">Get Test Post</button>
+            <div id="getPostResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>5. Update Post Test</h2>
+            <button onclick="testUpdatePost()">Update Test Post</button>
+            <div id="updatePostResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>6. Delete Post Test</h2>
+            <button onclick="testDeletePost()">Delete Test Post</button>
+            <div id="deletePostResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>7. Storage Consistency Test</h2>
+            <button onclick="testStorageConsistency()">Test Storage Keys</button>
+            <div id="storageResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>8. Complete Workflow Test</h2>
+            <button onclick="runCompleteWorkflow()">Run Full Test</button>
+            <div id="workflowResult"></div>
+        </div>
+        
+        <div class="navigation">
+            <a href="blog-editor.html">Blog Editor</a>
+            <a href="blog-dashboard.html">Blog Dashboard</a>
+            <a href="test-ai-comprehensive.html">AI Test Suite</a>
+        </div>
+    </div>
+
+    <script src="blog-manager.js"></script>
+    <script>
+        let testPostId = null;
+        const blogManager = new BlogManager();
+        
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="test-result ${type}">${message}</div>`;
+        }
+        
+        function showData(elementId, data, type = 'info') {
+            const element = document.getElementById(elementId);
+            const dataDiv = `<div class="test-data">${JSON.stringify(data, null, 2)}</div>`;
+            element.innerHTML = `<div class="test-result ${type}">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'} Test completed</div>${dataDiv}`;
+        }
+        
+        function testBlogManagerInit() {
+            try {
+                const isInitialized = blogManager && typeof blogManager.createPost === 'function';
+                const storageKey = blogManager.storageKey;
+                
+                if (isInitialized) {
+                    showResult('blogManagerResult', `✅ BlogManager initialized successfully with storage key: ${storageKey}`, 'success');
+                } else {
+                    showResult('blogManagerResult', '❌ BlogManager failed to initialize', 'error');
+                }
+            } catch (error) {
+                showResult('blogManagerResult', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+        
+        function testCreatePost() {
+            try {
+                const testPost = {
+                    title: 'Test Post - ' + new Date().toISOString(),
+                    content: 'This is a test post to verify the blog workflow functionality.',
+                    excerpt: 'Test post for workflow validation',
+                    tags: ['test', 'workflow', 'validation'],
+                    category: 'Testing',
+                    featuredImage: '',
+                    author: 'Test Suite',
+                    readTime: 2
+                };
+                
+                const result = blogManager.createPost(testPost);
+                testPostId = result.id;
+                
+                showData('createPostResult', {
+                    success: true,
+                    postId: result.id,
+                    post: result
+                }, 'success');
+            } catch (error) {
+                showResult('createPostResult', `❌ Error creating post: ${error.message}`, 'error');
+            }
+        }
+        
+        function testLoadPosts() {
+            try {
+                const posts = blogManager.getPosts();
+                
+                showData('loadPostsResult', {
+                    success: true,
+                    totalPosts: posts.length,
+                    posts: posts.map(p => ({
+                        id: p.id,
+                        title: p.title,
+                        createdAt: p.createdAt,
+                        updatedAt: p.updatedAt
+                    }))
+                }, 'success');
+            } catch (error) {
+                showResult('loadPostsResult', `❌ Error loading posts: ${error.message}`, 'error');
+            }
+        }
+        
+        function testGetPost() {
+            try {
+                if (!testPostId) {
+                    showResult('getPostResult', '❌ No test post ID available. Create a post first.', 'error');
+                    return;
+                }
+                
+                const post = blogManager.getPost(testPostId);
+                
+                if (post) {
+                    showData('getPostResult', {
+                        success: true,
+                        post: post
+                    }, 'success');
+                } else {
+                    showResult('getPostResult', '❌ Post not found', 'error');
+                }
+            } catch (error) {
+                showResult('getPostResult', `❌ Error getting post: ${error.message}`, 'error');
+            }
+        }
+        
+        function testUpdatePost() {
+            try {
+                if (!testPostId) {
+                    showResult('updatePostResult', '❌ No test post ID available. Create a post first.', 'error');
+                    return;
+                }
+                
+                const updatedData = {
+                    title: 'Updated Test Post - ' + new Date().toISOString(),
+                    content: 'This post has been updated to test the update functionality.',
+                    tags: ['test', 'workflow', 'validation', 'updated']
+                };
+                
+                const result = blogManager.updatePost(testPostId, updatedData);
+                
+                showData('updatePostResult', {
+                    success: true,
+                    updatedPost: result
+                }, 'success');
+            } catch (error) {
+                showResult('updatePostResult', `❌ Error updating post: ${error.message}`, 'error');
+            }
+        }
+        
+        function testDeletePost() {
+            try {
+                if (!testPostId) {
+                    showResult('deletePostResult', '❌ No test post ID available. Create a post first.', 'error');
+                    return;
+                }
+                
+                const result = blogManager.deletePost(testPostId);
+                
+                if (result) {
+                    showData('deletePostResult', {
+                        success: true,
+                        deletedPostId: testPostId,
+                        remainingPosts: blogManager.getPosts().length
+                    }, 'success');
+                    testPostId = null; // Clear the test ID
+                } else {
+                    showResult('deletePostResult', '❌ Failed to delete post', 'error');
+                }
+            } catch (error) {
+                showResult('deletePostResult', `❌ Error deleting post: ${error.message}`, 'error');
+            }
+        }
+        
+        function testStorageConsistency() {
+            try {
+                // Check localStorage keys
+                const likwidPosts = localStorage.getItem('likwid_blog_posts');
+                const oldPosts = localStorage.getItem('blog_posts');
+                
+                const data = {
+                    blogManagerKey: blogManager.storageKey,
+                    likwidPostsExists: !!likwidPosts,
+                    oldPostsExists: !!oldPosts,
+                    likwidPostsCount: likwidPosts ? JSON.parse(likwidPosts).length : 0,
+                    oldPostsCount: oldPosts ? JSON.parse(oldPosts).length : 0,
+                    recommendation: 'Using likwid_blog_posts as primary storage key'
+                };
+                
+                showData('storageResult', data, 'info');
+            } catch (error) {
+                showResult('storageResult', `❌ Error checking storage: ${error.message}`, 'error');
+            }
+        }
+        
+        async function runCompleteWorkflow() {
+            try {
+                const results = [];
+                
+                // Test 1: Create
+                results.push('🔹 Creating test post...');
+                testCreatePost();
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                // Test 2: Read
+                results.push('🔹 Loading all posts...');
+                testLoadPosts();
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                // Test 3: Get single
+                results.push('🔹 Getting single post...');
+                testGetPost();
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                // Test 4: Update
+                results.push('🔹 Updating post...');
+                testUpdatePost();
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                // Test 5: Delete
+                results.push('🔹 Deleting post...');
+                testDeletePost();
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                results.push('');
+                results.push('✅ Complete workflow test finished!');
+                results.push('Check individual sections above for detailed results.');
+                
+                showData('workflowResult', {
+                    workflowSteps: results,
+                    timestamp: new Date().toISOString(),
+                    status: 'Completed'
+                }, 'success');
+                
+            } catch (error) {
+                showResult('workflowResult', `❌ Workflow error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Auto-run initialization test on page load
+        window.addEventListener('load', () => {
+            testBlogManagerInit();
+        });
+    </script>
+</body>
+</html>

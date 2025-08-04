@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 AI Features Comprehensive Test - Likwid AI</title>
+    <script src="ai-service.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .test-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .test-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .test-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-success { background: #28a745; }
+        .status-error { background: #dc3545; }
+        .status-warning { background: #ffc107; }
+        .status-info { background: #17a2b8; }
+
+        .result-area {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .result-area.empty {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .image-result {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .file-upload {
+            margin: 1rem 0;
+            padding: 1rem;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .service-status {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .status-item {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 AI Features Comprehensive Test Suite</h1>
+        <p>Test all AI-powered features including content generation, image creation, and advanced analytics</p>
+    </div>
+
+    <!-- Service Status -->
+    <div class="service-status">
+        <h2 class="section-title">🔧 Service Status</h2>
+        <div id="service-status">Checking AI service status...</div>
+        <div class="status-grid" id="status-grid"></div>
+    </div>
+
+    <!-- Test Grid -->
+    <div class="test-grid">
+        <!-- Text Generation Tests -->
+        <div class="test-section">
+            <h3 class="section-title">📝 Text Generation</h3>
+            <button class="test-btn" onclick="testBasicGeneration()">Test Basic AI</button>
+            <button class="test-btn" onclick="testBlogGeneration()">Generate Blog Post</button>
+            <button class="test-btn" onclick="testSEOGeneration()">Generate SEO Data</button>
+            <button class="test-btn" onclick="testContentIdeas()">Generate Ideas</button>
+            <div class="result-area empty" id="text-result">Click a button to test text generation...</div>
+        </div>
+
+        <!-- Image Generation Tests -->
+        <div class="test-section">
+            <h3 class="section-title">🎨 Image Generation</h3>
+            <input type="text" id="image-prompt" placeholder="Enter image description..." 
+                   value="A modern smart factory with robots and AI systems" 
+                   style="width: 100%; padding: 0.5rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px;">
+            <button class="test-btn" onclick="testImageGeneration()">Generate Image</button>
+            <div class="result-area empty" id="image-result">Enter a prompt and click Generate Image...</div>
+        </div>
+
+        <!-- File Upload Tests -->
+        <div class="test-section">
+            <h3 class="section-title">📁 File Upload & Analysis</h3>
+            <div class="file-upload">
+                <input type="file" id="file-input" accept="image/*" style="margin-bottom: 1rem;">
+                <br>
+                <button class="test-btn" onclick="testFileUpload()">Upload & Analyze Image</button>
+            </div>
+            <div class="result-area empty" id="file-result">Upload an image to test analysis...</div>
+        </div>
+
+        <!-- SEO & Keywords Tests -->
+        <div class="test-section">
+            <h3 class="section-title">🔍 SEO & Keywords</h3>
+            <button class="test-btn" onclick="testKeywordLoading()">Check Keywords</button>
+            <button class="test-btn" onclick="testSEOScoring()">Test SEO Scoring</button>
+            <button class="test-btn" onclick="testKeywordAnalysis()">Analyze Keywords</button>
+            <div class="result-area empty" id="seo-result">Click a button to test SEO features...</div>
+        </div>
+    </div>
+
+    <!-- Comprehensive Test -->
+    <div class="test-section">
+        <h3 class="section-title">🧪 Comprehensive Test Suite</h3>
+        <button class="test-btn" onclick="runFullTest()" id="full-test-btn">Run All Tests</button>
+        <button class="test-btn" onclick="clearAllResults()">Clear Results</button>
+        <div class="progress-bar" id="progress-bar" style="display: none;">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="log" id="test-log">Ready to run tests...</div>
+    </div>
+
+    <script>
+        let testLog = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            testLog.push(logEntry);
+            
+            const logDiv = document.getElementById('test-log');
+            logDiv.innerHTML = testLog.slice(-50).join('\n'); // Keep last 50 entries
+            logDiv.scrollTop = logDiv.scrollHeight;
+            
+            console.log(message);
+        }
+
+        function updateProgress(percent) {
+            const progressBar = document.getElementById('progress-bar');
+            const progressFill = document.getElementById('progress-fill');
+            
+            if (percent > 0) {
+                progressBar.style.display = 'block';
+                progressFill.style.width = percent + '%';
+            } else {
+                progressBar.style.display = 'none';
+            }
+        }
+
+        function displayResult(containerId, content, isError = false) {
+            const container = document.getElementById(containerId);
+            container.className = 'result-area';
+            
+            if (isError) {
+                container.style.color = '#dc3545';
+                container.style.borderColor = '#dc3545';
+            } else {
+                container.style.color = '';
+                container.style.borderColor = '#28a745';
+            }
+            
+            if (typeof content === 'object') {
+                container.innerHTML = `<pre>${JSON.stringify(content, null, 2)}</pre>`;
+            } else {
+                container.innerHTML = content;
+            }
+        }
+
+        // Service Status Check
+        async function checkServiceStatus() {
+            try {
+                if (!window.aiService) {
+                    displayResult('service-status', 'AI Service not loaded', true);
+                    return;
+                }
+
+                const status = window.aiService.getStatus();
+                
+                let statusHtml = '<div style="display: flex; gap: 1rem; align-items: center;">';
+                statusHtml += `<span class="status-indicator ${status.configured ? 'status-success' : 'status-error'}"></span>`;
+                statusHtml += `<strong>Service ${status.configured ? 'Configured' : 'Not Configured'}</strong>`;
+                statusHtml += '</div>';
+
+                document.getElementById('service-status').innerHTML = statusHtml;
+
+                // Update status grid
+                const statusGrid = document.getElementById('status-grid');
+                statusGrid.innerHTML = `
+                    <div class="status-item">
+                        <div><strong>API Key</strong></div>
+                        <div>${status.apiKey}</div>
+                    </div>
+                    <div class="status-item">
+                        <div><strong>Keywords</strong></div>
+                        <div>${status.keywordCount} loaded</div>
+                    </div>
+                    <div class="status-item">
+                        <div><strong>Uploaded Files</strong></div>
+                        <div>${status.uploadedFiles} files</div>
+                    </div>
+                    <div class="status-item">
+                        <div><strong>Configuration</strong></div>
+                        <div>${status.configured ? '✅ Ready' : '❌ Error'}</div>
+                    </div>
+                `;
+
+            } catch (error) {
+                log(`Service status check failed: ${error.message}`, 'error');
+                displayResult('service-status', `Error: ${error.message}`, true);
+            }
+        }
+
+        // Test Functions
+        async function testBasicGeneration() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Testing...';
+            
+            try {
+                log('Testing basic AI text generation...');
+                const result = await window.aiService.generateContent("Explain Industry 4.0 in 2 sentences.", 100);
+                displayResult('text-result', result);
+                log('✅ Basic generation successful');
+            } catch (error) {
+                log(`❌ Basic generation failed: ${error.message}`, 'error');
+                displayResult('text-result', `Error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Test Basic AI';
+            }
+        }
+
+        async function testBlogGeneration() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+            
+            try {
+                log('Testing blog post generation...');
+                const result = await window.aiService.generateBlogPost("Smart Manufacturing");
+                displayResult('text-result', result);
+                log('✅ Blog generation successful');
+            } catch (error) {
+                log(`❌ Blog generation failed: ${error.message}`, 'error');
+                displayResult('text-result', `Error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Generate Blog Post';
+            }
+        }
+
+        async function testSEOGeneration() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+            
+            try {
+                log('Testing SEO data generation...');
+                const result = await window.aiService.generateSEO("Manufacturing Automation", "Content about manufacturing automation and its benefits...");
+                displayResult('text-result', result);
+                log('✅ SEO generation successful');
+            } catch (error) {
+                log(`❌ SEO generation failed: ${error.message}`, 'error');
+                displayResult('text-result', `Error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Generate SEO Data';
+            }
+        }
+
+        async function testContentIdeas() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+            
+            try {
+                log('Testing content ideas generation...');
+                const result = await window.aiService.generateContentIdeas();
+                displayResult('text-result', result);
+                log('✅ Content ideas generation successful');
+            } catch (error) {
+                log(`❌ Content ideas generation failed: ${error.message}`, 'error');
+                displayResult('text-result', `Error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Generate Ideas';
+            }
+        }
+
+        async function testImageGeneration() {
+            const btn = event.target;
+            const prompt = document.getElementById('image-prompt').value;
+            
+            if (!prompt.trim()) {
+                alert('Please enter an image description');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+            
+            try {
+                log(`Testing image generation with prompt: ${prompt}`);
+                const result = await window.aiService.generateImage(prompt);
+                
+                const imageHtml = `
+                    <div>
+                        <img src="${result.imageUrl}" alt="${result.description}" class="image-result">
+                        <div style="margin-top: 1rem;">
+                            <strong>Description:</strong> ${result.description}
+                        </div>
+                    </div>
+                `;
+                
+                displayResult('image-result', imageHtml);
+                log('✅ Image generation successful');
+            } catch (error) {
+                log(`❌ Image generation failed: ${error.message}`, 'error');
+                displayResult('image-result', `Error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Generate Image';
+            }
+        }
+
+        async function testFileUpload() {
+            const btn = event.target;
+            const fileInput = document.getElementById('file-input');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select an image file');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Analyzing...';
+            
+            try {
+                log(`Testing file upload and analysis: ${file.name}`);
+                const result = await window.aiService.analyzeImage(file, "Describe this image and suggest how it relates to manufacturing");
+                
+                const fileHtml = `
+                    <div>
+                        <strong>File:</strong> ${file.name} (${(file.size / 1024).toFixed(1)} KB)<br>
+                        <strong>Analysis:</strong> ${result}
+                    </div>
+                `;
+                
+                displayResult('file-result', fileHtml);
+                log('✅ File analysis successful');
+            } catch (error) {
+                log(`❌ File analysis failed: ${error.message}`, 'error');
+                displayResult('file-result', `Error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Upload & Analyze Image';
+            }
+        }
+
+        async function testKeywordLoading() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Checking...';
+            
+            try {
+                log('Testing keyword loading...');
+                const isLoaded = window.aiService.isKeywordsLoaded();
+                const keywordCount = window.aiService.keywords.length;
+                
+                const result = {
+                    loaded: isLoaded,
+                    count: keywordCount,
+                    sample: window.aiService.keywords.slice(0, 10)
+                };
+                
+                displayResult('seo-result', result);
+                log(`✅ Keywords check complete: ${keywordCount} keywords loaded`);
+            } catch (error) {
+                log(`❌ Keywords check failed: ${error.message}`, 'error');
+                displayResult('seo-result', `Error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Check Keywords';
+            }
+        }
+
+        async function testSEOScoring() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Scoring...';
+            
+            try {
+                log('Testing SEO scoring...');
+                const testPost = {
+                    title: "How Smart Manufacturing Transforms Production Efficiency",
+                    meta_title: "Smart Manufacturing: Transform Production Efficiency",
+                    meta_description: "Discover how smart manufacturing technologies revolutionize production efficiency and reduce costs in modern factories.",
+                    content: {
+                        blocks: [
+                            {type: "paragraph", data: {text: "Smart manufacturing represents the future of industrial production, leveraging IoT, AI, and automation to optimize operations."}},
+                            {type: "paragraph", data: {text: "Enterprise resource planning systems integrate seamlessly with manufacturing automation to provide real-time insights."}}
+                        ]
+                    },
+                    keywords: "smart manufacturing, automation, IoT, AI, production efficiency",
+                    slug: "smart-manufacturing-production-efficiency",
+                    alt_text: "Smart factory with automated systems"
+                };
+                
+                const score = window.aiService.calculateSEOScore(testPost);
+                displayResult('seo-result', score);
+                log(`✅ SEO scoring complete: ${score.score}/100`);
+            } catch (error) {
+                log(`❌ SEO scoring failed: ${error.message}`, 'error');
+                displayResult('seo-result', `Error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Test SEO Scoring';
+            }
+        }
+
+        async function testKeywordAnalysis() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Analyzing...';
+            
+            try {
+                log('Testing keyword analysis...');
+                const testText = "Manufacturing automation and ERP systems are revolutionizing smart factories with IoT and AI technology.";
+                const analysis = window.aiService.countCSVKeywords(testText);
+                
+                displayResult('seo-result', analysis);
+                log(`✅ Keyword analysis complete: ${analysis.count} keywords found`);
+            } catch (error) {
+                log(`❌ Keyword analysis failed: ${error.message}`, 'error');
+                displayResult('seo-result', `Error: ${error.message}`, true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Analyze Keywords';
+            }
+        }
+
+        async function runFullTest() {
+            const btn = document.getElementById('full-test-btn');
+            btn.disabled = true;
+            btn.textContent = 'Running Tests...';
+            
+            log('🧪 Starting comprehensive AI test suite...');
+            updateProgress(0);
+            
+            try {
+                const testResults = await window.aiService.testAIService();
+                updateProgress(100);
+                
+                log('📊 Test Results Summary:');
+                log(`API Connection: ${testResults.apiConnection ? '✅' : '❌'}`);
+                log(`Text Generation: ${testResults.textGeneration ? '✅' : '❌'}`);
+                log(`Image Generation: ${testResults.imageGeneration ? '✅' : '❌'}`);
+                log(`Keyword Loading: ${testResults.keywordLoading ? '✅' : '❌'}`);
+                
+                if (testResults.errors.length > 0) {
+                    log('❌ Errors encountered:');
+                    testResults.errors.forEach(error => log(`  - ${error}`));
+                }
+                
+                log('🎉 Comprehensive test complete!');
+                
+            } catch (error) {
+                log(`❌ Test suite failed: ${error.message}`, 'error');
+                updateProgress(0);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Run All Tests';
+                setTimeout(() => updateProgress(0), 2000);
+            }
+        }
+
+        function clearAllResults() {
+            testLog = [];
+            document.getElementById('test-log').innerHTML = 'Log cleared...';
+            
+            ['text-result', 'image-result', 'file-result', 'seo-result'].forEach(id => {
+                const element = document.getElementById(id);
+                element.className = 'result-area empty';
+                element.innerHTML = 'Results cleared...';
+                element.style.color = '';
+                element.style.borderColor = '';
+            });
+            
+            log('🧹 All results cleared');
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', async function() {
+            log('🚀 AI Test Suite initialized');
+            
+            // Wait for AI service to load
+            let attempts = 0;
+            while (!window.aiService && attempts < 10) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                attempts++;
+            }
+            
+            if (window.aiService) {
+                log('✅ AI Service detected');
+                await checkServiceStatus();
+                
+                // Wait for keywords to load
+                setTimeout(checkServiceStatus, 2000);
+            } else {
+                log('❌ AI Service not found');
+            }
+        });
+    </script>
+</body>
+</html>

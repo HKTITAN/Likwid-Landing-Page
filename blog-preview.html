@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Preview - Likwid AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Notion-inspired color palette */
+            --notion-bg: #ffffff;
+            --notion-bg-secondary: #fafafa;
+            --notion-bg-tertiary: #f7f6f3;
+            --notion-text: #37352f;
+            --notion-text-light: #6f6f6f;
+            --notion-text-lighter: #9b9a97;
+            --notion-border: #e9e9e7;
+            --notion-border-light: #f1f1ef;
+            --notion-hover: #f7f6f3;
+            --notion-blue: #2383e2;
+            --notion-purple: #9065b0;
+            --notion-pink: #e255a1;
+            --notion-orange: #d9730d;
+            --notion-green: #448361;
+            --notion-yellow: #c99221;
+            --notion-red: #e03e3e;
+            
+            /* Likwid brand colors */
+            --primary-color: #7E44EE;
+            --secondary-color: #0059FC;
+            --accent-color: #FFD700;
+            
+            /* Enhanced shadows for depth */
+            --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-strong: 0 8px 32px rgba(0, 0, 0, 0.12);
+            
+            /* Smooth transitions */
+            --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-medium: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Custom Cursor Implementation */
+        * {
+            cursor: url('assets/arrowhead-rounded-outline.svg') 12 12, auto;
+        }
+
+        *:hover {
+            cursor: url('assets/arrowhead-rounded-outline.svg') 16 16, auto;
+        }
+
+        button, a, input, textarea, select, .clickable {
+            cursor: url('assets/arrowhead-rounded-outline.svg') 14 14, pointer !important;
+            transition: transform 0.2s ease;
+        }
+
+        button:hover, a:hover, .clickable:hover {
+            cursor: url('assets/arrowhead-rounded-outline.svg') 18 18, pointer !important;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+            background: var(--notion-bg);
+            color: var(--notion-text);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        /* Top Navigation */
+        .preview-nav {
+            background: var(--notion-bg-secondary);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--notion-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .preview-nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .preview-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-btn {
+            background: var(--notion-bg);
+            border: 1px solid var(--notion-border);
+            color: var(--notion-text);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
+            background: var(--notion-hover);
+        }
+
+        .nav-btn.primary {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .nav-btn.primary:hover {
+            background: #6d3bcc;
+        }
+
+        /* Preview Container */
+        .preview-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Article Header */
+        .article-header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .article-title {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: var(--notion-text);
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            color: var(--notion-text-light);
+            font-size: 0.875rem;
+        }
+
+        .article-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .article-excerpt {
+            font-size: 1.125rem;
+            color: var(--notion-text-light);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .category-badge {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .author-details h4 {
+            margin: 0;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--notion-text);
+        }
+
+        .author-details p {
+            margin: 0;
+            font-size: 0.75rem;
+            color: var(--notion-text-light);
+        }
+
+        /* Featured Image */
+        .featured-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-medium);
+        }
+
+        /* Article Content */
+        .article-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--notion-text);
+        }
+
+        .article-content h1,
+        .article-content h2,
+        .article-content h3,
+        .article-content h4,
+        .article-content h5,
+        .article-content h6 {
+            margin: 2rem 0 1rem 0;
+            font-weight: 700;
+            line-height: 1.3;
+            color: var(--notion-text);
+        }
+
+        .article-content h1 {
+            font-size: 2.5rem;
+        }
+
+        .article-content h2 {
+            font-size: 2rem;
+        }
+
+        .article-content h3 {
+            font-size: 1.5rem;
+        }
+
+        .article-content p {
+            margin: 1rem 0;
+        }
+
+        .article-content ul,
+        .article-content ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        .article-content li {
+            margin: 0.5rem 0;
+        }
+
+        .article-content blockquote {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 1.5rem;
+            margin: 2rem 0;
+            font-style: italic;
+            color: var(--notion-text-light);
+            background: var(--notion-bg-secondary);
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .article-content code {
+            background: var(--notion-bg-secondary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.875rem;
+        }
+
+        .article-content pre {
+            background: var(--notion-bg-secondary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+
+        .article-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* Footer */
+        .article-footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--notion-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .article-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: var(--notion-bg-secondary);
+            color: var(--notion-text-light);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            border: 1px solid var(--notion-border);
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .share-btn {
+            background: var(--notion-bg-secondary);
+            border: 1px solid var(--notion-border);
+            color: var(--notion-text-light);
+            padding: 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .share-btn:hover {
+            background: var(--notion-hover);
+            color: var(--notion-text);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .preview-container {
+                padding: 0 1rem;
+            }
+            
+            .article-title {
+                font-size: 2rem;
+            }
+            
+            .article-meta {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .article-footer {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 50vh;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Preview Navigation -->
+    <div class="preview-nav">
+        <div class="preview-nav-left">
+            <a href="#" onclick="history.back()" class="nav-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back to Editor
+            </a>
+            <span style="color: var(--notion-text-light); font-size: 0.875rem;">
+                Preview Mode
+            </span>
+        </div>
+        <div class="preview-nav-right">
+            <button onclick="openInNewTab()" class="nav-btn">
+                <i class="fas fa-external-link-alt"></i>
+                Open in New Tab
+            </button>
+            <a href="blog-dashboard.html" class="nav-btn primary">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Preview Container -->
+    <div class="preview-container">
+        <!-- Loading State -->
+        <div class="loading" id="loading-state">
+            <i class="fas fa-spinner"></i>
+            <p>Loading preview...</p>
+        </div>
+
+        <!-- Article Content (Hidden by default) -->
+        <article id="article-content" style="display: none;">
+            <!-- Article Header -->
+            <header class="article-header">
+                <div class="category-badge" id="article-category">Technology</div>
+                <h1 class="article-title" id="article-title">Loading...</h1>
+                <p class="article-excerpt" id="article-excerpt"></p>
+                
+                <div class="author-info">
+                    <div class="author-avatar" id="author-avatar">AD</div>
+                    <div class="author-details">
+                        <h4 id="author-name">Admin</h4>
+                        <p id="author-title">Content Creator</p>
+                    </div>
+                </div>
+                
+                <div class="article-meta">
+                    <div class="article-meta-item">
+                        <i class="fas fa-calendar"></i>
+                        <span id="publish-date">Today</span>
+                    </div>
+                    <div class="article-meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span id="read-time">5 min read</span>
+                    </div>
+                    <div class="article-meta-item">
+                        <i class="fas fa-eye"></i>
+                        <span id="view-count">0 views</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Featured Image -->
+            <img id="featured-image" class="featured-image" style="display: none;">
+
+            <!-- Article Content -->
+            <div class="article-content" id="article-body">
+                <!-- Content will be rendered here -->
+            </div>
+
+            <!-- Article Footer -->
+            <footer class="article-footer">
+                <div class="article-tags" id="article-tags">
+                    <!-- Tags will be rendered here -->
+                </div>
+                
+                <div class="share-buttons">
+                    <button class="share-btn" onclick="sharePost('twitter')" title="Share on Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </button>
+                    <button class="share-btn" onclick="sharePost('linkedin')" title="Share on LinkedIn">
+                        <i class="fab fa-linkedin"></i>
+                    </button>
+                    <button class="share-btn" onclick="sharePost('facebook')" title="Share on Facebook">
+                        <i class="fab fa-facebook"></i>
+                    </button>
+                    <button class="share-btn" onclick="copyLink()" title="Copy Link">
+                        <i class="fas fa-link"></i>
+                    </button>
+                </div>
+            </footer>
+        </article>
+    </div>
+
+    <script src="ai-service.js"></script>
+    
+    <script>
+        let currentPost = null;
+
+        // Initialize preview
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('id');
+            
+            if (postId) {
+                loadPostPreview(postId);
+            } else {
+                showError('No post ID provided');
+            }
+        });
+
+        // Load post for preview
+        function loadPostPreview(postId) {
+            try {
+                const posts = JSON.parse(localStorage.getItem('blog_posts') || '[]');
+                const post = posts.find(p => p.id == postId);
+                
+                if (!post) {
+                    showError('Post not found');
+                    return;
+                }
+                
+                currentPost = post;
+                renderPostPreview(post);
+                
+            } catch (error) {
+                console.error('Error loading post:', error);
+                showError('Failed to load post');
+            }
+        }
+
+        // Render post preview
+        function renderPostPreview(post) {
+            // Hide loading, show content
+            document.getElementById('loading-state').style.display = 'none';
+            document.getElementById('article-content').style.display = 'block';
+            
+            // Set basic info
+            document.getElementById('article-title').textContent = post.title || 'Untitled';
+            document.getElementById('article-category').textContent = post.category || 'Technology';
+            document.getElementById('article-excerpt').textContent = post.excerpt || '';
+            
+            // Set author info
+            document.getElementById('author-name').textContent = post.author_name || 'Admin';
+            document.getElementById('author-title').textContent = post.author_title || 'Content Creator';
+            document.getElementById('author-avatar').textContent = post.author_avatar || 'AD';
+            
+            // Set meta info
+            const publishDate = new Date(post.created || Date.now()).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('publish-date').textContent = publishDate;
+            
+            // Calculate read time
+            const wordCount = calculateWordCount(post.content || '');
+            const readTime = Math.max(1, Math.ceil(wordCount / 200));
+            document.getElementById('read-time').textContent = `${readTime} min read`;
+            
+            // Set featured image
+            if (post.featured_image) {
+                const featuredImg = document.getElementById('featured-image');
+                featuredImg.src = post.featured_image;
+                featuredImg.alt = post.alt_text || post.title || 'Featured image';
+                featuredImg.style.display = 'block';
+            }
+            
+            // Render content
+            renderContent(post.content || '');
+            
+            // Render tags
+            renderTags(post.keywords || '');
+        }
+
+        // Render content from EditorJS format
+        function renderContent(contentString) {
+            const contentContainer = document.getElementById('article-body');
+            
+            try {
+                const editorData = JSON.parse(contentString);
+                
+                if (editorData && editorData.blocks) {
+                    const html = editorData.blocks.map(block => {
+                        return renderBlock(block);
+                    }).join('');
+                    
+                    contentContainer.innerHTML = html;
+                } else {
+                    // Fallback for plain text
+                    contentContainer.innerHTML = `<p>${contentString}</p>`;
+                }
+            } catch (error) {
+                // Fallback for plain text
+                contentContainer.innerHTML = `<p>${contentString}</p>`;
+            }
+        }
+
+        // Render individual block
+        function renderBlock(block) {
+            switch (block.type) {
+                case 'paragraph':
+                    return `<p>${block.data.text || ''}</p>`;
+                    
+                case 'header':
+                    const level = block.data.level || 2;
+                    return `<h${level}>${block.data.text || ''}</h${level}>`;
+                    
+                case 'list':
+                    const listType = block.data.style === 'ordered' ? 'ol' : 'ul';
+                    const items = (block.data.items || []).map(item => `<li>${item}</li>`).join('');
+                    return `<${listType}>${items}</${listType}>`;
+                    
+                case 'quote':
+                    const quoteCaption = block.data.caption ? `<footer>— ${block.data.caption}</footer>` : '';
+                    return `<blockquote>${block.data.text || ''}${quoteCaption}</blockquote>`;
+                    
+                case 'code':
+                    return `<pre><code>${block.data.code || ''}</code></pre>`;
+                    
+                case 'image':
+                case 'simpleImage':
+                    const imageUrl = block.data.url || block.data.file?.url || '';
+                    const imageCaption = block.data.caption || '';
+                    return imageUrl ? 
+                        `<figure><img src="${imageUrl}" alt="${imageCaption}"><figcaption>${imageCaption}</figcaption></figure>` : '';
+                    
+                case 'table':
+                    if (!block.data.content) return '';
+                    const rows = block.data.content.map((row, index) => {
+                        const cells = row.map(cell => {
+                            const tag = index === 0 && block.data.withHeadings ? 'th' : 'td';
+                            return `<${tag}>${cell}</${tag}>`;
+                        }).join('');
+                        return `<tr>${cells}</tr>`;
+                    }).join('');
+                    return `<table>${rows}</table>`;
+                    
+                case 'delimiter':
+                    return '<hr>';
+                    
+                case 'raw':
+                    return block.data.html || '';
+                    
+                default:
+                    return `<p>${block.data.text || JSON.stringify(block.data)}</p>`;
+            }
+        }
+
+        // Render tags
+        function renderTags(keywords) {
+            const tagsContainer = document.getElementById('article-tags');
+            
+            if (!keywords) {
+                tagsContainer.innerHTML = '';
+                return;
+            }
+            
+            const tags = keywords.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+            
+            tagsContainer.innerHTML = tags.map(tag => 
+                `<span class="tag">${tag}</span>`
+            ).join('');
+        }
+
+        // Calculate word count
+        function calculateWordCount(contentString) {
+            try {
+                const editorData = JSON.parse(contentString);
+                if (editorData && editorData.blocks) {
+                    const text = editorData.blocks.map(block => {
+                        switch (block.type) {
+                            case 'paragraph':
+                            case 'header':
+                                return block.data.text || '';
+                            case 'list':
+                                return (block.data.items || []).join(' ');
+                            case 'quote':
+                                return block.data.text || '';
+                            default:
+                                return '';
+                        }
+                    }).join(' ');
+                    
+                    return text.split(/\s+/).filter(word => word.length > 0).length;
+                } else {
+                    return contentString.split(/\s+/).filter(word => word.length > 0).length;
+                }
+            } catch (error) {
+                return contentString.split(/\s+/).filter(word => word.length > 0).length;
+            }
+        }
+
+        // Share post
+        function sharePost(platform) {
+            if (!currentPost) return;
+            
+            const url = window.location.href;
+            const title = currentPost.title || 'Untitled';
+            const text = currentPost.excerpt || 'Check out this blog post';
+            
+            let shareUrl = '';
+            
+            switch (platform) {
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
+                    break;
+                case 'linkedin':
+                    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+                    break;
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+                    break;
+            }
+            
+            if (shareUrl) {
+                window.open(shareUrl, '_blank', 'width=600,height=400');
+            }
+        }
+
+        // Copy link
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                showNotification('Link copied to clipboard!');
+            }).catch(() => {
+                showNotification('Failed to copy link', 'error');
+            });
+        }
+
+        // Open in new tab
+        function openInNewTab() {
+            window.open(window.location.href, '_blank');
+        }
+
+        // Show error
+        function showError(message) {
+            document.getElementById('loading-state').innerHTML = `
+                <i class="fas fa-exclamation-triangle" style="color: var(--notion-red);"></i>
+                <p style="color: var(--notion-red);">${message}</p>
+                <a href="blog-dashboard.html" class="nav-btn primary">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+            `;
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : '#ef4444'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                font-weight: 500;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+            `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

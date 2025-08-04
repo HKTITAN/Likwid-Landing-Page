@@ -174,6 +174,20 @@ class BlogManager {
         // Simulate AI API call delay
         await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
 
+        // Handle field-specific AI operations for Notion-like interface
+        if (type.startsWith('analyze_')) {
+            return this.analyzeField(type.replace('analyze_', ''), context);
+        }
+        if (type.startsWith('generate_')) {
+            return this.generateFieldContent(type.replace('generate_', ''), context);
+        }
+        if (type.startsWith('expand_')) {
+            return this.expandFieldContent(type.replace('expand_', ''), context);
+        }
+        if (type.startsWith('optimize_')) {
+            return this.optimizeFieldContent(type.replace('optimize_', ''), context);
+        }
+
         const aiResponses = {
             seo: {
                 meta_title: `${context.title} | Manufacturing Intelligence Hub`,
@@ -193,6 +207,86 @@ class BlogManager {
         };
 
         return aiResponses[type] || [];
+    }
+
+    // Field-specific AI analysis for Notion-like database fields
+    analyzeField(fieldName, context) {
+        const allContent = context.allContent || {};
+        
+        switch(fieldName) {
+            case 'title':
+                return this.analyzeTitleField(context.title, allContent);
+            case 'excerpt':
+                return this.analyzeExcerptField(context.excerpt, allContent);
+            case 'meta_title':
+                return this.analyzeMetaTitleField(context.meta_title, allContent);
+            case 'meta_description':
+                return this.analyzeMetaDescriptionField(context.meta_description, allContent);
+            case 'keywords':
+                return this.analyzeKeywordsField(context.keywords, allContent);
+            case 'alt_text':
+                return this.analyzeAltTextField(context.alt_text, allContent);
+            default:
+                return [];
+        }
+    }
+
+    // Generate content for empty fields
+    generateFieldContent(fieldName, context) {
+        const allContent = context.allContent || {};
+        
+        switch(fieldName) {
+            case 'title':
+                return this.generateTitleSuggestions(allContent);
+            case 'excerpt':
+                return this.generateExcerptSuggestions(allContent);
+            case 'meta_title':
+                return this.generateMetaTitleSuggestions(allContent);
+            case 'meta_description':
+                return this.generateMetaDescriptionSuggestions(allContent);
+            case 'keywords':
+                return this.generateKeywordsSuggestions(allContent);
+            case 'alt_text':
+                return this.generateAltTextSuggestions(allContent);
+            default:
+                return [];
+        }
+    }
+
+    // Expand existing field content
+    expandFieldContent(fieldName, context) {
+        const currentValue = context[fieldName];
+        const allContent = context.allContent || {};
+        
+        switch(fieldName) {
+            case 'excerpt':
+                return this.expandExcerpt(currentValue, allContent);
+            case 'meta_description':
+                return this.expandMetaDescription(currentValue, allContent);
+            case 'keywords':
+                return this.expandKeywords(currentValue, allContent);
+            default:
+                return [];
+        }
+    }
+
+    // Optimize existing field content
+    optimizeFieldContent(fieldName, context) {
+        const currentValue = context[fieldName];
+        const allContent = context.allContent || {};
+        
+        switch(fieldName) {
+            case 'title':
+                return this.optimizeTitle(currentValue, allContent);
+            case 'meta_title':
+                return this.optimizeMetaTitle(currentValue, allContent);
+            case 'meta_description':
+                return this.optimizeMetaDescription(currentValue, allContent);
+            case 'keywords':
+                return this.optimizeKeywords(currentValue, allContent);
+            default:
+                return [];
+        }
     }
 
     generateSEOSuggestions(context) {
@@ -396,6 +490,362 @@ class BlogManager {
             localStorage.removeItem(key);
         });
         this.initializeData();
+    }
+
+    // Field-specific analysis methods for Notion-like interface
+
+    analyzeTitleField(title, allContent) {
+        const suggestions = [];
+        if (!title || title.trim() === '') {
+            suggestions.push({
+                type: 'missing',
+                message: 'Title is required for SEO and user engagement',
+                action: 'generate_title',
+                priority: 'high'
+            });
+        } else {
+            if (title.length < 30) {
+                suggestions.push({
+                    type: 'length',
+                    message: 'Title is too short. Optimal length is 50-60 characters',
+                    action: 'expand_title',
+                    priority: 'medium'
+                });
+            }
+            if (title.length > 60) {
+                suggestions.push({
+                    type: 'length',
+                    message: 'Title is too long. May be truncated in search results',
+                    action: 'optimize_title',
+                    priority: 'medium'
+                });
+            }
+            if (!/\?|!|:/.test(title)) {
+                suggestions.push({
+                    type: 'engagement',
+                    message: 'Consider adding punctuation for better engagement',
+                    action: 'optimize_title',
+                    priority: 'low'
+                });
+            }
+        }
+        return suggestions;
+    }
+
+    analyzeExcerptField(excerpt, allContent) {
+        const suggestions = [];
+        if (!excerpt || excerpt.trim() === '') {
+            suggestions.push({
+                type: 'missing',
+                message: 'Excerpt helps with social sharing and SEO snippets',
+                action: 'generate_excerpt',
+                priority: 'medium'
+            });
+        } else {
+            if (excerpt.length < 100) {
+                suggestions.push({
+                    type: 'length',
+                    message: 'Excerpt could be more descriptive (aim for 120-150 characters)',
+                    action: 'expand_excerpt',
+                    priority: 'low'
+                });
+            }
+            if (excerpt.length > 160) {
+                suggestions.push({
+                    type: 'length',
+                    message: 'Excerpt is too long for meta descriptions',
+                    action: 'optimize_excerpt',
+                    priority: 'medium'
+                });
+            }
+        }
+        return suggestions;
+    }
+
+    analyzeMetaTitleField(metaTitle, allContent) {
+        const suggestions = [];
+        if (!metaTitle || metaTitle.trim() === '') {
+            suggestions.push({
+                type: 'missing',
+                message: 'Meta title is crucial for search engine rankings',
+                action: 'generate_meta_title',
+                priority: 'high'
+            });
+        } else {
+            if (metaTitle.length > 60) {
+                suggestions.push({
+                    type: 'length',
+                    message: 'Meta title may be truncated in search results',
+                    action: 'optimize_meta_title',
+                    priority: 'high'
+                });
+            }
+            if (!metaTitle.includes('|') && !metaTitle.includes('-')) {
+                suggestions.push({
+                    type: 'branding',
+                    message: 'Consider adding brand name to meta title',
+                    action: 'optimize_meta_title',
+                    priority: 'low'
+                });
+            }
+        }
+        return suggestions;
+    }
+
+    analyzeMetaDescriptionField(metaDescription, allContent) {
+        const suggestions = [];
+        if (!metaDescription || metaDescription.trim() === '') {
+            suggestions.push({
+                type: 'missing',
+                message: 'Meta description improves click-through rates from search',
+                action: 'generate_meta_description',
+                priority: 'high'
+            });
+        } else {
+            if (metaDescription.length < 120) {
+                suggestions.push({
+                    type: 'length',
+                    message: 'Meta description could be more detailed (aim for 150-160 characters)',
+                    action: 'expand_meta_description',
+                    priority: 'medium'
+                });
+            }
+            if (metaDescription.length > 160) {
+                suggestions.push({
+                    type: 'length',
+                    message: 'Meta description is too long and will be truncated',
+                    action: 'optimize_meta_description',
+                    priority: 'high'
+                });
+            }
+        }
+        return suggestions;
+    }
+
+    analyzeKeywordsField(keywords, allContent) {
+        const suggestions = [];
+        if (!keywords || keywords.trim() === '') {
+            suggestions.push({
+                type: 'missing',
+                message: 'Keywords help with content organization and SEO',
+                action: 'generate_keywords',
+                priority: 'medium'
+            });
+        } else {
+            const keywordArray = keywords.split(',').map(k => k.trim()).filter(k => k);
+            if (keywordArray.length < 3) {
+                suggestions.push({
+                    type: 'count',
+                    message: 'Consider adding more keywords (aim for 5-8 relevant terms)',
+                    action: 'expand_keywords',
+                    priority: 'low'
+                });
+            }
+            if (keywordArray.length > 10) {
+                suggestions.push({
+                    type: 'count',
+                    message: 'Too many keywords may dilute focus',
+                    action: 'optimize_keywords',
+                    priority: 'medium'
+                });
+            }
+        }
+        return suggestions;
+    }
+
+    analyzeAltTextField(altText, allContent) {
+        const suggestions = [];
+        if (!altText || altText.trim() === '') {
+            suggestions.push({
+                type: 'missing',
+                message: 'Alt text is essential for accessibility and SEO',
+                action: 'generate_alt_text',
+                priority: 'high'
+            });
+        } else {
+            if (altText.length < 20) {
+                suggestions.push({
+                    type: 'descriptive',
+                    message: 'Alt text could be more descriptive',
+                    action: 'expand_alt_text',
+                    priority: 'low'
+                });
+            }
+            if (altText.length > 125) {
+                suggestions.push({
+                    type: 'length',
+                    message: 'Alt text is too long for screen readers',
+                    action: 'optimize_alt_text',
+                    priority: 'medium'
+                });
+            }
+        }
+        return suggestions;
+    }
+
+    // Content generation methods
+    generateTitleSuggestions(allContent) {
+        const topics = [
+            'Manufacturing Intelligence in 2024',
+            'AI-Powered Production Optimization',
+            'Smart Factory Technologies',
+            'Industry 4.0 Implementation Guide',
+            'Data-Driven Manufacturing Excellence'
+        ];
+        return topics.map(title => ({
+            type: 'suggestion',
+            content: title,
+            confidence: 0.8 + Math.random() * 0.2
+        }));
+    }
+
+    generateExcerptSuggestions(allContent) {
+        const excerpts = [
+            'Discover how modern manufacturing intelligence transforms production efficiency and quality control through advanced analytics and automation.',
+            'Learn practical strategies for implementing AI-powered solutions that drive measurable improvements in manufacturing operations.',
+            'Explore cutting-edge technologies that are reshaping the manufacturing landscape and creating competitive advantages.'
+        ];
+        return excerpts.map(excerpt => ({
+            type: 'suggestion',
+            content: excerpt,
+            confidence: 0.7 + Math.random() * 0.3
+        }));
+    }
+
+    generateMetaTitleSuggestions(allContent) {
+        const title = allContent.title || 'Manufacturing Intelligence';
+        return [{
+            type: 'suggestion',
+            content: `${title} | Likwid Manufacturing Hub`,
+            confidence: 0.9
+        }, {
+            type: 'suggestion',
+            content: `${title} - Expert Manufacturing Insights`,
+            confidence: 0.8
+        }];
+    }
+
+    generateMetaDescriptionSuggestions(allContent) {
+        const excerpt = allContent.excerpt || 'Expert insights on manufacturing intelligence, AI automation, and industry best practices.';
+        return [{
+            type: 'suggestion',
+            content: `${excerpt.substring(0, 140)}... Learn from industry experts at Likwid.`,
+            confidence: 0.8
+        }];
+    }
+
+    generateKeywordsSuggestions(allContent) {
+        const keywords = [
+            'manufacturing intelligence, AI automation, industry 4.0, smart factory, production optimization',
+            'manufacturing analytics, process improvement, digital transformation, industrial IoT, quality control',
+            'lean manufacturing, operational efficiency, data analytics, predictive maintenance, supply chain'
+        ];
+        return keywords.map(keyword => ({
+            type: 'suggestion',
+            content: keyword,
+            confidence: 0.7 + Math.random() * 0.3
+        }));
+    }
+
+    generateAltTextSuggestions(allContent) {
+        const title = allContent.title || 'manufacturing content';
+        return [{
+            type: 'suggestion',
+            content: `Illustration showing ${title.toLowerCase()} concepts and best practices`,
+            confidence: 0.8
+        }, {
+            type: 'suggestion',
+            content: `Diagram depicting modern manufacturing intelligence and automation technologies`,
+            confidence: 0.7
+        }];
+    }
+
+    // Content expansion methods
+    expandExcerpt(currentExcerpt, allContent) {
+        return [{
+            type: 'expansion',
+            content: `${currentExcerpt} This comprehensive guide explores practical implementation strategies, real-world case studies, and expert insights to help you succeed.`,
+            confidence: 0.8
+        }];
+    }
+
+    expandMetaDescription(currentMeta, allContent) {
+        return [{
+            type: 'expansion',
+            content: `${currentMeta} Get actionable insights from industry experts.`,
+            confidence: 0.8
+        }];
+    }
+
+    expandKeywords(currentKeywords, allContent) {
+        const additionalKeywords = ['digital transformation', 'operational excellence', 'process automation', 'industrial analytics'];
+        return [{
+            type: 'expansion',
+            content: `${currentKeywords}, ${additionalKeywords.join(', ')}`,
+            confidence: 0.7
+        }];
+    }
+
+    // Content optimization methods
+    optimizeTitle(currentTitle, allContent) {
+        return [{
+            type: 'optimization',
+            content: currentTitle.length > 60 ? currentTitle.substring(0, 57) + '...' : `${currentTitle} - Complete Guide`,
+            confidence: 0.8,
+            reason: currentTitle.length > 60 ? 'Shortened for search results' : 'Enhanced for engagement'
+        }];
+    }
+
+    optimizeMetaTitle(currentMetaTitle, allContent) {
+        if (currentMetaTitle.length > 60) {
+            return [{
+                type: 'optimization',
+                content: currentMetaTitle.substring(0, 57) + '...',
+                confidence: 0.9,
+                reason: 'Truncated to optimal length for search results'
+            }];
+        }
+        return [{
+            type: 'optimization',
+            content: `${currentMetaTitle} | Likwid`,
+            confidence: 0.8,
+            reason: 'Added branding for better recognition'
+        }];
+    }
+
+    optimizeMetaDescription(currentMeta, allContent) {
+        if (currentMeta.length > 160) {
+            return [{
+                type: 'optimization',
+                content: currentMeta.substring(0, 157) + '...',
+                confidence: 0.9,
+                reason: 'Shortened to prevent truncation in search results'
+            }];
+        }
+        return [{
+            type: 'optimization',
+            content: `${currentMeta} Learn more at Likwid.`,
+            confidence: 0.7,
+            reason: 'Added call-to-action for better click-through rates'
+        }];
+    }
+
+    optimizeKeywords(currentKeywords, allContent) {
+        const keywords = currentKeywords.split(',').map(k => k.trim()).filter(k => k);
+        if (keywords.length > 8) {
+            return [{
+                type: 'optimization',
+                content: keywords.slice(0, 8).join(', '),
+                confidence: 0.8,
+                reason: 'Reduced to focus on most relevant keywords'
+            }];
+        }
+        return [{
+            type: 'optimization',
+            content: keywords.join(', '),
+            confidence: 0.7,
+            reason: 'Keywords are well-optimized'
+        }];
     }
 }
 
