@@ -2,7 +2,7 @@ const express = require('express');
 const fs = require('fs').promises;
 const path = require('path');
 const cors = require('cors');
-const DatabaseService = require('./database');
+const DatabaseService = require('./blog/database');
 
 const app = express();
 const PORT = 3001;
@@ -185,7 +185,7 @@ app.post('/api/ai/generate-cover-image', async (req, res) => {
         }
 
         // Import ai-service dynamically (assuming it's a module)
-        const aiService = await import('./ai-service.js');
+        const aiService = await import('./blog/ai-service.js');
         const imageUrl = await aiService.generateContentImage(title);
         
         res.json({ imageUrl });
@@ -204,7 +204,7 @@ app.post('/api/ai/regenerate-cover-image', async (req, res) => {
         }
 
         // Import ai-service dynamically
-        const aiService = await import('./ai-service.js');
+        const aiService = await import('./blog/ai-service.js');
         const imageUrl = await aiService.regenerateCoverImage(title);
         
         res.json({ imageUrl });

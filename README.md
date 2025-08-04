@@ -1,239 +1,152 @@
-# Likwid Blog System
+# Likwid Landing Page
 
-A comprehensive blog management system with AI-powered content generation, backend storage, and modern editing interface.
+A modern landing page with an integrated blog system for Likwid AI.
+
+## Project Structure
+
+```
+Likwid Landing Page/
+├── assets/                 # Static assets (images, icons)
+├── blog/                   # Blog system (isolated)
+│   ├── ai-service.js       # AI content generation service
+│   ├── blog-dashboard.html # Blog management dashboard
+│   ├── blog-editor.html    # Rich blog post editor
+│   ├── blog-manager.js     # Blog management utilities
+│   ├── blog-post.html      # Individual post template
+│   ├── blog-posts.html     # Blog listing page
+│   ├── blog-preview.html   # Post preview page
+│   ├── blog.html           # Blog home page
+│   ├── blog.db            # SQLite database
+│   ├── database.js        # Database service
+│   ├── keywords.csv       # AI keywords database
+│   ├── migrate-posts.js   # Migration utility
+│   └── post-storage.js    # Post storage service
+├── index.html             # Main landing page
+├── onboarding.html        # User onboarding page
+├── script.js              # Main site JavaScript
+├── style.css              # Main site styles
+├── server.js              # Express backend server
+└── package.json           # Node.js dependencies
+```
 
 ## Features
 
-- ✅ **Backend Storage**: Posts stored in backend with full CRUD operations
-- ✅ **Modern Editor**: Rich text editor with blocks, lists, headers, and more
-- ✅ **AI Content Generation**: Complete blog posts with SEO optimization
-- ✅ **Post Management**: Create, edit, delete, and duplicate posts
-- ✅ **Image Generation**: AI-powered featured image creation
-- ✅ **SEO Optimization**: Meta titles, descriptions, keywords, and analytics
-- ✅ **Bulk Operations**: Select and delete multiple posts
-- ✅ **Search & Filters**: Find posts by title, category, or status
-- ✅ **Auto-save**: Automatic saving every 30 seconds
-- ✅ **Dashboard**: Overview of all posts with statistics
+### Landing Page
+- Modern, responsive design
+- Company information and services
+- Contact forms and call-to-actions
 
-## Quick Start
+### Blog System
+- **Rich Text Editor**: EditorJS-powered blog editor
+- **Database Storage**: SQLite database for persistence
+- **AI Content Generation**: Automated blog post creation
+- **Cover Images**: Auto-generated 1920x1080 cover images
+- **Full CRUD**: Create, read, update, delete operations
+- **Search**: Full-text search across all posts
+- **Categories**: Organized content categorization
 
-### 1. Setup (Windows)
+## Getting Started
+
+### Prerequisites
+- Node.js (v14 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
 ```bash
-# Run the setup script
-setup.bat
+git clone <repository-url>
+cd "Likwid Landing Page"
 ```
 
-### 2. Manual Setup
+2. Install dependencies:
 ```bash
-# Install dependencies
 npm install
+```
 
-# Start the backend server
+3. Start the server:
+```bash
 npm start
-```
-
-### 3. Open the Blog System
-- Backend server: http://localhost:3001
-- Posts dashboard: Open `blog-posts.html` in your browser
-- Create new post: Open `blog-editor.html` in your browser
-
-## File Structure
-
-```
-├── server.js              # Backend Express server
-├── package.json           # Node.js dependencies
-├── post-storage.js        # Frontend storage service
-├── ai-service.js          # AI content generation
-├── blog-editor.html       # Rich text blog editor
-├── blog-posts.html        # Posts dashboard
-├── posts/                 # Backend storage directory (auto-created)
-└── README.md              # This file
-```
-
-## API Endpoints
-
-The backend server provides these REST API endpoints:
-
-### Posts
-- `GET /api/posts` - List all posts
-- `GET /api/posts/:id` - Get single post
-- `POST /api/posts` - Create new post
-- `PUT /api/posts/:id` - Update existing post
-- `DELETE /api/posts/:id` - Delete post
-
-### Search & Bulk Operations
-- `GET /api/posts/search?q=query&category=tech&status=draft` - Search posts
-- `POST /api/posts/bulk-delete` - Delete multiple posts
-
-### System
-- `GET /api/health` - Backend health check
-
-## Using the System
-
-### Creating a New Post
-
-1. **Open the Editor**
-   ```
-   Open blog-editor.html in your browser
-   ```
-
-2. **AI Content Generation**
-   - Enter a topic in the AI generation section
-   - Click "Generate Complete Content"
-   - AI will create title, content, keywords, SEO, and featured image
-
-3. **Manual Creation**
-   - Fill in title, content, and metadata manually
-   - Use the rich text editor for formatting
-   - Add featured images and SEO data
-
-4. **Save & Publish**
-   - Save as draft or publish immediately
-   - Auto-save runs every 30 seconds
-
-### Managing Posts
-
-1. **View All Posts**
-   ```
-   Open blog-posts.html in your browser
-   ```
-
-2. **Search & Filter**
-   - Search by title, excerpt, or content
-   - Filter by category or status
-   - View statistics and analytics
-
-3. **Bulk Operations**
-   - Select multiple posts
-   - Delete in bulk
-   - Export/import functionality
-
-### Editing Existing Posts
-
-1. **From Posts Dashboard**
-   - Click "Edit" on any post card
-   - Opens editor with all post data loaded
-
-2. **Direct URL**
-   ```
-   blog-editor.html?edit=POST_ID
-   ```
-
-3. **Auto-save**
-   - Changes saved automatically
-   - Manual save with Ctrl+S
-
-## AI Features
-
-### Complete Content Generation
-Enter a simple topic and AI will generate:
-- Refined topic and content strategy
-- Strategic keywords from CSV database
-- Complete blog post with proper structure
-- SEO metadata (title, description, slug)
-- Featured image with alt text
-- Content improvement suggestions
-
-### Progressive Prompting
-The AI uses a 6-step process:
-1. **Prompt Refinement** - Enhances user input
-2. **Strategic Keywords** - Generates targeted keywords
-3. **Enhanced Blog Post** - Creates comprehensive content
-4. **SEO Optimization** - Optimizes for search engines
-5. **Image Generation** - Creates relevant featured image
-6. **Content Suggestions** - Provides improvement recommendations
-
-## Storage
-
-### Backend Storage
-- Posts stored as JSON files in `posts/` directory
-- Automatic ID generation and timestamps
-- Full post history and metadata
-- Safe concurrent access
-
-### Data Format
-```json
-{
-  "id": "post_1234567890_abc123",
-  "title": "Post Title",
-  "content": {...},
-  "status": "draft|published|archived",
-  "category": "Technology",
-  "excerpt": "Brief summary...",
-  "featuredImage": "image_url",
-  "author": "Author Name",
-  "keywords": "keyword1, keyword2",
-  "meta_title": "SEO Title",
-  "meta_description": "SEO Description",
-  "slug": "url-friendly-slug",
-  "createdAt": "2025-01-01T00:00:00.000Z",
-  "updatedAt": "2025-01-01T00:00:00.000Z",
-  "readTime": 5
-}
-```
-
-## Troubleshooting
-
-### Backend Not Starting
-```bash
-# Check Node.js version (requires 14+)
-node --version
-
-# Install dependencies
-npm install
-
-# Start server manually
+# or
 node server.js
 ```
 
-### Posts Not Loading
-1. Ensure backend server is running on port 3001
-2. Check browser console for errors
-3. Verify `post-storage.js` is loaded
+4. Open your browser:
+- Landing Page: http://localhost:3001/
+- Blog Dashboard: http://localhost:3001/blog/blog-dashboard.html
+- Blog Editor: http://localhost:3001/blog/blog-editor.html
 
-### AI Features Not Working
-1. Check Gemini API key in `ai-service.js`
-2. Verify internet connection
-3. Check browser console for API errors
+## Blog System Usage
 
-### Port Already in Use
-```bash
-# Kill process on port 3001
-netstat -ano | findstr :3001
-taskkill /PID <PID_NUMBER> /F
+### Dashboard Management
+- Navigate to `/blog/blog-dashboard.html`
+- View all posts, create new ones, edit existing posts
+- Search and filter posts by status or category
 
-# Or change port in server.js
-```
+### Creating Posts
+- Click "New Post" from dashboard
+- Use the rich text editor with live preview
+- Generate AI-powered cover images
+- Auto-save functionality keeps your work safe
+
+### Editing Posts
+- Access via dashboard or direct URL: `/blog/blog-editor.html?id=X`
+- Full editing capabilities with real-time saving
+- Cover image management (generate, upload, remove)
+
+### Previewing Posts
+- Preview URL: `/blog/blog-preview.html?id=X`
+- Full post rendering with cover images
+- Mobile-responsive design
+
+## API Endpoints
+
+### Blog API
+- `GET /api/posts` - Get all posts
+- `GET /api/posts/:id` - Get specific post
+- `POST /api/posts` - Create new post
+- `PUT /api/posts/:id` - Update post
+- `DELETE /api/posts/:id` - Delete post
+- `GET /api/posts/search?q=term` - Search posts
+
+### AI API
+- `POST /api/ai/generate-cover-image` - Generate cover image
+- `POST /api/ai/regenerate-cover-image` - Regenerate cover image
+
+## Database
+
+The blog system uses SQLite for data persistence:
+- Database file: `blog/blog.db`
+- Automatic table creation on first run
+- Full backup capability (single file)
 
 ## Development
 
-### Adding New Features
-1. Backend API: Modify `server.js`
-2. Frontend Storage: Update `post-storage.js`
-3. UI: Modify `blog-editor.html` or `blog-posts.html`
-4. AI: Enhance `ai-service.js`
+### File Organization
+- All blog-related files are contained in the `/blog` folder
+- Landing page files remain in the root directory
+- Clean separation of concerns
 
-### Testing
-- Test backend: `curl http://localhost:3001/api/health`
-- Test storage: Use browser developer tools
-- Test AI: Use test pages in project
+### Adding Features
+- Blog features: Modify files in `/blog` folder
+- Landing page features: Modify root files
+- Server functionality: Update `server.js`
+
+## Deployment
+
+1. Ensure all dependencies are installed
+2. Set environment variables if needed
+3. Run `node server.js` on your server
+4. Configure reverse proxy (nginx/Apache) if needed
 
 ## Contributing
 
 1. Fork the repository
-2. Create feature branch: `git checkout -b feature-name`
-3. Commit changes: `git commit -am 'Add feature'`
-4. Push to branch: `git push origin feature-name`
-5. Submit pull request
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
 ## License
 
-MIT License - see LICENSE file for details.
-
-## Support
-
-For issues and questions:
-1. Check this README
-2. Review browser console errors
-3. Check server logs
-4. Create issue in repository
+MIT License - See LICENSE file for details
