@@ -1334,219 +1334,28 @@
                 </div>
             </div>
 
+            <!-- Loading State -->
+            <div id="blog-loading" class="loading-state" style="text-align: center; padding: 3rem; color: #6b7280;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                <p>Loading latest insights...</p>
+            </div>
+
             <!-- Featured Article -->
-            <div class="featured-article">
-                <div class="article-visual">
-                    <div class="article-image">
-                        <div class="image-overlay">
-                            <div class="overlay-badge">Featured</div>
-                            <div class="read-time">
-                                <i class="fas fa-clock"></i>
-                                <span>8 min read</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="article-content">
-                    <div class="article-meta">
-                        <span class="category-tag manufacturing">Manufacturing Strategy</span>
-                        <span class="publish-date">December 15, 2024</span>
-                    </div>
-                    <h2>The Future of Manufacturing: How AI is Reshaping Industry 4.0</h2>
-                    <p>Explore how artificial intelligence is transforming manufacturing processes, from predictive maintenance to intelligent supply chain optimization. Learn the key strategies that leading manufacturers are using to stay competitive.</p>
-                    <div class="article-footer">
-                        <div class="author-info">
-                            <div class="author-avatar">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div class="author-details">
-                                <span class="author-name">Sidharth Sharma</span>
-                                <span class="author-title">Chief Technology Officer</span>
-                            </div>
-                        </div>
-                        <a href="#" class="featured-cta">
-                            <span>Read Full Article</span>
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
+            <div id="featured-article" class="featured-article" style="display: none;">
+                <!-- Featured article will be loaded dynamically -->
             </div>
 
             <!-- Articles Grid -->
-            <div class="articles-grid">
-                <article class="insight-card" data-category="manufacturing">
-                    <div class="card-image">
-                        <div class="image-placeholder">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <div class="card-overlay">
-                            <span class="read-time">5 min</span>
-                        </div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-meta">
-                            <span class="category-tag manufacturing">Manufacturing</span>
-                            <time>Dec 10, 2024</time>
-                        </div>
-                        <h3>Understanding Made-to-Stock Manufacturing: ERP's Role in Demand Forecasting</h3>
-                        <p>Deep dive into made-to-stock strategies and how modern ERP systems enhance demand forecasting accuracy.</p>
-                        <div class="engagement-stats">
-                            <div class="stat">
-                                <i class="fas fa-eye"></i>
-                                <span>2.4k views</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-heart"></i>
-                                <span>89 likes</span>
-                            </div>
-                        </div>
-                    </div>
-                </article>
+            <div id="articles-grid" class="articles-grid">
+                <!-- Articles will be loaded dynamically -->
+            </div>
 
-                <article class="insight-card" data-category="ai">
-                    <div class="card-image">
-                        <div class="image-placeholder">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <div class="card-overlay">
-                            <span class="read-time">7 min</span>
-                        </div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-meta">
-                            <span class="category-tag ai">AI Technology</span>
-                            <time>Dec 5, 2024</time>
-                        </div>
-                        <h3>How Likwid.AI Helps Manufacturers Achieve Just-in-Time Management</h3>
-                        <p>Discover the AI-powered features that enable precise inventory management and optimal production timing.</p>
-                        <div class="engagement-stats">
-                            <div class="stat">
-                                <i class="fas fa-eye"></i>
-                                <span>1.8k views</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-heart"></i>
-                                <span>67 likes</span>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="insight-card" data-category="trends">
-                    <div class="card-image">
-                        <div class="image-placeholder">
-                            <i class="fas fa-cogs"></i>
-                        </div>
-                        <div class="card-overlay">
-                            <span class="read-time">6 min</span>
-                        </div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-meta">
-                            <span class="category-tag trends">Industry Trends</span>
-                            <time>Nov 28, 2024</time>
-                        </div>
-                        <h3>Just-in-Time Management for Manufacturing: A Complete Guide</h3>
-                        <p>Everything you need to know about implementing JIT manufacturing principles in modern production environments.</p>
-                        <div class="engagement-stats">
-                            <div class="stat">
-                                <i class="fas fa-eye"></i>
-                                <span>3.1k views</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-heart"></i>
-                                <span>124 likes</span>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="insight-card" data-category="manufacturing">
-                    <div class="card-image">
-                        <div class="image-placeholder">
-                            <i class="fas fa-industry"></i>
-                        </div>
-                        <div class="card-overlay">
-                            <span class="read-time">4 min</span>
-                        </div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-meta">
-                            <span class="category-tag manufacturing">Manufacturing</span>
-                            <time>Nov 20, 2024</time>
-                        </div>
-                        <h3>Digital Transformation in SME Manufacturing: A Practical Roadmap</h3>
-                        <p>Step-by-step guide for small and medium enterprises to successfully implement digital transformation.</p>
-                        <div class="engagement-stats">
-                            <div class="stat">
-                                <i class="fas fa-eye"></i>
-                                <span>1.5k views</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-heart"></i>
-                                <span>45 likes</span>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="insight-card" data-category="ai">
-                    <div class="card-image">
-                        <div class="image-placeholder">
-                            <i class="fas fa-brain"></i>
-                        </div>
-                        <div class="card-overlay">
-                            <span class="read-time">9 min</span>
-                        </div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-meta">
-                            <span class="category-tag ai">AI Technology</span>
-                            <time>Nov 15, 2024</time>
-                        </div>
-                        <h3>Predictive Analytics in Manufacturing: Beyond Forecasting</h3>
-                        <p>How advanced AI models are revolutionizing production planning and resource optimization.</p>
-                        <div class="engagement-stats">
-                            <div class="stat">
-                                <i class="fas fa-eye"></i>
-                                <span>2.7k views</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-heart"></i>
-                                <span>98 likes</span>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="insight-card" data-category="trends">
-                    <div class="card-image">
-                        <div class="image-placeholder">
-                            <i class="fas fa-globe"></i>
-                        </div>
-                        <div class="card-overlay">
-                            <span class="read-time">6 min</span>
-                        </div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-meta">
-                            <span class="category-tag trends">Industry Trends</span>
-                            <time>Nov 8, 2024</time>
-                        </div>
-                        <h3>Sustainable Manufacturing: The Green Revolution in Industry</h3>
-                        <p>Exploring eco-friendly manufacturing practices and their impact on business sustainability and profitability.</p>
-                        <div class="engagement-stats">
-                            <div class="stat">
-                                <i class="fas fa-eye"></i>
-                                <span>1.9k views</span>
-                            </div>
-                            <div class="stat">
-                                <i class="fas fa-heart"></i>
-                                <span>73 likes</span>
-                            </div>
-                        </div>
-                    </div>
-                </article>
+            <!-- View All Blog Posts -->
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="blog.html" class="btn" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: var(--primary); color: white; text-decoration: none; border-radius: 10px; font-weight: 600; transition: all 0.3s ease;">
+                    <span>View All Blog Posts</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
 
             <!-- Newsletter CTA -->
@@ -1645,6 +1454,199 @@
         </div>
     </footer>
     <script src="script.js"></script>
+    
+    <!-- Dynamic Blog Loading Script -->
+    <script>
+        // Blog functionality for the homepage
+        class HomepageBlog {
+            constructor() {
+                this.apiBase = 'blog-backend.php';
+                this.currentFilter = 'all';
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.loadBlogContent();
+            }
+
+            bindEvents() {
+                // Filter buttons
+                document.querySelectorAll('.nav-filter').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const filter = e.target.dataset.filter;
+                        this.setActiveFilter(filter);
+                        this.filterPosts(filter);
+                    });
+                });
+            }
+
+            setActiveFilter(filter) {
+                document.querySelectorAll('.nav-filter').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+                this.currentFilter = filter;
+            }
+
+            async loadBlogContent() {
+                try {
+                    // Load featured post and regular posts in parallel
+                    const [featuredResponse, postsResponse] = await Promise.all([
+                        fetch(`${this.apiBase}?action=featured`),
+                        fetch(`${this.apiBase}?action=posts&limit=6`)
+                    ]);
+
+                    const featuredData = await featuredResponse.json();
+                    const postsData = await postsResponse.json();
+
+                    // Hide loading
+                    document.getElementById('blog-loading').style.display = 'none';
+
+                    // Render featured post
+                    if (featuredData.post) {
+                        this.renderFeaturedPost(featuredData.post);
+                    }
+
+                    // Render articles grid
+                    if (postsData.posts && postsData.posts.length > 0) {
+                        this.allPosts = postsData.posts.filter(post => !post.is_featured);
+                        this.renderArticles();
+                    }
+                } catch (error) {
+                    console.error('Error loading blog content:', error);
+                    document.getElementById('blog-loading').innerHTML = '<p>Unable to load blog content at this time.</p>';
+                }
+            }
+
+            renderFeaturedPost(post) {
+                const container = document.getElementById('featured-article');
+                container.style.display = 'block';
+                
+                const publishDate = new Date(post.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                container.innerHTML = `
+                    <div class="article-visual">
+                        <div class="article-image">
+                            <div class="image-overlay">
+                                <div class="overlay-badge">Featured</div>
+                                <div class="read-time">
+                                    <i class="fas fa-clock"></i>
+                                    <span>${post.read_time} min read</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="article-content">
+                        <div class="article-meta">
+                            <span class="category-tag ${post.category}">${post.category.charAt(0).toUpperCase() + post.category.slice(1)}</span>
+                            <span class="publish-date">${publishDate}</span>
+                        </div>
+                        <h2>${post.title}</h2>
+                        <p>${post.excerpt}</p>
+                        <div class="article-footer">
+                            <div class="author-info">
+                                <div class="author-avatar">
+                                    ${post.author_avatar}
+                                </div>
+                                <div class="author-details">
+                                    <span class="author-name">${post.author_name}</span>
+                                    <span class="author-title">${post.author_title}</span>
+                                </div>
+                            </div>
+                            <a href="blog-post.html?slug=${post.slug}" class="featured-cta">
+                                <span>Read Full Article</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+
+                // Make the entire featured article clickable
+                container.style.cursor = 'pointer';
+                container.addEventListener('click', (e) => {
+                    if (!e.target.closest('.featured-cta')) {
+                        window.location.href = `blog-post.html?slug=${post.slug}`;
+                    }
+                });
+            }
+
+            renderArticles() {
+                const grid = document.getElementById('articles-grid');
+                const filteredPosts = this.getFilteredPosts();
+                const postsToShow = filteredPosts.slice(0, 6);
+
+                grid.innerHTML = postsToShow.map(post => this.createArticleCard(post)).join('');
+            }
+
+            getFilteredPosts() {
+                if (!this.allPosts) return [];
+                
+                if (this.currentFilter === 'all') {
+                    return this.allPosts;
+                }
+                return this.allPosts.filter(post => post.category === this.currentFilter);
+            }
+
+            createArticleCard(post) {
+                const publishDate = new Date(post.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+
+                const iconMap = {
+                    manufacturing: 'fas fa-industry',
+                    ai: 'fas fa-robot',
+                    trends: 'fas fa-chart-line'
+                };
+
+                return `
+                    <article class="insight-card" data-category="${post.category}" onclick="window.location.href='blog-post.html?slug=${post.slug}'" style="cursor: pointer;">
+                        <div class="card-image">
+                            <div class="image-placeholder">
+                                <i class="${iconMap[post.category] || 'fas fa-file-alt'}"></i>
+                            </div>
+                            <div class="card-overlay">
+                                <span class="read-time">${post.read_time} min</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-meta">
+                                <span class="category-tag ${post.category}">${post.category.charAt(0).toUpperCase() + post.category.slice(1)}</span>
+                                <time>${publishDate}</time>
+                            </div>
+                            <h3>${post.title}</h3>
+                            <p>${post.excerpt}</p>
+                            <div class="engagement-stats">
+                                <div class="stat">
+                                    <i class="fas fa-eye"></i>
+                                    <span>${post.views.toLocaleString()} views</span>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-heart"></i>
+                                    <span>${post.likes} likes</span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            }
+
+            filterPosts(filter) {
+                this.renderArticles();
+            }
+        }
+
+        // Initialize homepage blog when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new HomepageBlog();
+        });
+    </script>
     
     <!-- Taskade Agent Chat Popup Initialization -->
     <script type="module">

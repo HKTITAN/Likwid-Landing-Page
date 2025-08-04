@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Likwid.AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Blog page using Likwid landing page design system */
+        .blog-page {
+            margin-top: 100px;
+            padding: 2rem 0;
+            background: linear-gradient(135deg, #F8F9FF 0%, #FFFFFF 50%, #F0F4FF 100%);
+            min-height: 100vh;
+        }
+
+        .blog-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .blog-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 3rem 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 25px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(126, 68, 238, 0.3);
+        }
+
+        .blog-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 4s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(180deg); }
+        }
+
+        .blog-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .blog-subtitle {
+            font-size: 1.4rem;
+            opacity: 0.95;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            font-weight: 400;
+        }
+
+        .blog-filters {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+            flex-wrap: wrap;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(126, 68, 238, 0.1);
+        }
+
+        .filter-btn {
+            padding: 1rem 2rem;
+            border: 2px solid rgba(126, 68, 238, 0.2);
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text-dark);
+            border-radius: 30px;
+            font-weight: 700;
+            text-transform: capitalize;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .filter-btn:hover::before {
+            left: 100%;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(126, 68, 238, 0.4);
+        }
+
+        .featured-post {
+            background: white;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            margin-bottom: 5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(126, 68, 238, 0.1);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .featured-post::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+        }
+
+        .featured-post:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 35px 70px rgba(126, 68, 238, 0.25);
+        }
+
+        .featured-image {
+            height: 450px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .featured-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.1) 100%);
+        }
+
+        .featured-content {
+            padding: 3rem;
+        }
+
+        .featured-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--accent-color), #FFA500);
+            color: white;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .featured-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            color: var(--text-dark);
+        }
+
+        .featured-excerpt {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        .featured-meta {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .post-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(126, 68, 238, 0.08);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .post-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .post-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .post-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(126, 68, 238, 0.2);
+        }
+
+        .post-image {
+            height: 220px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .post-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.1) 100%);
+        }
+
+        .post-content {
+            padding: 2rem;
+        }
+
+        .post-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .category-tag {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(126, 68, 238, 0.3);
+        }
+
+        .category-tag.manufacturing { 
+            background: linear-gradient(135deg, var(--primary-color), #5A3CB8); 
+        }
+        .category-tag.ai { 
+            background: linear-gradient(135deg, var(--secondary-color), #003FCC); 
+        }
+        .category-tag.trends { 
+            background: linear-gradient(135deg, var(--accent-color), #FFA500); 
+        }
+        .category-tag.all { 
+            background: linear-gradient(135deg, #6B7280, #4B5563); 
+        }
+
+        .post-stats {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-light);
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .post-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+            color: var(--text-dark);
+            transition: color 0.3s ease;
+        }
+
+        .post-card:hover .post-title {
+            color: var(--primary-color);
+        }
+
+        .post-excerpt {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .author-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(126, 68, 238, 0.3);
+        }
+
+        .author-info h4 {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        .author-info p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .load-more {
+            text-align: center;
+            margin: 4rem 0;
+        }
+
+        .load-more-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 1.25rem 3rem;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 25px rgba(126, 68, 238, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+
+        .load-more-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(126, 68, 238, 0.4);
+        }
+
+        .load-more-btn:disabled {
+            background: linear-gradient(135deg, #9CA3AF, #6B7280);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 5rem;
+            color: var(--text-light);
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .loading i {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .no-posts {
+            text-align: center;
+            padding: 5rem 2rem;
+            color: var(--text-light);
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .no-posts i {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            opacity: 0.3;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .no-posts h3 {
+            color: var(--text-dark);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .blog-container {
+                padding: 0 1rem;
+            }
+
+            .blog-title {
+                font-size: 2.5rem;
+            }
+
+            .blog-filters {
+                gap: 0.75rem;
+                padding: 1rem;
+            }
+
+            .filter-btn {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .featured-title {
+                font-size: 2rem;
+            }
+
+            .featured-content {
+                padding: 2rem 1.5rem;
+            }
+
+            .posts-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .featured-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .post-content {
+                padding: 1.5rem;
+            }
+
+            .author-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Loading animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .post-card,
+        .featured-post {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .post-card:nth-child(2) { animation-delay: 0.1s; }
+        .post-card:nth-child(3) { animation-delay: 0.2s; }
+        .post-card:nth-child(4) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="assets/Logo_Typography.png" alt="Likwid.AI" style="height: 40px;">
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html#features">Features</a></li>
+                <li><a href="index.html#benefits">Benefits</a></li>
+                <li><a href="index.html#pricing">Pricing</a></li>
+                <li><a href="blog.html" class="active">Blog</a></li>
+                <li><a href="onboarding.html" class="nav-cta">Get Started</a></li>
+            </ul>
+            <div class="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <div class="blog-page">
+        <div class="blog-container">
+            <!-- Header -->
+            <div class="blog-header">
+                <h1 class="blog-title">Manufacturing Intelligence Hub</h1>
+                <p class="blog-subtitle">
+                    Expert insights, industry trends, and actionable strategies for modern manufacturing
+                </p>
+            </div>
+
+            <!-- Filters -->
+            <div class="blog-filters">
+                <button class="filter-btn active" data-filter="all">All Posts</button>
+                <button class="filter-btn" data-filter="manufacturing">Manufacturing</button>
+                <button class="filter-btn" data-filter="ai">AI & Technology</button>
+                <button class="filter-btn" data-filter="trends">Industry Trends</button>
+            </div>
+
+            <!-- Featured Post -->
+            <div id="featured-post" class="featured-post" style="display: none;">
+                <!-- Featured post will be loaded here -->
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading posts...</p>
+            </div>
+
+            <!-- Posts Grid -->
+            <div id="posts-grid" class="posts-grid">
+                <!-- Posts will be loaded here -->
+            </div>
+
+            <!-- No Posts Message -->
+            <div id="no-posts" class="no-posts" style="display: none;">
+                <i class="fas fa-file-alt"></i>
+                <h3>No posts found</h3>
+                <p>Try selecting a different category or check back later for new content.</p>
+            </div>
+
+            <!-- Load More -->
+            <div class="load-more">
+                <button id="load-more-btn" class="load-more-btn" style="display: none;">
+                    Load More Posts
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class BlogListing {
+            constructor() {
+                this.apiBase = 'blog-serverless.php';
+                this.currentFilter = 'all';
+                this.currentPage = 0;
+                this.postsPerPage = 6;
+                this.allPosts = [];
+                this.hasMorePosts = true;
+                
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.loadFeaturedPost();
+                this.loadPosts();
+            }
+
+            bindEvents() {
+                // Filter buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const filter = e.target.dataset.filter;
+                        this.setActiveFilter(filter);
+                        this.filterPosts(filter);
+                    });
+                });
+
+                // Load more button
+                document.getElementById('load-more-btn').addEventListener('click', () => {
+                    this.loadMorePosts();
+                });
+            }
+
+            setActiveFilter(filter) {
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+                this.currentFilter = filter;
+            }
+
+            async loadFeaturedPost() {
+                try {
+                    const response = await fetch(`${this.apiBase}?action=featured`);
+                    const data = await response.json();
+
+                    if (data.post) {
+                        this.renderFeaturedPost(data.post);
+                    }
+                } catch (error) {
+                    console.error('Error loading featured post:', error);
+                }
+            }
+
+            renderFeaturedPost(post) {
+                const featuredContainer = document.getElementById('featured-post');
+                featuredContainer.style.display = 'block';
+                
+                featuredContainer.innerHTML = `
+                    <div class="featured-image">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="featured-content">
+                        <div class="featured-badge">
+                            <i class="fas fa-star"></i>
+                            Featured Post
+                        </div>
+                        <h2 class="featured-title">${post.title}</h2>
+                        <p class="featured-excerpt">${post.excerpt}</p>
+                        <div class="featured-meta">
+                            <div class="category-tag ${post.category}">${post.category.charAt(0).toUpperCase() + post.category.slice(1)}</div>
+                            <span>By ${post.author_name}</span>
+                            <span>${new Date(post.created_at).toLocaleDateString()}</span>
+                            <span>${post.read_time} min read</span>
+                            <span>${post.views.toLocaleString()} views</span>
+                        </div>
+                    </div>
+                `;
+
+                featuredContainer.addEventListener('click', () => {
+                    window.location.href = `blog-post.html?slug=${post.slug}`;
+                });
+            }
+
+            async loadPosts() {
+                try {
+                    document.getElementById('loading').style.display = 'block';
+                    
+                    const response = await fetch(`${this.apiBase}?action=posts&limit=50`);
+                    const data = await response.json();
+
+                    document.getElementById('loading').style.display = 'none';
+
+                    if (data.posts && data.posts.length > 0) {
+                        this.allPosts = data.posts.filter(post => !post.is_featured); // Exclude featured posts
+                        this.renderPosts();
+                    } else {
+                        this.showNoPosts();
+                    }
+                } catch (error) {
+                    console.error('Error loading posts:', error);
+                    document.getElementById('loading').style.display = 'none';
+                    this.showNoPosts();
+                }
+            }
+
+            renderPosts() {
+                const grid = document.getElementById('posts-grid');
+                const filteredPosts = this.getFilteredPosts();
+                const postsToShow = filteredPosts.slice(0, (this.currentPage + 1) * this.postsPerPage);
+
+                grid.innerHTML = postsToShow.map(post => this.createPostCard(post)).join('');
+
+                // Show/hide load more button
+                const loadMoreBtn = document.getElementById('load-more-btn');
+                if (postsToShow.length < filteredPosts.length) {
+                    loadMoreBtn.style.display = 'block';
+                } else {
+                    loadMoreBtn.style.display = 'none';
+                }
+
+                // Show no posts message if needed
+                if (filteredPosts.length === 0) {
+                    this.showNoPosts();
+                } else {
+                    document.getElementById('no-posts').style.display = 'none';
+                }
+            }
+
+            getFilteredPosts() {
+                if (this.currentFilter === 'all') {
+                    return this.allPosts;
+                }
+                return this.allPosts.filter(post => post.category === this.currentFilter);
+            }
+
+            createPostCard(post) {
+                const publishDate = new Date(post.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+
+                return `
+                    <div class="post-card" onclick="window.location.href='blog-post.html?slug=${post.slug}'">
+                        <div class="post-image">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                        <div class="post-content">
+                            <div class="post-meta">
+                                <div class="category-tag ${post.category}">${post.category.charAt(0).toUpperCase() + post.category.slice(1)}</div>
+                                <div class="post-stats">
+                                    <div class="stat">
+                                        <i class="fas fa-calendar"></i>
+                                        <span>${publishDate}</span>
+                                    </div>
+                                    <div class="stat">
+                                        <i class="fas fa-clock"></i>
+                                        <span>${post.read_time} min</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3 class="post-title">${post.title}</h3>
+                            <p class="post-excerpt">${post.excerpt}</p>
+                            <div class="post-author">
+                                <div class="author-avatar">${post.author_avatar}</div>
+                                <div class="author-info">
+                                    <h4>${post.author_name}</h4>
+                                    <p>${post.author_title}</p>
+                                </div>
+                            </div>
+                            <div class="post-stats" style="margin-top: 1rem; justify-content: space-between;">
+                                <div class="stat">
+                                    <i class="fas fa-eye"></i>
+                                    <span>${post.views.toLocaleString()}</span>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-heart"></i>
+                                    <span>${post.likes}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            filterPosts(filter) {
+                this.currentPage = 0;
+                this.renderPosts();
+            }
+
+            loadMorePosts() {
+                this.currentPage++;
+                this.renderPosts();
+            }
+
+            showNoPosts() {
+                document.getElementById('posts-grid').innerHTML = '';
+                document.getElementById('no-posts').style.display = 'block';
+                document.getElementById('load-more-btn').style.display = 'none';
+            }
+        }
+
+        // Initialize blog listing
+        document.addEventListener('DOMContentLoaded', () => {
+            new BlogListing();
+        });
+    </script>
+</body>
+</html>
