@@ -199,19 +199,24 @@ class PostStorageService {
     // Save post (auto-detect create vs update)
     async savePost(postData) {
         try {
-            if (postData.id) {
-                // Check if post exists
+            if (postData.id && typeof postData.id === 'number' && postData.id > 0) {
+                // Only try to update if ID is a valid database ID
                 try {
                     await this.getPost(postData.id);
                     // Post exists, update it
                     return await this.updatePost(postData.id, postData);
                 } catch (error) {
-                    // Post doesn't exist, create new one
-                    return await this.createPost(postData);
+                    if (error.message.includes('Post not found') || error.message.includes('404')) {
+                        // Post doesn't exist, create new one without the old ID
+                        const { id, ...postDataWithoutId } = postData;
+                        return await this.createPost(postDataWithoutId);
+                    }
+                    throw error;
                 }
             } else {
-                // No ID, create new post
-                return await this.createPost(postData);
+                // No valid ID or invalid ID (like timestamp), create new post
+                const { id, ...postDataWithoutId } = postData;
+                return await this.createPost(postDataWithoutId);
             }
         } catch (error) {
             console.error('Error saving post:', error);
