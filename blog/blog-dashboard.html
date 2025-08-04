@@ -47,20 +47,20 @@
 
         /* Custom Cursor Implementation */
         * {
-            cursor: url('assets/arrowhead-rounded-outline.svg') 12 12, auto;
+            cursor: url('../assets/arrowhead-rounded-outline.svg') 12 12, auto;
         }
 
         *:hover {
-            cursor: url('assets/arrowhead-rounded-outline.svg') 16 16, auto;
+            cursor: url('../assets/arrowhead-rounded-outline.svg') 16 16, auto;
         }
 
         button, a, input, textarea, select, .clickable {
-            cursor: url('assets/arrowhead-rounded-outline.svg') 14 14, pointer !important;
+            cursor: url('../assets/arrowhead-rounded-outline.svg') 14 14, pointer !important;
             transition: transform 0.2s ease;
         }
 
         button:hover, a:hover, .clickable:hover {
-            cursor: url('assets/arrowhead-rounded-outline.svg') 18 18, pointer !important;
+            cursor: url('../assets/arrowhead-rounded-outline.svg') 18 18, pointer !important;
             transform: scale(1.02);
         }
 
@@ -606,7 +606,7 @@
                 
                 if (result.success) {
                     checkAuth();
-                    loadDashboard();
+                    await loadDashboard();
                     showNotification('Login successful!', 'success');
                 } else {
                     showNotification(result.message || 'Invalid password', 'error');
@@ -627,9 +627,7 @@
         // Create new post and save to backend
         async function createNewPost() {
             try {
-                const postId = Date.now();
                 const newPost = {
-                    id: postId,
                     title: 'New Post',
                     content: JSON.stringify({
                         blocks: [
@@ -652,7 +650,7 @@
                     author_name: 'Content Creator',
                     author_title: 'Writer',
                     author_avatar: 'User',
-                    slug: `new-post-${postId}`,
+                    slug: `new-post-${Date.now()}`,
                     seo_score: 0,
                     created: new Date().toISOString(),
                     updated: new Date().toISOString()
@@ -663,24 +661,24 @@
                     window.postStorageService = new PostStorageService();
                 }
 
-                // Save to backend first
-                await window.postStorageService.savePost(newPost);
-                console.log('✅ New post saved to backend successfully');
+                // Save to backend first and get the actual database ID
+                const savedPost = await window.postStorageService.savePost(newPost);
+                console.log('✅ New post saved to backend successfully:', savedPost);
                 
                 // Also save to localStorage for backward compatibility
                 if (window.blogManager && typeof window.blogManager.createPost === 'function') {
-                    blogManager.createPost(newPost);
+                    blogManager.createPost(savedPost);
                 } else {
                     const posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || 
                                            localStorage.getItem('blog_posts') || '[]');
-                    posts.push(newPost);
+                    posts.push(savedPost);
                     localStorage.setItem('likwid_blog_posts', JSON.stringify(posts));
                 }
 
                 showNotification('New post created successfully!', 'success');
                 
-                // Redirect to editor
-                window.location.href = `blog-editor.html?id=${postId}`;
+                // Redirect to editor using the database ID
+                window.location.href = `blog-editor.html?id=${savedPost.id}`;
                 
             } catch (error) {
                 console.error('Error creating new post:', error);
@@ -689,98 +687,159 @@
         }
 
         // Load dashboard data
-        function loadDashboard() {
-            loadDashboardStats();
-            loadPostsDatabase();
+        async function loadDashboard() {
+            await loadDashboardStats();
+            await loadPostsDatabase();
         }
 
         // Load dashboard statistics
-        function loadDashboardStats() {
-            // Use blogManager to get posts, with fallback to direct localStorage access
-            let posts = [];
-            
-            if (window.blogManager && typeof window.blogManager.getPosts === 'function') {
-                posts = blogManager.getPosts();
-            } else {
-                // Fallback: try different possible localStorage keys
-                posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || 
-                                 localStorage.getItem('blog_posts') || '[]');
-            }
-            
-            const totalPosts = posts.length;
-            const publishedPosts = posts.filter(post => post.status === 'published').length;
-            const draftPosts = posts.filter(post => post.status === 'draft').length;
-            const avgSeoScore = totalPosts > 0 ? 
-                Math.round(posts.reduce((sum, post) => sum + (post.seo_score || 0), 0) / totalPosts) : 0;
-            
-            // Calculate CSV keyword usage across all posts
-            let totalKeywordUsage = 0;
-            let totalCsvKeywords = 0;
-            let keywordDashboard = null;
-            
-            if (window.aiService) {
-                // Get comprehensive keyword dashboard
-                keywordDashboard = aiService.getKeywordDashboard(posts);
+        async function loadDashboardStats() {
+            try {
+                // Try to get posts from backend first
+                let posts = [];
                 
-                posts.forEach(post => {
-                    const content = aiService.extractTextFromContent(post.content || '');
-                    const allText = (post.title || '') + ' ' + content + ' ' + (post.keywords || '');
-                    const keywordAnalysis = aiService.countCSVKeywords(allText);
-                    totalKeywordUsage += keywordAnalysis.count;
-                });
-                totalCsvKeywords = aiService.keywords.length;
-            }
-            
-            document.getElementById('total-posts').textContent = totalPosts;
-            document.getElementById('published-posts').textContent = publishedPosts;
-            document.getElementById('draft-posts').textContent = draftPosts;
-            document.getElementById('avg-seo-score').textContent = avgSeoScore;
-            
-            // Update keyword usage if element exists
-            const keywordUsageElement = document.getElementById('keyword-usage');
-            if (keywordUsageElement && keywordDashboard) {
-                const usedKeywords = keywordDashboard.globalUsage.used.size;
-                const coverage = keywordDashboard.globalUsage.coverage;
-                keywordUsageElement.textContent = `${usedKeywords}/${totalCsvKeywords}`;
-                keywordUsageElement.style.color = coverage > 15 ? 'var(--notion-green)' : coverage > 5 ? 'var(--notion-orange)' : 'var(--notion-red)';
+                if (!window.postStorageService) {
+                    window.postStorageService = new PostStorageService();
+                }
                 
-                // Update keyword insights dashboard
-                updateKeywordInsightsDashboard(keywordDashboard);
+                posts = await window.postStorageService.getAllPosts();
+                console.log('📊 Loading dashboard stats from backend posts:', posts.length);
+                
+                const totalPosts = posts.length;
+                const publishedPosts = posts.filter(post => post.status === 'published').length;
+                const draftPosts = posts.filter(post => post.status === 'draft').length;
+                const avgSeoScore = totalPosts > 0 ? 
+                    Math.round(posts.reduce((sum, post) => sum + (post.seo_score || 0), 0) / totalPosts) : 0;
+                
+                // Calculate CSV keyword usage across all posts
+                let totalKeywordUsage = 0;
+                let totalCsvKeywords = 0;
+                let keywordDashboard = null;
+                
+                if (window.aiService) {
+                    // Get comprehensive keyword dashboard
+                    keywordDashboard = aiService.getKeywordDashboard(posts);
+                    
+                    posts.forEach(post => {
+                        const content = aiService.extractTextFromContent(post.content || '');
+                        const allText = (post.title || '') + ' ' + content + ' ' + (post.keywords || '');
+                        const keywordAnalysis = aiService.countCSVKeywords(allText);
+                        totalKeywordUsage += keywordAnalysis.count;
+                    });
+                    totalCsvKeywords = aiService.keywords.length;
+                }
+                
+                document.getElementById('total-posts').textContent = totalPosts;
+                document.getElementById('published-posts').textContent = publishedPosts;
+                document.getElementById('draft-posts').textContent = draftPosts;
+                document.getElementById('avg-seo-score').textContent = avgSeoScore;
+                
+                // Update keyword usage if element exists
+                const keywordUsageElement = document.getElementById('keyword-usage');
+                if (keywordUsageElement && keywordDashboard) {
+                    const usedKeywords = keywordDashboard.globalUsage.used.size;
+                    const coverage = keywordDashboard.globalUsage.coverage;
+                    keywordUsageElement.textContent = `${usedKeywords}/${totalCsvKeywords}`;
+                    keywordUsageElement.style.color = coverage > 15 ? 'var(--notion-green)' : coverage > 5 ? 'var(--notion-orange)' : 'var(--notion-red)';
+                    
+                    // Update keyword insights dashboard
+                    updateKeywordInsightsDashboard(keywordDashboard);
+                }
+                
+            } catch (error) {
+                console.error('❌ Failed to load dashboard stats from backend, falling back to localStorage:', error);
+                
+                // Fallback to localStorage
+                let posts = [];
+                if (window.blogManager && typeof window.blogManager.getPosts === 'function') {
+                    posts = blogManager.getPosts();
+                } else {
+                    posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || 
+                                     localStorage.getItem('blog_posts') || '[]');
+                }
+                
+                const totalPosts = posts.length;
+                const publishedPosts = posts.filter(post => post.status === 'published').length;
+                const draftPosts = posts.filter(post => post.status === 'draft').length;
+                const avgSeoScore = totalPosts > 0 ? 
+                    Math.round(posts.reduce((sum, post) => sum + (post.seo_score || 0), 0) / totalPosts) : 0;
+                
+                document.getElementById('total-posts').textContent = totalPosts;
+                document.getElementById('published-posts').textContent = publishedPosts;
+                document.getElementById('draft-posts').textContent = draftPosts;
+                document.getElementById('avg-seo-score').textContent = avgSeoScore;
             }
         }
 
         // Load posts database
-        function loadPostsDatabase() {
-            // Use blogManager to get posts, with fallback to direct localStorage access
-            let posts = [];
-            
-            if (window.blogManager && typeof window.blogManager.getPosts === 'function') {
-                posts = blogManager.getPosts();
-            } else {
-                // Fallback: try different possible localStorage keys
-                posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || 
-                                 localStorage.getItem('blog_posts') || '[]');
-            }
-            
+        async function loadPostsDatabase() {
             const container = document.getElementById('posts-database-rows');
             const countElement = document.getElementById('posts-count');
             
-            countElement.textContent = `${posts.length} post${posts.length !== 1 ? 's' : ''}`;
-            
-            if (posts.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-file-text"></i>
-                        <h3>No posts yet</h3>
-                        <p>Start by describing what you'd like to write about above, or create a new post from scratch</p>
-                        <a href="blog-editor.html" class="notion-btn primary">
-                            <i class="fas fa-plus"></i>
-                            Create Your First Post
-                        </a>
-                    </div>
-                `;
-                return;
+            try {
+                // First try to load from backend
+                if (!window.postStorageService) {
+                    window.postStorageService = new PostStorageService();
+                }
+                
+                const posts = await window.postStorageService.getAllPosts();
+                console.log('✅ Loaded posts from backend:', posts);
+                
+                countElement.textContent = `${posts.length} post${posts.length !== 1 ? 's' : ''}`;
+                
+                if (posts.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-file-text"></i>
+                            <h3>No posts yet</h3>
+                            <p>Start by describing what you'd like to write about above, or create a new post from scratch</p>
+                            <a href="blog-editor.html" class="notion-btn primary">
+                                <i class="fas fa-plus"></i>
+                                Create Your First Post
+                            </a>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                renderPostsList(posts);
+                
+            } catch (error) {
+                console.error('❌ Failed to load posts from backend, falling back to localStorage:', error);
+                
+                // Fallback to localStorage
+                let posts = [];
+                if (window.blogManager && typeof window.blogManager.getPosts === 'function') {
+                    posts = blogManager.getPosts();
+                } else {
+                    posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || 
+                                     localStorage.getItem('blog_posts') || '[]');
+                }
+                
+                countElement.textContent = `${posts.length} post${posts.length !== 1 ? 's' : ''}`;
+                
+                if (posts.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-file-text"></i>
+                            <h3>No posts yet</h3>
+                            <p>Start by describing what you'd like to write about above, or create a new post from scratch</p>
+                            <a href="blog-editor.html" class="notion-btn primary">
+                                <i class="fas fa-plus"></i>
+                                Create Your First Post
+                            </a>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                renderPostsList(posts);
             }
+        }
+        
+        // Separate function to render posts list
+        function renderPostsList(posts) {
+            const container = document.getElementById('posts-database-rows');
             
             container.innerHTML = posts.map(post => {
                 const seoScoreClass = post.seo_score >= 80 ? 'score-excellent' : post.seo_score >= 60 ? 'score-good' : 'score-poor';
@@ -816,42 +875,49 @@
         }
 
         // Delete post
-        function deletePost(id) {
+        async function deletePost(id) {
             if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) return;
             
             try {
-                // Try using blogManager first
-                if (window.blogManager && typeof window.blogManager.deletePost === 'function') {
-                    const result = blogManager.deletePost(id);
-                    if (result.success) {
-                        loadDashboard();
-                        showNotification('Post deleted successfully', 'success');
-                        return;
-                    }
+                // Use PostStorageService to delete from backend
+                if (!window.postStorageService) {
+                    window.postStorageService = new PostStorageService();
                 }
                 
-                // Fallback: Direct localStorage manipulation
-                const posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || '[]');
-                const filteredPosts = posts.filter(post => post.id != id);
+                await window.postStorageService.deletePost(id);
+                console.log('✅ Post deleted from backend:', id);
                 
-                if (filteredPosts.length === posts.length) {
-                    showNotification('Post not found', 'error');
-                    return;
-                }
-                
-                localStorage.setItem('likwid_blog_posts', JSON.stringify(filteredPosts));
-                loadDashboard();
+                // Reload the dashboard to reflect changes
+                await loadDashboard();
                 showNotification('Post deleted successfully', 'success');
                 
             } catch (error) {
-                console.error('Delete post error:', error);
-                showNotification('Failed to delete post: ' + error.message, 'error');
+                console.error('❌ Delete post error:', error);
+                
+                // Try fallback to localStorage if backend fails
+                try {
+                    const posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || '[]');
+                    const filteredPosts = posts.filter(post => post.id != id);
+                    
+                    if (filteredPosts.length === posts.length) {
+                        showNotification('Post not found', 'error');
+                        return;
+                    }
+                    
+                    localStorage.setItem('likwid_blog_posts', JSON.stringify(filteredPosts));
+                    await loadDashboard();
+                    showNotification('Post deleted successfully (localStorage fallback)', 'success');
+                    
+                } catch (fallbackError) {
+                    console.error('❌ Fallback delete also failed:', fallbackError);
+                    showNotification('Failed to delete post: ' + error.message, 'error');
+                }
             }
         }
 
         // Refresh posts
-        function refreshPosts() {
-            loadDashboard();
+        async function refreshPosts() {
+            await loadDashboard();
         }
 
         // Generate complete post
@@ -879,9 +945,7 @@
                 statusText.textContent = 'Creating post structure...';
 
                 // Create a new post with the AI-generated content
-                const postId = Date.now();
                 const newPost = {
-                    id: postId,
                     title: postData.title,
                     content: JSON.stringify(postData.content),
                     excerpt: postData.excerpt,
@@ -907,19 +971,19 @@
                     window.postStorageService = new PostStorageService();
                 }
 
-                // Save to backend first
-                await window.postStorageService.savePost(newPost);
-                console.log('✅ AI-generated post saved to backend successfully');
+                // Save to backend first and get the actual database ID
+                const savedPost = await window.postStorageService.savePost(newPost);
+                console.log('✅ AI-generated post saved to backend successfully:', savedPost);
 
                 // Also save to localStorage for backward compatibility
                 if (window.blogManager && typeof window.blogManager.createPost === 'function') {
                     // Use blogManager if available
-                    blogManager.createPost(newPost);
+                    blogManager.createPost(savedPost);
                 } else {
                     // Fallback: Direct localStorage manipulation
                     const posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || 
                                            localStorage.getItem('blog_posts') || '[]');
-                    posts.push(newPost);
+                    posts.push(savedPost);
                     localStorage.setItem('likwid_blog_posts', JSON.stringify(posts));
                 }
                 
@@ -927,7 +991,7 @@
                 statusText.textContent = 'Complete! Redirecting to editor...';
                 
                 setTimeout(() => {
-                    window.location.href = `blog-editor.html?id=${postId}`;
+                    window.location.href = `blog-editor.html?id=${savedPost.id}`;
                 }, 1000);
 
             } catch (error) {
@@ -936,9 +1000,7 @@
                 showNotification('Failed to generate post: ' + error.message, 'error');
                 
                 // Fallback: create basic post
-                const postId = Date.now();
                 const newPost = {
-                    id: postId,
                     title: topic,
                     content: JSON.stringify({
                         blocks: [
@@ -973,25 +1035,38 @@
                         window.postStorageService = new PostStorageService();
                     }
 
-                    // Save to backend first
-                    await window.postStorageService.savePost(newPost);
-                    console.log('✅ Fallback post saved to backend successfully');
+                    // Save to backend first and get the actual database ID
+                    const savedPost = await window.postStorageService.savePost(newPost);
+                    console.log('✅ Fallback post saved to backend successfully:', savedPost);
+                    
+                    // Also save to localStorage for backward compatibility
+                    if (window.blogManager && typeof window.blogManager.createPost === 'function') {
+                        blogManager.createPost(savedPost);
+                    } else {
+                        const posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || 
+                                               localStorage.getItem('blog_posts') || '[]');
+                        posts.push(savedPost);
+                        localStorage.setItem('likwid_blog_posts', JSON.stringify(posts));
+                    }
+                    
+                    window.location.href = `blog-editor.html?id=${savedPost.id}`;
                 } catch (backendError) {
                     console.error('Failed to save fallback post to backend:', backendError);
                     // Continue with localStorage only if backend fails
+                    
+                    // Also save to localStorage for backward compatibility
+                    if (window.blogManager && typeof window.blogManager.createPost === 'function') {
+                        blogManager.createPost(newPost);
+                    } else {
+                        const posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || 
+                                               localStorage.getItem('blog_posts') || '[]');
+                        posts.push(newPost);
+                        localStorage.setItem('likwid_blog_posts', JSON.stringify(posts));
+                    }
+                    
+                    // If backend fails, just redirect to editor without ID to create new post
+                    window.location.href = `blog-editor.html`;
                 }
-
-                // Also save to localStorage for backward compatibility
-                if (window.blogManager && typeof window.blogManager.createPost === 'function') {
-                    blogManager.createPost(newPost);
-                } else {
-                    const posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || 
-                                           localStorage.getItem('blog_posts') || '[]');
-                    posts.push(newPost);
-                    localStorage.setItem('likwid_blog_posts', JSON.stringify(posts));
-                }
-                
-                window.location.href = `blog-editor.html?id=${postId}`;
             }
         }
 
@@ -1040,7 +1115,7 @@
         });
 
         // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             // Debug: Check what's available
             console.log('Page loaded. Checking services...');
             console.log('BlogManager available:', !!window.blogManager);
@@ -1069,7 +1144,7 @@
             }
             
             if (checkAuth()) {
-                loadDashboard();
+                await loadDashboard();
                 
                 // Initialize keyword tracking
                 if (window.aiService) {

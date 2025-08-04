@@ -45,20 +45,20 @@
 
         /* Custom Cursor Implementation */
         * {
-            cursor: url('assets/arrowhead-rounded-outline.svg') 12 12, auto;
+            cursor: url('../assets/arrowhead-rounded-outline.svg') 12 12, auto;
         }
 
         *:hover {
-            cursor: url('assets/arrowhead-rounded-outline.svg') 16 16, auto;
+            cursor: url('../assets/arrowhead-rounded-outline.svg') 16 16, auto;
         }
 
         button, a, input, textarea, select, .clickable {
-            cursor: url('assets/arrowhead-rounded-outline.svg') 14 14, pointer !important;
+            cursor: url('../assets/arrowhead-rounded-outline.svg') 14 14, pointer !important;
             transition: transform 0.2s ease;
         }
 
         button:hover, a:hover, .clickable:hover {
-            cursor: url('assets/arrowhead-rounded-outline.svg') 18 18, pointer !important;
+            cursor: url('../assets/arrowhead-rounded-outline.svg') 18 18, pointer !important;
         }
 
         * {
@@ -492,39 +492,59 @@
     </div>
 
     <script src="ai-service.js"></script>
+    <script src="post-storage.js"></script>
     
     <script>
         let currentPost = null;
 
         // Initialize preview
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             const urlParams = new URLSearchParams(window.location.search);
             const postId = urlParams.get('id');
             
             if (postId) {
-                loadPostPreview(postId);
+                await loadPostPreview(postId);
             } else {
                 showError('No post ID provided');
             }
         });
 
         // Load post for preview
-        function loadPostPreview(postId) {
+        async function loadPostPreview(postId) {
             try {
-                const posts = JSON.parse(localStorage.getItem('blog_posts') || '[]');
-                const post = posts.find(p => p.id == postId);
-                
-                if (!post) {
-                    showError('Post not found');
-                    return;
+                // Initialize PostStorageService if not available
+                if (!window.postStorageService) {
+                    window.postStorageService = new PostStorageService();
                 }
+                
+                // Try to load from backend first
+                const post = await window.postStorageService.getPost(postId);
+                console.log('✅ Loaded post from backend for preview:', post.title);
                 
                 currentPost = post;
                 renderPostPreview(post);
                 
             } catch (error) {
-                console.error('Error loading post:', error);
-                showError('Failed to load post');
+                console.error('❌ Error loading post from backend, trying localStorage:', error);
+                
+                // Fallback to localStorage
+                try {
+                    const posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || 
+                                           localStorage.getItem('blog_posts') || '[]');
+                    const post = posts.find(p => p.id == postId);
+                    
+                    if (!post) {
+                        showError('Post not found');
+                        return;
+                    }
+                    
+                    currentPost = post;
+                    renderPostPreview(post);
+                    
+                } catch (fallbackError) {
+                    console.error('❌ Fallback to localStorage also failed:', fallbackError);
+                    showError('Failed to load post');
+                }
             }
         }
 
