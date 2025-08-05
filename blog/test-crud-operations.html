@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog CRUD Operations Test Suite</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #7E44EE;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --bg-color: #ffffff;
+            --text-color: #37352f;
+            --border-color: #e9e9e7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), #6d3bcc);
+            color: white;
+            border-radius: 12px;
+        }
+
+        .test-section {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .test-header {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .test-content {
+            padding: 1.5rem;
+        }
+
+        .test-step {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .test-step h4 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .test-result {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .test-result.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .test-result.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .test-result.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #6d3bcc;
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.secondary {
+            background: #6c757d;
+        }
+
+        .btn.danger {
+            background: var(--error-color);
+        }
+
+        .btn.success {
+            background: var(--success-color);
+        }
+
+        .test-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .log-container {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ccc;
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-vial"></i> Blog CRUD Operations Test Suite</h1>
+            <p>Comprehensive testing for Create, Read, Update, Delete operations</p>
+        </div>
+
+        <div class="test-controls">
+            <button class="btn" onclick="runAllTests()">
+                <i class="fas fa-play"></i>
+                Run All Tests
+            </button>
+            <button class="btn secondary" onclick="clearResults()">
+                <i class="fas fa-trash"></i>
+                Clear Results
+            </button>
+            <button class="btn success" onclick="exportResults()">
+                <i class="fas fa-download"></i>
+                Export Results
+            </button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="total-tests">0</div>
+                <div class="stat-label">Total Tests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="passed-tests" style="color: var(--success-color);">0</div>
+                <div class="stat-label">Passed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="failed-tests" style="color: var(--error-color);">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="test-duration">0s</div>
+                <div class="stat-label">Duration</div>
+            </div>
+        </div>
+
+        <!-- Test Section 7.1: Post Creation Workflow -->
+        <div class="test-section">
+            <div class="test-header">
+                <span><i class="fas fa-plus-circle"></i> 7.1 Post Creation Workflow</span>
+                <button class="btn" onclick="runPostCreationTests()">
+                    <i class="fas fa-play"></i>
+                    Run Test
+                </button>
+            </div>
+            <div class="test-content">
+                <div class="test-step">
+                    <h4>Step 1: Create New Post from Dashboard</h4>
+                    <p>Test creating a new post through the dashboard interface</p>
+                    <div id="creation-test-result" class="test-result" style="display: none;"></div>
+                </div>
+                <div class="test-step">
+                    <h4>Step 2: Verify Post Saved to Database</h4>
+                    <p>Confirm the post exists in the backend database</p>
+                    <div id="database-save-result" class="test-result" style="display: none;"></div>
+                </div>
+                <div class="test-step">
+                    <h4>Step 3: Check Post Appears in Blog Listing</h4>
+                    <p>Verify the post shows up in the blog listing</p>
+                    <div id="listing-check-result" class="test-result" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Section 7.2: Post Editing Workflow -->
+        <div class="test-section">
+            <div class="test-header">
+                <span><i class="fas fa-edit"></i> 7.2 Post Editing Workflow</span>
+                <button class="btn" onclick="runPostEditingTests()">
+                    <i class="fas fa-play"></i>
+                    Run Test
+                </button>
+            </div>
+            <div class="test-content">
+                <div class="test-step">
+                    <h4>Step 1: Edit Existing Post Content</h4>
+                    <p>Modify post title, content, and metadata</p>
+                    <div id="edit-content-result" class="test-result" style="display: none;"></div>
+                </div>
+                <div class="test-step">
+                    <h4>Step 2: Verify Changes Saved to Database</h4>
+                    <p>Confirm updates are persisted in the database</p>
+                    <div id="edit-save-result" class="test-result" style="display: none;"></div>
+                </div>
+                <div class="test-step">
+                    <h4>Step 3: Test Auto-save Functionality</h4>
+                    <p>Verify automatic saving works correctly</p>
+                    <div id="autosave-result" class="test-result" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Section 7.3: Post Publishing Workflow -->
+        <div class="test-section">
+            <div class="test-header">
+                <span><i class="fas fa-globe"></i> 7.3 Post Publishing Workflow</span>
+                <button class="btn" onclick="runPostPublishingTests()">
+                    <i class="fas fa-play"></i>
+                    Run Test
+                </button>
+            </div>
+            <div class="test-content">
+                <div class="test-step">
+                    <h4>Step 1: Change Post Status to Published</h4>
+                    <p>Update post status from draft to published</p>
+                    <div id="publish-status-result" class="test-result" style="display: none;"></div>
+                </div>
+                <div class="test-step">
+                    <h4>Step 2: Verify Published Post on Public Blog</h4>
+                    <p>Check that published post appears on public blog</p>
+                    <div id="public-blog-result" class="test-result" style="display: none;"></div>
+                </div>
+                <div class="test-step">
+                    <h4>Step 3: Test Featured Post Functionality</h4>
+                    <p>Verify featured post functionality works</p>
+                    <div id="featured-post-result" class="test-result" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Section 7.4: Post Deletion Workflow -->
+        <div class="test-section">
+            <div class="test-header">
+                <span><i class="fas fa-trash"></i> 7.4 Post Deletion Workflow</span>
+                <button class="btn" onclick="runPostDeletionTests()">
+                    <i class="fas fa-play"></i>
+                    Run Test
+                </button>
+            </div>
+            <div class="test-content">
+                <div class="test-step">
+                    <h4>Step 1: Delete Post from Dashboard</h4>
+                    <p>Remove post using dashboard interface</p>
+                    <div id="delete-dashboard-result" class="test-result" style="display: none;"></div>
+                </div>
+                <div class="test-step">
+                    <h4>Step 2: Verify Post Removed from Database</h4>
+                    <p>Confirm post no longer exists in database</p>
+                    <div id="delete-database-result" class="test-result" style="display: none;"></div>
+                </div>
+                <div class="test-step">
+                    <h4>Step 3: Confirm Post Not in Listings</h4>
+                    <p>Verify post doesn't appear in any listings</p>
+                    <div id="delete-listing-result" class="test-result" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="log-container" id="test-log">
+            <div>Test log will appear here...</div>
+        </div>
+    </div>
+
+    <script src="post-storage.js"></script>
+    <script>
+        // Test suite state
+        let testResults = {
+            total: 0,
+            passed: 0,
+            failed: 0,
+            startTime: null,
+            endTime: null,
+            logs: []
+        };
+
+        let testPostId = null; // Store created test post ID
+
+        // Logging function
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            testResults.logs.push(logEntry);
+            
+            const logContainer = document.getElementById('test-log');
+            const logDiv = document.createElement('div');
+            logDiv.textContent = logEntry;
+            logDiv.style.color = type === 'error' ? '#ff6b6b' : 
+                               type === 'success' ? '#51cf66' : 
+                               type === 'warning' ? '#ffd43b' : '#00ff00';
+            logContainer.appendChild(logDiv);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // Update test statistics
+        function updateStats() {
+            document.getElementById('total-tests').textContent = testResults.total;
+            document.getElementById('passed-tests').textContent = testResults.passed;
+            document.getElementById('failed-tests').textContent = testResults.failed;
+            
+            if (testResults.startTime && testResults.endTime) {
+                const duration = Math.round((testResults.endTime - testResults.startTime) / 1000);
+                document.getElementById('test-duration').textContent = `${duration}s`;
+            }
+        }
+
+        // Show test result
+        function showResult(elementId, success, message, details = null) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `test-result ${success ? 'success' : 'error'}`;
+            element.innerHTML = `
+                <i class="fas fa-${success ? 'check-circle' : 'times-circle'}"></i>
+                ${message}
+                ${details ? `<div style="margin-top: 0.5rem; font-size: 0.8em; opacity: 0.8;">${details}</div>` : ''}
+            `;
+            
+            testResults.total++;
+            if (success) {
+                testResults.passed++;
+                log(`✅ ${message}`, 'success');
+            } else {
+                testResults.failed++;
+                log(`❌ ${message}`, 'error');
+                if (details) log(`   Details: ${details}`, 'error');
+            }
+            updateStats();
+        }
+
+        // Initialize PostStorageService
+        const postStorage = new PostStorageService();
+
+        // Test 7.1: Post Creation Workflow
+        async function runPostCreationTests() {
+            log('Starting Post Creation Workflow Tests', 'info');
+            
+            try {
+                // Step 1: Create new post
+                log('Step 1: Creating new test post...', 'info');
+                const testPost = {
+                    title: `Test Post ${Date.now()}`,
+                    content: JSON.stringify({
+                        blocks: [
+                            {
+                                type: "header",
+                                data: { text: "Test Post Content", level: 1 }
+                            },
+                            {
+                                type: "paragraph",
+                                data: { text: "This is a test post created by the CRUD test suite." }
+                            }
+                        ]
+                    }),
+                    excerpt: 'Test post for CRUD operations',
+                    category: 'Testing',
+                    status: 'draft',
+                    author_name: 'Test Suite',
+                    meta_title: 'Test Post Meta Title',
+                    meta_description: 'Test post meta description'
+                };
+
+                const createdPost = await postStorage.createPost(testPost);
+                testPostId = createdPost.id;
+                
+                showResult('creation-test-result', true, 
+                    'Post created successfully', 
+                    `Post ID: ${createdPost.id}, Title: "${createdPost.title}"`);
+
+                // Step 2: Verify post saved to database
+                log('Step 2: Verifying post exists in database...', 'info');
+                const retrievedPost = await postStorage.getPost(testPostId);
+                
+                if (retrievedPost && retrievedPost.id === testPostId) {
+                    showResult('database-save-result', true, 
+                        'Post successfully saved to database',
+                        `Retrieved post with matching ID and title`);
+                } else {
+                    showResult('database-save-result', false, 
+                        'Post not found in database',
+                        'Could not retrieve the created post');
+                }
+
+                // Step 3: Check post appears in blog listing
+                log('Step 3: Checking post appears in blog listing...', 'info');
+                const allPosts = await postStorage.getAllPosts();
+                const postInListing = allPosts.find(post => post.id === testPostId);
+                
+                if (postInListing) {
+                    showResult('listing-check-result', true, 
+                        'Post appears in blog listing',
+                        `Found post in listing with ${allPosts.length} total posts`);
+                } else {
+                    showResult('listing-check-result', false, 
+                        'Post not found in blog listing',
+                        `Checked ${allPosts.length} posts in listing`);
+                }
+
+            } catch (error) {
+                log(`Post creation test failed: ${error.message}`, 'error');
+                showResult('creation-test-result', false, 
+                    'Post creation failed', 
+                    error.message);
+            }
+        }
+
+        // Test 7.2: Post Editing Workflow
+        async function runPostEditingTests() {
+            log('Starting Post Editing Workflow Tests', 'info');
+            
+            if (!testPostId) {
+                log('No test post available. Running creation test first...', 'warning');
+                await runPostCreationTests();
+            }
+
+            if (!testPostId) {
+                showResult('edit-content-result', false, 
+                    'Cannot run editing tests', 
+                    'No test post available after creation attempt');
+                return;
+            }
+
+            try {
+                // Step 1: Edit existing post content
+                log('Step 1: Editing post content and metadata...', 'info');
+                const updatedData = {
+                    title: `Updated Test Post ${Date.now()}`,
+                    content: JSON.stringify({
+                        blocks: [
+                            {
+                                type: "header",
+                                data: { text: "Updated Test Post Content", level: 1 }
+                            },
+                            {
+                                type: "paragraph",
+                                data: { text: "This post has been updated by the CRUD test suite." }
+                            }
+                        ]
+                    }),
+                    excerpt: 'Updated test post for CRUD operations',
+                    category: 'Updated Testing',
+                    meta_title: 'Updated Test Post Meta Title',
+                    updated: new Date().toISOString()
+                };
+
+                const updatedPost = await postStorage.updatePost(testPostId, updatedData);
+                
+                showResult('edit-content-result', true, 
+                    'Post content updated successfully',
+                    `Updated title: "${updatedPost.title}"`);
+
+                // Step 2: Verify changes saved to database
+                log('Step 2: Verifying changes saved to database...', 'info');
+                
+                // Wait a moment for database to update
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                const retrievedPost = await postStorage.getPost(testPostId);
+                
+                if (retrievedPost.title === updatedData.title && 
+                    retrievedPost.category === updatedData.category) {
+                    showResult('edit-save-result', true, 
+                        'Changes successfully saved to database',
+                        'Title and category updates confirmed');
+                } else {
+                    showResult('edit-save-result', false, 
+                        'Changes not properly saved',
+                        `Expected title: "${updatedData.title}", Got: "${retrievedPost.title}"`);
+                }
+
+                // Step 3: Test auto-save functionality (simulated)
+                log('Step 3: Testing auto-save functionality...', 'info');
+                
+                // Simulate auto-save by making another update
+                const autoSaveData = {
+                    excerpt: `Auto-saved at ${new Date().toISOString()}`,
+                    updated: new Date().toISOString()
+                };
+                
+                const autoSavedPost = await postStorage.updatePost(testPostId, autoSaveData);
+                
+                if (autoSavedPost.excerpt === autoSaveData.excerpt) {
+                    showResult('autosave-result', true, 
+                        'Auto-save functionality working',
+                        'Simulated auto-save update successful');
+                } else {
+                    showResult('autosave-result', false, 
+                        'Auto-save functionality failed',
+                        `Expected: "${autoSaveData.excerpt}", Got: "${autoSavedPost.excerpt}"`);
+                }
+
+            } catch (error) {
+                log(`Post editing test failed: ${error.message}`, 'error');
+                showResult('edit-content-result', false, 
+                    'Post editing failed', 
+                    error.message);
+                showResult('edit-save-result', false, 
+                    'Could not verify database save', 
+                    'Edit operation failed');
+                showResult('autosave-result', false, 
+                    'Could not test auto-save', 
+                    'Edit operation failed');
+            }
+        }
+
+        // Test 7.3: Post Publishing Workflow
+        async function runPostPublishingTests() {
+            log('Starting Post Publishing Workflow Tests', 'info');
+            
+            if (!testPostId) {
+                log('No test post available. Running creation test first...', 'warning');
+                await runPostCreationTests();
+            }
+
+            if (!testPostId) {
+                showResult('publish-status-result', false, 
+                    'Cannot run publishing tests', 
+                    'No test post available after creation attempt');
+                return;
+            }
+
+            try {
+                // Step 1: Change post status to published
+                log('Step 1: Publishing the test post...', 'info');
+                const publishData = {
+                    status: 'published',
+                    updated: new Date().toISOString()
+                };
+
+                const publishedPost = await postStorage.updatePost(testPostId, publishData);
+                
+                if (publishedPost.status === 'published') {
+                    showResult('publish-status-result', true, 
+                        'Post status changed to published',
+                        `Post ID ${testPostId} is now published`);
+                } else {
+                    showResult('publish-status-result', false, 
+                        'Failed to change post status',
+                        `Expected: published, Got: ${publishedPost.status}`);
+                }
+
+                // Step 2: Verify published post appears on public blog
+                log('Step 2: Checking published posts endpoint...', 'info');
+                
+                // Wait a moment for database to update
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                try {
+                    // Check published posts endpoint
+                    const response = await fetch('http://localhost:3001/api/posts/published');
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const publishedPosts = await response.json();
+                    const publishedTestPost = publishedPosts.find(post => post.id === testPostId);
+                    
+                    if (publishedTestPost) {
+                        showResult('public-blog-result', true, 
+                            'Published post appears in public blog',
+                            `Found in ${publishedPosts.length} published posts`);
+                    } else {
+                        showResult('public-blog-result', false, 
+                            'Published post not found in public blog',
+                            `Checked ${publishedPosts.length} published posts, IDs: ${publishedPosts.map(p => p.id).join(', ')}`);
+                    }
+                } catch (fetchError) {
+                    showResult('public-blog-result', false, 
+                        'Failed to check published posts endpoint',
+                        fetchError.message);
+                }
+
+                // Step 3: Test featured post functionality
+                log('Step 3: Testing featured post functionality...', 'info');
+                const featuredData = {
+                    is_featured: 1,
+                    updated: new Date().toISOString()
+                };
+
+                const featuredPost = await postStorage.updatePost(testPostId, featuredData);
+                
+                if (featuredPost.is_featured === 1 || featuredPost.is_featured === true) {
+                    showResult('featured-post-result', true, 
+                        'Featured post functionality working',
+                        'Post successfully marked as featured');
+                        
+                    // Also test featured posts endpoint
+                    try {
+                        const featuredResponse = await fetch('http://localhost:3001/api/posts/featured');
+                        if (featuredResponse.ok) {
+                            const featuredPosts = await featuredResponse.json();
+                            const featuredTestPost = featuredPosts.find(post => post.id === testPostId);
+                            if (featuredTestPost) {
+                                log('✅ Featured post also appears in featured posts endpoint', 'success');
+                            }
+                        }
+                    } catch (featuredError) {
+                        log(`⚠️ Could not verify featured posts endpoint: ${featuredError.message}`, 'warning');
+                    }
+                } else {
+                    showResult('featured-post-result', false, 
+                        'Featured post functionality failed',
+                        `Expected is_featured: 1, Got: ${featuredPost.is_featured}`);
+                }
+
+            } catch (error) {
+                log(`Post publishing test failed: ${error.message}`, 'error');
+                showResult('publish-status-result', false, 
+                    'Post publishing failed', 
+                    error.message);
+                showResult('public-blog-result', false, 
+                    'Could not verify public blog', 
+                    'Publishing operation failed');
+                showResult('featured-post-result', false, 
+                    'Could not test featured functionality', 
+                    'Publishing operation failed');
+            }
+        }
+
+        // Test 7.4: Post Deletion Workflow
+        async function runPostDeletionTests() {
+            log('Starting Post Deletion Workflow Tests', 'info');
+            
+            if (!testPostId) {
+                log('No test post available. Running creation test first...', 'warning');
+                await runPostCreationTests();
+            }
+
+            if (!testPostId) {
+                showResult('delete-dashboard-result', false, 
+                    'Cannot run deletion tests', 
+                    'No test post available after creation attempt');
+                return;
+            }
+
+            const postIdToDelete = testPostId; // Store ID before deletion
+            
+            try {
+                // Step 1: Delete post from dashboard (via API)
+                log(`Step 1: Deleting post ${postIdToDelete} via API...`, 'info');
+                
+                const deleteResult = await postStorage.deletePost(testPostId);
+                
+                showResult('delete-dashboard-result', true, 
+                    'Post deletion request completed',
+                    `Post ID ${postIdToDelete} deletion API call successful`);
+
+                // Step 2: Verify post removed from database
+                log('Step 2: Verifying post removed from database...', 'info');
+                
+                // Wait a moment for database to update
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                try {
+                    const deletedPost = await postStorage.getPost(postIdToDelete);
+                    showResult('delete-database-result', false, 
+                        'Post still exists in database',
+                        `Post was not properly deleted: ${JSON.stringify(deletedPost)}`);
+                } catch (error) {
+                    if (error.message.includes('not found') || 
+                        error.message.includes('404') || 
+                        error.type === 'NOT_FOUND') {
+                        showResult('delete-database-result', true, 
+                            'Post successfully removed from database',
+                            'Post no longer exists in database (404 error as expected)');
+                    } else {
+                        showResult('delete-database-result', false, 
+                            'Error checking post deletion',
+                            `Unexpected error: ${error.message}`);
+                    }
+                }
+
+                // Step 3: Confirm post not in listings
+                log('Step 3: Checking post not in listings...', 'info');
+                
+                try {
+                    const allPosts = await postStorage.getAllPosts();
+                    const postInListing = allPosts.find(post => post.id === postIdToDelete);
+                    
+                    if (!postInListing) {
+                        showResult('delete-listing-result', true, 
+                            'Post not found in listings',
+                            `Confirmed absence in ${allPosts.length} posts`);
+                    } else {
+                        showResult('delete-listing-result', false, 
+                            'Post still appears in listings',
+                            `Post found in listings: ${postInListing.title}`);
+                    }
+                } catch (listingError) {
+                    showResult('delete-listing-result', false, 
+                        'Error checking post listings',
+                        listingError.message);
+                }
+
+                // Also check published posts to ensure it's removed from there too
+                try {
+                    const publishedResponse = await fetch('http://localhost:3001/api/posts/published');
+                    if (publishedResponse.ok) {
+                        const publishedPosts = await publishedResponse.json();
+                        const publishedTestPost = publishedPosts.find(post => post.id === postIdToDelete);
+                        if (!publishedTestPost) {
+                            log('✅ Post also removed from published posts endpoint', 'success');
+                        } else {
+                            log('⚠️ Post still appears in published posts endpoint', 'warning');
+                        }
+                    }
+                } catch (publishedError) {
+                    log(`⚠️ Could not verify published posts endpoint: ${publishedError.message}`, 'warning');
+                }
+
+                // Reset test post ID since it's been deleted
+                testPostId = null;
+
+            } catch (error) {
+                log(`Post deletion test failed: ${error.message}`, 'error');
+                showResult('delete-dashboard-result', false, 
+                    'Post deletion failed', 
+                    error.message);
+                showResult('delete-database-result', false, 
+                    'Could not verify database deletion', 
+                    'Deletion operation failed');
+                showResult('delete-listing-result', false, 
+                    'Could not verify listing removal', 
+                    'Deletion operation failed');
+            }
+        }
+
+        // Run all tests sequentially
+        async function runAllTests() {
+            log('=== Starting Complete CRUD Test Suite ===', 'info');
+            testResults.startTime = Date.now();
+            
+            clearResults();
+            
+            await runPostCreationTests();
+            await runPostEditingTests();
+            await runPostPublishingTests();
+            await runPostDeletionTests();
+            
+            testResults.endTime = Date.now();
+            updateStats();
+            
+            log('=== CRUD Test Suite Completed ===', 'info');
+            log(`Total: ${testResults.total}, Passed: ${testResults.passed}, Failed: ${testResults.failed}`, 'info');
+        }
+
+        // Clear all test results
+        function clearResults() {
+            const resultElements = document.querySelectorAll('.test-result');
+            resultElements.forEach(el => el.style.display = 'none');
+            
+            testResults = {
+                total: 0,
+                passed: 0,
+                failed: 0,
+                startTime: null,
+                endTime: null,
+                logs: []
+            };
+            
+            document.getElementById('test-log').innerHTML = '<div>Test log cleared...</div>';
+            updateStats();
+        }
+
+        // Export test results
+        function exportResults() {
+            const results = {
+                summary: {
+                    total: testResults.total,
+                    passed: testResults.passed,
+                    failed: testResults.failed,
+                    duration: testResults.endTime ? 
+                        Math.round((testResults.endTime - testResults.startTime) / 1000) : 0,
+                    timestamp: new Date().toISOString()
+                },
+                logs: testResults.logs
+            };
+            
+            const blob = new Blob([JSON.stringify(results, null, 2)], 
+                { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `crud-test-results-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            log('Test results exported successfully', 'success');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('CRUD Test Suite initialized', 'info');
+            log('Ready to run tests. Click "Run All Tests" to begin.', 'info');
+        });
+    </script>
+</body>
+</html>

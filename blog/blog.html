@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog - Likwid.AI</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         /* Blog page using Likwid landing page design system */
@@ -533,15 +533,15 @@
     <!-- Navigation -->
     <nav id="navbar">
         <div class="nav-container">
-            <a href="index.html" class="logo">
-                <img src="assets/Logo_Typography.png" alt="Likwid.AI" style="height: 40px;">
+            <a href="../index.html" class="logo">
+                <img src="../assets/Logo_Typography.png" alt="Likwid.AI" style="height: 40px;">
             </a>
             <ul class="nav-links">
-                <li><a href="index.html#features">Features</a></li>
-                <li><a href="index.html#benefits">Benefits</a></li>
-                <li><a href="index.html#pricing">Pricing</a></li>
+                <li><a href="../index.html#features">Features</a></li>
+                <li><a href="../index.html#benefits">Benefits</a></li>
+                <li><a href="../index.html#pricing">Pricing</a></li>
                 <li><a href="blog.html" class="active">Blog</a></li>
-                <li><a href="onboarding.html" class="nav-cta">Get Started</a></li>
+                <li><a href="../onboarding.html" class="nav-cta">Get Started</a></li>
             </ul>
             <div class="mobile-menu">
                 <i class="fas fa-bars"></i>
@@ -602,7 +602,7 @@
     <script>
         class BlogListing {
             constructor() {
-                this.apiBase = 'blog-serverless.php';
+                this.apiBase = 'http://localhost:3001/api';
                 this.currentFilter = 'all';
                 this.currentPage = 0;
                 this.postsPerPage = 6;
@@ -644,11 +644,11 @@
 
             async loadFeaturedPost() {
                 try {
-                    const response = await fetch(`${this.apiBase}?action=featured`);
+                    const response = await fetch(`${this.apiBase}/posts/featured`);
                     const data = await response.json();
 
-                    if (data.post) {
-                        this.renderFeaturedPost(data.post);
+                    if (data.length > 0) {
+                        this.renderFeaturedPost(data[0]);
                     }
                 } catch (error) {
                     console.error('Error loading featured post:', error);
@@ -669,13 +669,12 @@
                             Featured Post
                         </div>
                         <h2 class="featured-title">${post.title}</h2>
-                        <p class="featured-excerpt">${post.excerpt}</p>
+                        <p class="featured-excerpt">${post.excerpt || 'No excerpt available'}</p>
                         <div class="featured-meta">
-                            <div class="category-tag ${post.category}">${post.category.charAt(0).toUpperCase() + post.category.slice(1)}</div>
-                            <span>By ${post.author_name}</span>
+                            <div class="category-tag ${post.category.toLowerCase()}">${post.category.charAt(0).toUpperCase() + post.category.slice(1)}</div>
+                            <span>By ${post.author}</span>
                             <span>${new Date(post.created_at).toLocaleDateString()}</span>
                             <span>${post.read_time} min read</span>
-                            <span>${post.views.toLocaleString()} views</span>
                         </div>
                     </div>
                 `;
@@ -689,13 +688,13 @@
                 try {
                     document.getElementById('loading').style.display = 'block';
                     
-                    const response = await fetch(`${this.apiBase}?action=posts&limit=50`);
+                    const response = await fetch(`${this.apiBase}/posts/published`);
                     const data = await response.json();
 
                     document.getElementById('loading').style.display = 'none';
 
-                    if (data.posts && data.posts.length > 0) {
-                        this.allPosts = data.posts.filter(post => !post.is_featured); // Exclude featured posts
+                    if (data && data.length > 0) {
+                        this.allPosts = data.filter(post => !post.is_featured); // Exclude featured posts
                         this.renderPosts();
                     } else {
                         this.showNoPosts();
@@ -751,7 +750,7 @@
                         </div>
                         <div class="post-content">
                             <div class="post-meta">
-                                <div class="category-tag ${post.category}">${post.category.charAt(0).toUpperCase() + post.category.slice(1)}</div>
+                                <div class="category-tag ${post.category.toLowerCase()}">${post.category.charAt(0).toUpperCase() + post.category.slice(1)}</div>
                                 <div class="post-stats">
                                     <div class="stat">
                                         <i class="fas fa-calendar"></i>
@@ -764,22 +763,12 @@
                                 </div>
                             </div>
                             <h3 class="post-title">${post.title}</h3>
-                            <p class="post-excerpt">${post.excerpt}</p>
+                            <p class="post-excerpt">${post.excerpt || 'No excerpt available'}</p>
                             <div class="post-author">
                                 <div class="author-avatar">${post.author_avatar}</div>
                                 <div class="author-info">
-                                    <h4>${post.author_name}</h4>
+                                    <h4>${post.author}</h4>
                                     <p>${post.author_title}</p>
-                                </div>
-                            </div>
-                            <div class="post-stats" style="margin-top: 1rem; justify-content: space-between;">
-                                <div class="stat">
-                                    <i class="fas fa-eye"></i>
-                                    <span>${post.views.toLocaleString()}</span>
-                                </div>
-                                <div class="stat">
-                                    <i class="fas fa-heart"></i>
-                                    <span>${post.likes}</span>
                                 </div>
                             </div>
                         </div>

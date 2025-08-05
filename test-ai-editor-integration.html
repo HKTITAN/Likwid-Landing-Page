@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Editor Integration Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: 600;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .loading {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .image-result {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .test-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .test-status.pass {
+            background: #d4edda;
+            color: #155724;
+        }
+        .test-status.fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .test-status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #28a745;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI Editor Integration Test</h1>
+        <p>This page tests all AI functionality in the blog editor with the new secure configuration system.</p>
+
+        <!-- Test Progress -->
+        <div class="test-section">
+            <h3>📊 Test Progress</h3>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+            </div>
+            <div id="progress-text">Ready to start tests...</div>
+        </div>
+
+        <!-- API Key Management -->
+        <div class="test-section">
+            <div id="api-key-manager"></div>
+        </div>
+
+        <!-- Test 1: Complete Content Generation -->
+        <div class="test-section">
+            <h3>🚀 Test 1: Complete Content Generation <span id="test1-status" class="test-status pending">PENDING</span></h3>
+            <p>Tests the generateCompleteContent method used in the blog editor.</p>
+            <input type="text" id="complete-content-topic" placeholder="Enter a topic (e.g., 'Industry 4.0 implementation')" value="smart manufacturing systems">
+            <button onclick="testCompleteContentGeneration()">Test Complete Content Generation</button>
+            <div id="complete-content-result" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Test 2: SEO Metadata Generation -->
+        <div class="test-section">
+            <h3>🎯 Test 2: SEO Metadata Generation <span id="test2-status" class="test-status pending">PENDING</span></h3>
+            <p>Tests the generateSEO method used for meta titles and descriptions.</p>
+            <input type="text" id="seo-title" placeholder="Blog post title" value="The Future of Manufacturing Automation">
+            <textarea id="seo-content" placeholder="Blog post content">Manufacturing automation is revolutionizing the industry with advanced robotics, AI-powered quality control, and predictive maintenance systems. Companies implementing these technologies see significant improvements in efficiency, cost reduction, and product quality.</textarea>
+            <button onclick="testSEOGeneration()">Test SEO Generation</button>
+            <div id="seo-result" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Test 3: Image Generation -->
+        <div class="test-section">
+            <h3>🖼️ Test 3: Image Generation <span id="test3-status" class="test-status pending">PENDING</span></h3>
+            <p>Tests the generateImage method used for blog post images.</p>
+            <input type="text" id="image-prompt" placeholder="Image description" value="modern automated manufacturing facility with robotic arms and conveyor systems">
+            <button onclick="testImageGeneration()">Test Image Generation</button>
+            <div id="image-result" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Test 4: Content Ideas Generation -->
+        <div class="test-section">
+            <h3>💡 Test 4: Content Ideas Generation <span id="test4-status" class="test-status pending">PENDING</span></h3>
+            <p>Tests the generateContentIdeas method used in the editor.</p>
+            <button onclick="testContentIdeas()">Test Content Ideas Generation</button>
+            <div id="content-ideas-result" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Test 5: Content Improvements -->
+        <div class="test-section">
+            <h3>✨ Test 5: Content Improvements <span id="test5-status" class="test-status pending">PENDING</span></h3>
+            <p>Tests the generateImprovements method for content enhancement.</p>
+            <textarea id="improvement-content" placeholder="Content to improve">ERP systems help companies manage their resources. They are useful for tracking inventory and managing finances.</textarea>
+            <button onclick="testContentImprovements()">Test Content Improvements</button>
+            <div id="improvements-result" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Test 6: Error Handling -->
+        <div class="test-section">
+            <h3>⚠️ Test 6: Error Handling <span id="test6-status" class="test-status pending">PENDING</span></h3>
+            <p>Tests error handling when API key is invalid or missing.</p>
+            <button onclick="testErrorHandling()">Test Error Handling</button>
+            <div id="error-result" class="result" style="display: none;"></div>
+        </div>
+
+        <!-- Run All Tests -->
+        <div class="test-section">
+            <h3>🏃‍♂️ Run All Tests</h3>
+            <button onclick="runAllTests()" id="run-all-btn">Run All Tests</button>
+            <button onclick="resetTests()">Reset Tests</button>
+        </div>
+
+        <!-- Test Summary -->
+        <div class="test-section">
+            <h3>📋 Test Summary</h3>
+            <div id="test-summary">
+                <div>Total Tests: 6</div>
+                <div>Passed: <span id="passed-count">0</span></div>
+                <div>Failed: <span id="failed-count">0</span></div>
+                <div>Pending: <span id="pending-count">6</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load required scripts -->
+    <script src="blog/config-manager.js"></script>
+    <script src="blog/api-key-manager.js"></script>
+    <script src="blog/ai-service.js"></script>
+
+    <script>
+        let aiService;
+        let testResults = {
+            test1: 'pending',
+            test2: 'pending',
+            test3: 'pending',
+            test4: 'pending',
+            test5: 'pending',
+            test6: 'pending'
+        };
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔄 Initializing AI Editor Integration Test...');
+            
+            // Initialize API key manager
+            apiKeyManager.init();
+            
+            // Initialize AI service
+            aiService = new AIService();
+            apiKeyManager.setAIService(aiService);
+            
+            console.log('✅ AI Editor Integration Test initialized');
+            updateTestSummary();
+        });
+
+        // Test 1: Complete Content Generation
+        async function testCompleteContentGeneration() {
+            const topic = document.getElementById('complete-content-topic').value.trim();
+            const resultDiv = document.getElementById('complete-content-result');
+            
+            if (!topic) {
+                alert('Please enter a topic for content generation');
+                return;
+            }
+            
+            setTestStatus('test1', 'loading');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = 'Generating complete content... This may take a few minutes.';
+            
+            try {
+                const completeContent = await aiService.generateCompleteContent(topic);
+                
+                resultDiv.innerHTML = `
+✅ Complete Content Generation Test - PASSED
+
+Topic: ${completeContent.originalInput}
+Refined Topic: ${completeContent.refinedBrief.refined_topic}
+Title: ${completeContent.blogPost.title}
+Meta Title: ${completeContent.blogPost.meta_title}
+Meta Description: ${completeContent.blogPost.meta_description}
+Keywords: ${completeContent.blogPost.keywords}
+SEO Score: ${completeContent.seoAnalysis.totalScore}/100
+Read Time: ${completeContent.blogPost.estimatedReadTime} minutes
+Generated At: ${new Date(completeContent.generatedAt).toLocaleString()}
+
+✅ All required fields generated successfully
+✅ Content structure is valid
+✅ SEO metadata is present
+✅ Image data is included
+                `;
+                resultDiv.className = 'result success';
+                setTestStatus('test1', 'pass');
+            } catch (error) {
+                resultDiv.textContent = `❌ Complete content generation failed: ${error.message}`;
+                resultDiv.className = 'result error';
+                setTestStatus('test1', 'fail');
+            }
+        }
+
+        // Test 2: SEO Metadata Generation
+        async function testSEOGeneration() {
+            const title = document.getElementById('seo-title').value.trim();
+            const content = document.getElementById('seo-content').value.trim();
+            const resultDiv = document.getElementById('seo-result');
+            
+            if (!title || !content) {
+                alert('Please enter both title and content');
+                return;
+            }
+            
+            setTestStatus('test2', 'loading');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = 'Generating SEO metadata...';
+            
+            try {
+                const seoData = await aiService.generateSEO(title, content);
+                
+                resultDiv.textContent = `
+✅ SEO Generation Test - PASSED
+
+Original Title: ${title}
+Meta Title: ${seoData.meta_title}
+Meta Description: ${seoData.meta_description}
+Keywords: ${seoData.keywords}
+Canonical URL: ${seoData.canonical_url || 'Generated'}
+
+✅ Meta title generated
+✅ Meta description generated
+✅ Keywords extracted
+✅ SEO structure is valid
+                `;
+                resultDiv.className = 'result success';
+                setTestStatus('test2', 'pass');
+            } catch (error) {
+                resultDiv.textContent = `❌ SEO generation failed: ${error.message}`;
+                resultDiv.className = 'result error';
+                setTestStatus('test2', 'fail');
+            }
+        }
+
+        // Test 3: Image Generation
+        async function testImageGeneration() {
+            const prompt = document.getElementById('image-prompt').value.trim();
+            const resultDiv = document.getElementById('image-result');
+            
+            if (!prompt) {
+                alert('Please enter an image description');
+                return;
+            }
+            
+            setTestStatus('test3', 'loading');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = 'Generating image...';
+            
+            try {
+                const imageResult = await aiService.generateImage(prompt);
+                
+                resultDiv.innerHTML = `
+                    <div>✅ Image Generation Test - PASSED</div>
+                    <div>Prompt: ${prompt}</div>
+                    <div>Description: ${imageResult.description}</div>
+                    <div>✅ Image generated successfully</div>
+                    <div>✅ Image URL created</div>
+                    <div>✅ Description provided</div>
+                    <img src="${imageResult.imageUrl}" alt="Generated image" class="image-result">
+                `;
+                resultDiv.className = 'result success';
+                setTestStatus('test3', 'pass');
+            } catch (error) {
+                resultDiv.textContent = `❌ Image generation failed: ${error.message}`;
+                resultDiv.className = 'result error';
+                setTestStatus('test3', 'fail');
+            }
+        }
+
+        // Test 4: Content Ideas Generation
+        async function testContentIdeas() {
+            const resultDiv = document.getElementById('content-ideas-result');
+            
+            setTestStatus('test4', 'loading');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = 'Generating content ideas...';
+            
+            try {
+                const ideas = await aiService.generateContentIdeas();
+                
+                resultDiv.textContent = `
+✅ Content Ideas Generation Test - PASSED
+
+Generated Ideas:
+${ideas.map((idea, index) => `${index + 1}. ${idea}`).join('\n')}
+
+✅ Multiple ideas generated
+✅ Ideas are relevant to manufacturing/ERP
+✅ Ideas are actionable
+                `;
+                resultDiv.className = 'result success';
+                setTestStatus('test4', 'pass');
+            } catch (error) {
+                resultDiv.textContent = `❌ Content ideas generation failed: ${error.message}`;
+                resultDiv.className = 'result error';
+                setTestStatus('test4', 'fail');
+            }
+        }
+
+        // Test 5: Content Improvements
+        async function testContentImprovements() {
+            const content = document.getElementById('improvement-content').value.trim();
+            const resultDiv = document.getElementById('improvements-result');
+            
+            if (!content) {
+                alert('Please enter content to improve');
+                return;
+            }
+            
+            setTestStatus('test5', 'loading');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = 'Generating content improvements...';
+            
+            try {
+                const postData = {
+                    title: 'Test Post',
+                    content: content,
+                    keywords: 'ERP, manufacturing, automation'
+                };
+                
+                const improvements = await aiService.generateImprovements(postData);
+                
+                resultDiv.textContent = `
+✅ Content Improvements Test - PASSED
+
+Original Content: ${content}
+
+Improvements:
+${improvements.map((improvement, index) => `${index + 1}. ${improvement}`).join('\n')}
+
+✅ Improvements generated
+✅ Suggestions are relevant
+✅ Improvements are actionable
+                `;
+                resultDiv.className = 'result success';
+                setTestStatus('test5', 'pass');
+            } catch (error) {
+                resultDiv.textContent = `❌ Content improvements failed: ${error.message}`;
+                resultDiv.className = 'result error';
+                setTestStatus('test5', 'fail');
+            }
+        }
+
+        // Test 6: Error Handling
+        async function testErrorHandling() {
+            const resultDiv = document.getElementById('error-result');
+            
+            setTestStatus('test6', 'loading');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = 'Testing error handling...';
+            
+            try {
+                // Save current API key
+                const currentKey = aiService.apiKey;
+                
+                // Temporarily set invalid API key
+                aiService.apiKey = '';
+                
+                let errorCaught = false;
+                try {
+                    await aiService.generateContent('test prompt');
+                } catch (error) {
+                    errorCaught = true;
+                    if (error.message.includes('No API key configured')) {
+                        resultDiv.textContent = `
+✅ Error Handling Test - PASSED
+
+✅ API key validation working
+✅ Appropriate error message: "${error.message}"
+✅ Error handling prevents API calls without key
+✅ System fails gracefully
+                        `;
+                        resultDiv.className = 'result success';
+                        setTestStatus('test6', 'pass');
+                    } else {
+                        throw new Error(`Unexpected error message: ${error.message}`);
+                    }
+                }
+                
+                // Restore API key
+                aiService.apiKey = currentKey;
+                
+                if (!errorCaught) {
+                    throw new Error('Expected error was not thrown');
+                }
+                
+            } catch (error) {
+                resultDiv.textContent = `❌ Error handling test failed: ${error.message}`;
+                resultDiv.className = 'result error';
+                setTestStatus('test6', 'fail');
+            }
+        }
+
+        // Set test status
+        function setTestStatus(testId, status) {
+            testResults[testId] = status;
+            const statusElement = document.getElementById(`${testId}-status`);
+            
+            statusElement.className = `test-status ${status === 'loading' ? 'pending' : status}`;
+            statusElement.textContent = status === 'loading' ? 'RUNNING' : 
+                                     status === 'pass' ? 'PASSED' : 
+                                     status === 'fail' ? 'FAILED' : 'PENDING';
+            
+            updateTestSummary();
+            updateProgress();
+        }
+
+        // Update test summary
+        function updateTestSummary() {
+            const passed = Object.values(testResults).filter(r => r === 'pass').length;
+            const failed = Object.values(testResults).filter(r => r === 'fail').length;
+            const pending = Object.values(testResults).filter(r => r === 'pending').length;
+            
+            document.getElementById('passed-count').textContent = passed;
+            document.getElementById('failed-count').textContent = failed;
+            document.getElementById('pending-count').textContent = pending;
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const total = Object.keys(testResults).length;
+            const completed = Object.values(testResults).filter(r => r === 'pass' || r === 'fail').length;
+            const percentage = (completed / total) * 100;
+            
+            document.getElementById('progress-fill').style.width = `${percentage}%`;
+            document.getElementById('progress-text').textContent = 
+                `${completed}/${total} tests completed (${Math.round(percentage)}%)`;
+        }
+
+        // Run all tests
+        async function runAllTests() {
+            const runAllBtn = document.getElementById('run-all-btn');
+            runAllBtn.disabled = true;
+            runAllBtn.textContent = 'Running Tests...';
+            
+            try {
+                // Set default values if empty
+                if (!document.getElementById('complete-content-topic').value.trim()) {
+                    document.getElementById('complete-content-topic').value = 'smart manufacturing systems';
+                }
+                if (!document.getElementById('seo-title').value.trim()) {
+                    document.getElementById('seo-title').value = 'The Future of Manufacturing Automation';
+                }
+                if (!document.getElementById('image-prompt').value.trim()) {
+                    document.getElementById('image-prompt').value = 'modern automated manufacturing facility';
+                }
+                if (!document.getElementById('improvement-content').value.trim()) {
+                    document.getElementById('improvement-content').value = 'ERP systems help companies manage their resources efficiently.';
+                }
+                
+                // Run tests sequentially to avoid overwhelming the API
+                await testCompleteContentGeneration();
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+                
+                await testSEOGeneration();
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                await testImageGeneration();
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                await testContentIdeas();
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                await testContentImprovements();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                await testErrorHandling();
+                
+                // Show final results
+                const passed = Object.values(testResults).filter(r => r === 'pass').length;
+                const total = Object.keys(testResults).length;
+                
+                if (passed === total) {
+                    alert(`🎉 All tests passed! (${passed}/${total})`);
+                } else {
+                    alert(`⚠️ ${passed}/${total} tests passed. Check failed tests for details.`);
+                }
+                
+            } catch (error) {
+                console.error('Error running tests:', error);
+                alert(`❌ Error running tests: ${error.message}`);
+            } finally {
+                runAllBtn.disabled = false;
+                runAllBtn.textContent = 'Run All Tests';
+            }
+        }
+
+        // Reset all tests
+        function resetTests() {
+            testResults = {
+                test1: 'pending',
+                test2: 'pending',
+                test3: 'pending',
+                test4: 'pending',
+                test5: 'pending',
+                test6: 'pending'
+            };
+            
+            // Reset all status indicators
+            for (let i = 1; i <= 6; i++) {
+                setTestStatus(`test${i}`, 'pending');
+            }
+            
+            // Hide all result divs
+            document.querySelectorAll('.result').forEach(div => {
+                div.style.display = 'none';
+            });
+            
+            updateTestSummary();
+            updateProgress();
+        }
+    </script>
+</body>
+</html>

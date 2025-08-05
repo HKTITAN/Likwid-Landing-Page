@@ -8,37 +8,242 @@ class PostStorageService {
         this.baseURL = 'http://localhost:3001/api';
         this.cache = new Map();
         this.cacheExpiry = 5 * 60 * 1000; // 5 minutes
+        this.maxRetries = 3;
+        this.retryDelay = 1000; // 1 second
+        this.isOnline = navigator.onLine;
+        this.setupNetworkListeners();
     }
 
-    // Helper method to make API requests
-    async makeRequest(endpoint, options = {}) {
+    // Setup network status listeners
+    setupNetworkListeners() {
+        window.addEventListener('online', () => {
+            this.isOnline = true;
+            this.showNotification('Connection restored', 'success');
+            console.log('🟢 Network connection restored');
+        });
+
+        window.addEventListener('offline', () => {
+            this.isOnline = false;
+            this.showNotification('You are offline. Some features may not work.', 'warning');
+            console.log('🔴 Network connection lost');
+        });
+    }
+
+    // Show user-friendly notifications
+    showNotification(message, type = 'info', duration = 5000) {
+        // Create notification element if it doesn't exist
+        let notificationContainer = document.getElementById('notification-container');
+        if (!notificationContainer) {
+            notificationContainer = document.createElement('div');
+            notificationContainer.id = 'notification-container';
+            notificationContainer.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 10000;
+                max-width: 400px;
+            `;
+            document.body.appendChild(notificationContainer);
+        }
+
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            background: ${this.getNotificationColor(type)};
+            color: white;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        `;
+        
+        notification.textContent = message;
+        notificationContainer.appendChild(notification);
+
+        // Animate in
+        setTimeout(() => {
+            notification.style.opacity = '1';
+            notification.style.transform = 'translateX(0)';
+        }, 10);
+
+        // Auto remove
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, duration);
+    }
+
+    getNotificationColor(type) {
+        const colors = {
+            success: '#10b981',
+            error: '#ef4444',
+            warning: '#f59e0b',
+            info: '#3b82f6'
+        };
+        return colors[type] || colors.info;
+    }
+
+    // Sleep utility for retry delays
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Helper method to make API requests with retry logic
+    async makeRequest(endpoint, options = {}, retryCount = 0) {
         const url = `${this.baseURL}${endpoint}`;
         
         const defaultOptions = {
             headers: {
                 'Content-Type': 'application/json',
             },
+            timeout: 10000, // 10 second timeout
         };
 
         const requestOptions = { ...defaultOptions, ...options };
         
-        console.log(`📡 API Request: ${requestOptions.method || 'GET'} ${url}`);
+        console.log(`📡 API Request: ${requestOptions.method || 'GET'} ${url} (attempt ${retryCount + 1})`);
         
+        // Check network connectivity
+        if (!this.isOnline) {
+            const error = new Error('No internet connection');
+            error.type = 'NETWORK_ERROR';
+            throw error;
+        }
+
         try {
-            const response = await fetch(url, requestOptions);
+            // Create AbortController for timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), requestOptions.timeout);
+            
+            const response = await fetch(url, {
+                ...requestOptions,
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
             
             if (!response.ok) {
-                const errorData = await response.text();
-                throw new Error(`API Error ${response.status}: ${errorData}`);
+                let errorData;
+                try {
+                    errorData = await response.json();
+                } catch {
+                    errorData = await response.text();
+                }
+                
+                const error = new Error(errorData.message || errorData || `HTTP ${response.status}`);
+                error.status = response.status;
+                error.type = this.getErrorType(response.status);
+                throw error;
             }
             
             const data = await response.json();
             console.log(`✅ API Response received`);
             return data;
+            
         } catch (error) {
-            console.error(`❌ API Request failed:`, error);
-            throw new Error(`Backend request failed: ${error.message}`);
+            console.error(`❌ API Request failed (attempt ${retryCount + 1}):`, error);
+            
+            // Determine if we should retry
+            const shouldRetry = this.shouldRetryRequest(error, retryCount);
+            
+            if (shouldRetry) {
+                const delay = this.getRetryDelay(retryCount);
+                console.log(`⏳ Retrying in ${delay}ms...`);
+                await this.sleep(delay);
+                return this.makeRequest(endpoint, options, retryCount + 1);
+            }
+            
+            // Enhance error with user-friendly message
+            const enhancedError = this.enhanceError(error, endpoint, requestOptions.method);
+            throw enhancedError;
         }
+    }
+
+    // Determine error type based on status code
+    getErrorType(status) {
+        if (status >= 500) return 'SERVER_ERROR';
+        if (status === 404) return 'NOT_FOUND';
+        if (status === 401 || status === 403) return 'AUTH_ERROR';
+        if (status >= 400) return 'CLIENT_ERROR';
+        return 'UNKNOWN_ERROR';
+    }
+
+    // Determine if request should be retried
+    shouldRetryRequest(error, retryCount) {
+        if (retryCount >= this.maxRetries) return false;
+        
+        // Retry on network errors, timeouts, and server errors
+        if (error.name === 'AbortError') return true; // Timeout
+        if (error.type === 'NETWORK_ERROR') return true;
+        if (error.type === 'SERVER_ERROR') return true;
+        if (error.message.includes('fetch')) return true; // Network fetch errors
+        
+        return false;
+    }
+
+    // Calculate retry delay with exponential backoff
+    getRetryDelay(retryCount) {
+        return this.retryDelay * Math.pow(2, retryCount);
+    }
+
+    // Enhance error with user-friendly messages
+    enhanceError(error, endpoint, method = 'GET') {
+        const enhancedError = new Error(error.message);
+        enhancedError.originalError = error;
+        enhancedError.endpoint = endpoint;
+        enhancedError.method = method;
+        
+        // Add user-friendly message
+        if (error.name === 'AbortError') {
+            enhancedError.userMessage = 'Request timed out. Please check your connection and try again.';
+            enhancedError.type = 'TIMEOUT_ERROR';
+        } else if (error.type === 'NETWORK_ERROR' || error.message.includes('fetch')) {
+            enhancedError.userMessage = 'Unable to connect to the server. Please check your internet connection.';
+            enhancedError.type = 'NETWORK_ERROR';
+        } else if (error.type === 'SERVER_ERROR') {
+            enhancedError.userMessage = 'Server error occurred. Please try again in a few moments.';
+            enhancedError.type = 'SERVER_ERROR';
+        } else if (error.type === 'NOT_FOUND') {
+            enhancedError.userMessage = 'The requested resource was not found.';
+            enhancedError.type = 'NOT_FOUND';
+        } else if (error.type === 'AUTH_ERROR') {
+            enhancedError.userMessage = 'Authentication required. Please log in and try again.';
+            enhancedError.type = 'AUTH_ERROR';
+        } else {
+            enhancedError.userMessage = 'An unexpected error occurred. Please try again.';
+            enhancedError.type = 'UNKNOWN_ERROR';
+        }
+        
+        return enhancedError;
+    }
+
+    // Handle errors with user notifications
+    handleError(error, context = '') {
+        console.error(`Error in ${context}:`, error);
+        
+        // Show user notification
+        if (error.userMessage) {
+            this.showNotification(error.userMessage, 'error');
+        } else {
+            this.showNotification('An unexpected error occurred. Please try again.', 'error');
+        }
+        
+        // Log detailed error for debugging
+        if (error.originalError) {
+            console.error('Original error:', error.originalError);
+        }
+        
+        return error;
     }
 
     // Check if backend server is running
@@ -46,14 +251,18 @@ class PostStorageService {
         try {
             const health = await this.makeRequest('/health');
             console.log('🟢 Backend server is healthy:', health);
-            return true;
+            return { isHealthy: true, data: health };
         } catch (error) {
             console.error('🔴 Backend server is not running:', error.message);
-            return false;
+            return { 
+                isHealthy: false, 
+                error: error.userMessage || 'Backend server is not available',
+                details: error
+            };
         }
     }
 
-    // Get all posts (list view)
+    // Get all posts (list view) - Backend only
     async getAllPosts() {
         try {
             // Check cache first
@@ -72,12 +281,12 @@ class PostStorageService {
             console.log(`📋 Retrieved ${posts.length} posts from backend`);
             return posts;
         } catch (error) {
-            console.error('Error getting all posts:', error);
-            throw error;
+            this.handleError(error, 'getAllPosts');
+            throw error; // No localStorage fallback - backend only
         }
     }
 
-    // Get single post by ID
+    // Get single post by ID - Backend only
     async getPost(postId) {
         try {
             // Check cache first
@@ -96,14 +305,23 @@ class PostStorageService {
             console.log(`📄 Retrieved post: ${post.title || postId}`);
             return post;
         } catch (error) {
-            console.error(`Error getting post ${postId}:`, error);
-            throw error;
+            this.handleError(error, `getPost(${postId})`);
+            throw error; // No localStorage fallback - backend only
         }
     }
 
     // Create new post
     async createPost(postData) {
         try {
+            // Validate post data first
+            const validation = this.validatePostData(postData);
+            if (!validation.isValid) {
+                const error = new Error(`Validation failed: ${validation.errors.join(', ')}`);
+                error.type = 'VALIDATION_ERROR';
+                error.userMessage = `Please fix the following issues: ${validation.errors.join(', ')}`;
+                throw error;
+            }
+
             const newPost = await this.makeRequest('/posts', {
                 method: 'POST',
                 body: JSON.stringify(postData)
@@ -113,9 +331,10 @@ class PostStorageService {
             this.clearCache();
             
             console.log(`✨ Created new post: ${newPost.title || newPost.id}`);
+            this.showNotification(`Post "${newPost.title}" created successfully!`, 'success');
             return newPost;
         } catch (error) {
-            console.error('Error creating post:', error);
+            this.handleError(error, 'createPost');
             throw error;
         }
     }
@@ -123,6 +342,15 @@ class PostStorageService {
     // Update existing post
     async updatePost(postId, updates) {
         try {
+            // Validate post data first
+            const validation = this.validatePostData(updates);
+            if (!validation.isValid) {
+                const error = new Error(`Validation failed: ${validation.errors.join(', ')}`);
+                error.type = 'VALIDATION_ERROR';
+                error.userMessage = `Please fix the following issues: ${validation.errors.join(', ')}`;
+                throw error;
+            }
+
             const updatedPost = await this.makeRequest(`/posts/${postId}`, {
                 method: 'PUT',
                 body: JSON.stringify(updates)
@@ -133,9 +361,10 @@ class PostStorageService {
             this.clearCache('all_posts'); // Clear list cache
             
             console.log(`💾 Updated post: ${updatedPost.title || postId}`);
+            this.showNotification(`Post "${updatedPost.title}" updated successfully!`, 'success');
             return updatedPost;
         } catch (error) {
-            console.error(`Error updating post ${postId}:`, error);
+            this.handleError(error, `updatePost(${postId})`);
             throw error;
         }
     }
@@ -151,9 +380,10 @@ class PostStorageService {
             this.clearCache();
             
             console.log(`🗑️ Deleted post: ${postId}`);
+            this.showNotification('Post deleted successfully!', 'success');
             return result;
         } catch (error) {
-            console.error(`Error deleting post ${postId}:`, error);
+            this.handleError(error, `deletePost(${postId})`);
             throw error;
         }
     }
@@ -177,7 +407,7 @@ class PostStorageService {
         }
     }
 
-    // Search posts
+    // Search posts - Backend only
     async searchPosts(query, filters = {}) {
         try {
             const params = new URLSearchParams();
@@ -191,7 +421,66 @@ class PostStorageService {
             console.log(`🔍 Search found ${posts.length} posts`);
             return posts;
         } catch (error) {
-            console.error('Error searching posts:', error);
+            this.handleError(error, 'searchPosts');
+            throw error; // No localStorage fallback - backend only
+        }
+    }
+
+    // Upload image to backend
+    async uploadImage(file) {
+        try {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const response = await fetch(`${this.baseURL}/upload/image`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const imageData = await response.json();
+            console.log('📸 Image uploaded successfully:', imageData);
+            this.showNotification('Image uploaded successfully!', 'success');
+            return imageData;
+        } catch (error) {
+            this.handleError(error, 'uploadImage');
+            throw error;
+        }
+    }
+
+    // Generate cover image using AI
+    async generateCoverImage(prompt) {
+        try {
+            const imageData = await this.makeRequest('/ai/generate-cover-image', {
+                method: 'POST',
+                body: JSON.stringify({ prompt })
+            });
+            
+            console.log('🎨 Cover image generated:', imageData);
+            this.showNotification('Cover image generated successfully!', 'success');
+            return imageData;
+        } catch (error) {
+            this.handleError(error, 'generateCoverImage');
+            throw error;
+        }
+    }
+
+    // Generate complete post with AI (including images)
+    async generateCompletePost(prompt) {
+        try {
+            const postData = await this.makeRequest('/ai/generate-complete-post', {
+                method: 'POST',
+                body: JSON.stringify({ prompt })
+            });
+            
+            console.log('✨ Complete post generated with AI:', postData);
+            this.showNotification('AI post generated successfully!', 'success');
+            return postData;
+        } catch (error) {
+            this.handleError(error, 'generateCompletePost');
             throw error;
         }
     }
@@ -206,9 +495,10 @@ class PostStorageService {
                     // Post exists, update it
                     return await this.updatePost(postData.id, postData);
                 } catch (error) {
-                    if (error.message.includes('Post not found') || error.message.includes('404')) {
+                    if (error.type === 'NOT_FOUND' || error.message.includes('Post not found') || error.message.includes('404')) {
                         // Post doesn't exist, create new one without the old ID
                         const { id, ...postDataWithoutId } = postData;
+                        console.log('Post not found, creating new post instead');
                         return await this.createPost(postDataWithoutId);
                     }
                     throw error;
@@ -219,16 +509,19 @@ class PostStorageService {
                 return await this.createPost(postDataWithoutId);
             }
         } catch (error) {
-            console.error('Error saving post:', error);
+            this.handleError(error, 'savePost');
             throw error;
         }
     }
 
-    // Auto-save functionality
+    // Auto-save functionality with error handling
     setupAutoSave(postData, callback, interval = 30000) {
         if (this.autoSaveInterval) {
             clearInterval(this.autoSaveInterval);
         }
+
+        this.autoSaveFailures = 0;
+        this.maxAutoSaveFailures = 3;
 
         this.autoSaveInterval = setInterval(async () => {
             try {
@@ -237,9 +530,29 @@ class PostStorageService {
                     console.log('💾 Auto-saving post...');
                     await this.savePost(currentData);
                     console.log('✅ Auto-save completed');
+                    this.autoSaveFailures = 0; // Reset failure count on success
+                    
+                    // Update last saved data
+                    this.lastSavedData = JSON.parse(JSON.stringify(currentData));
                 }
             } catch (error) {
-                console.error('Auto-save failed:', error);
+                this.autoSaveFailures++;
+                console.error(`Auto-save failed (attempt ${this.autoSaveFailures}):`, error);
+                
+                if (this.autoSaveFailures >= this.maxAutoSaveFailures) {
+                    this.showNotification(
+                        'Auto-save has failed multiple times. Please save manually to prevent data loss.', 
+                        'error', 
+                        10000
+                    );
+                    this.stopAutoSave();
+                } else {
+                    this.showNotification(
+                        `Auto-save failed. Will retry in ${interval/1000} seconds.`, 
+                        'warning', 
+                        3000
+                    );
+                }
             }
         }, interval);
 
@@ -331,15 +644,19 @@ class PostStorageService {
     }
 
     // Cache management
-    getFromCache(key) {
+    getFromCache(key, allowExpired = false) {
         const cached = this.cache.get(key);
-        if (cached && Date.now() - cached.timestamp < this.cacheExpiry) {
-            return cached.data;
-        }
-        
-        // Remove expired cache
         if (cached) {
-            this.cache.delete(key);
+            const isExpired = Date.now() - cached.timestamp >= this.cacheExpiry;
+            
+            if (!isExpired || allowExpired) {
+                return cached.data;
+            }
+            
+            // Remove expired cache only if we're not allowing expired data
+            if (!allowExpired) {
+                this.cache.delete(key);
+            }
         }
         
         return null;
@@ -450,8 +767,19 @@ class PostStorageService {
             
             return stats;
         } catch (error) {
-            console.error('Error getting post statistics:', error);
-            throw error;
+            this.handleError(error, 'getPostStatistics');
+            
+            // Return default stats as fallback
+            return {
+                total: 0,
+                byStatus: { draft: 0, published: 0 },
+                byCategory: {},
+                byAuthor: {},
+                totalWords: 0,
+                avgReadTime: 0,
+                recentPosts: [],
+                error: true
+            };
         }
     }
 }

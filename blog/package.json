@@ -1,0 +1,16 @@
+{
+  "name": "blog-crud-tests",
+  "version": "1.0.0",
+  "description": "CRUD operations test suite for the blog system",
+  "main": "run-crud-tests.js",
+  "scripts": {
+    "test": "node run-crud-tests.js",
+    "test:web": "echo 'Open http://localhost:3001/blog/test-crud-operations.html in your browser'"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  },
+  "keywords": ["blog", "crud", "testing", "api"],
+  "author": "Blog System",
+  "license": "MIT"
+}

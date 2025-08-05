@@ -25,6 +25,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/raw@2.5.0/dist/raw.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/simple-image@1.6.0/dist/simple-image.umd.js"></script>
     
+    <script src="config-manager.js"></script>
+    <script src="api-key-manager.js"></script>
     <script src="blog-manager.js"></script>
     <script src="ai-service.js"></script>
     <script src="post-storage.js"></script>
@@ -2015,104 +2017,273 @@
         }
 
         // Load existing post from backend
+        // Load post with comprehensive error handling and recovery
         async function loadPost(postId) {
-            try {
-                console.log('Loading post from backend:', postId);
-                showAutoSaveIndicator('loading');
-                
-                const post = await window.postStorage.getPost(postId);
-                
-                if (!post) {
-                    showNotification('Post not found', 'error');
-                    window.location.href = 'blog-dashboard.html';
-                    return;
-                }
-
-                console.log('Loaded post data from backend:', post);
-
-                // Load basic fields
-                document.getElementById('post-title').value = post.title || '';
-                document.getElementById('post-status').value = post.status || 'draft';
-                document.getElementById('post-category').value = post.category || 'Technology';
-                document.getElementById('post-excerpt').value = post.excerpt || '';
-                document.getElementById('featured-image').value = post.featuredImage || '';
-                document.getElementById('is-featured').checked = post.is_featured == 1;
-                
-                // Load author fields
-                document.getElementById('author-name').value = post.author || '';
-                document.getElementById('author-title').value = post.author_title || '';
-                document.getElementById('author-avatar').value = post.author_avatar || '';
-                
-                // Load SEO fields
-                document.getElementById('post-slug').value = post.slug || '';
-                document.getElementById('meta-title').value = post.meta_title || '';
-                document.getElementById('meta-description').value = post.meta_description || '';
-                document.getElementById('keywords').value = post.keywords || '';
-                document.getElementById('alt-text').value = post.imageAlt || '';
-
-                // Update featured image preview if exists
-                if (post.featuredImage) {
-                    document.getElementById('current-image-preview').src = post.featuredImage;
-                    document.getElementById('current-image-display').style.display = 'block';
-                }
-
-                // Load cover image if exists
-                if (post.coverImage) {
-                    setCoverImage(post.coverImage);
-                }
-
-                // Load content into editor
-                // Load content into editor
-                if (post.content && editor && editor.render) {
-                    try {
-                        let editorData;
-                        if (typeof post.content === 'string') {
-                            editorData = JSON.parse(post.content);
-                        } else {
-                            editorData = post.content;
-                        }
-                        await editor.render(editorData);
-                    } catch (e) {
-                        console.error('Error parsing post content:', e);
-                        // Fallback for plain text content
-                        await editor.render({
-                            blocks: [{
-                                type: 'paragraph',
-                                data: { text: typeof post.content === 'string' ? post.content : 'Content could not be loaded' }
-                            }]
-                        });
+            let loadAttempts = 0;
+            const maxAttempts = 3;
+            
+            while (loadAttempts < maxAttempts) {
+                try {
+                    console.log(`Loading post from backend (attempt ${loadAttempts + 1}):`, postId);
+                    showAutoSaveIndicator('loading');
+                    
+                    // Initialize PostStorageService if not available
+                    if (!window.postStorage) {
+                        window.postStorage = new PostStorageService();
                     }
-                } else if (!editor) {
-                    console.error('Editor is not initialized');
-                    showNotification('Editor not ready. Please try again.', 'error');
-                    return;
-                }
+                    
+                    const post = await window.postStorage.getPost(postId);
+                    
+                    if (!post) {
+                        throw new Error('Post not found');
+                    }
 
-                updateDocumentStatus('saved');
-                updateAnalytics();
-                showAutoSaveIndicator('saved');
-                showNotification('Post loaded successfully', 'success');
+                    console.log('Loaded post data from backend:', post);
+
+                    // Validate editor is ready
+                    if (!editor) {
+                        throw new Error('Editor is not initialized');
+                    }
+
+                    // Load basic fields with error handling
+                    try {
+                        safeSetValue('post-title', post.title || '');
+                        safeSetValue('post-status', post.status || 'draft');
+                        safeSetValue('post-category', post.category || 'Technology');
+                        safeSetValue('post-excerpt', post.excerpt || '');
+                        safeSetValue('featured-image', post.featuredImage || '');
+                        safeSetChecked('is-featured', post.is_featured == 1);
+                        
+                        // Load author fields
+                        safeSetValue('author-name', post.author || '');
+                        safeSetValue('author-title', post.author_title || '');
+                        safeSetValue('author-avatar', post.author_avatar || '');
+                        
+                        // Load SEO fields
+                        safeSetValue('post-slug', post.slug || '');
+                        safeSetValue('meta-title', post.meta_title || '');
+                        safeSetValue('meta-description', post.meta_description || '');
+                        safeSetValue('keywords', post.keywords || '');
+                        safeSetValue('alt-text', post.imageAlt || '');
+                    } catch (fieldError) {
+                        console.warn('Error loading some form fields:', fieldError);
+                        // Continue loading even if some fields fail
+                    }
+
+                    // Update featured image preview if exists
+                    try {
+                        if (post.featuredImage) {
+                            const preview = document.getElementById('current-image-preview');
+                            const display = document.getElementById('current-image-display');
+                            if (preview && display) {
+                                preview.src = post.featuredImage;
+                                display.style.display = 'block';
+                            }
+                        }
+                    } catch (imageError) {
+                        console.warn('Error loading featured image preview:', imageError);
+                    }
+
+                    // Load cover image if exists
+                    try {
+                        if (post.coverImage && typeof setCoverImage === 'function') {
+                            setCoverImage(post.coverImage);
+                        }
+                    } catch (coverError) {
+                        console.warn('Error loading cover image:', coverError);
+                    }
+
+                    // Load content into editor with robust error handling
+                    try {
+                        if (post.content) {
+                            let editorData;
+                            if (typeof post.content === 'string') {
+                                try {
+                                    editorData = JSON.parse(post.content);
+                                } catch (parseError) {
+                                    console.warn('Content is not valid JSON, treating as plain text');
+                                    editorData = {
+                                        blocks: [{
+                                            type: 'paragraph',
+                                            data: { text: post.content }
+                                        }]
+                                    };
+                                }
+                            } else {
+                                editorData = post.content;
+                            }
+                            
+                            // Validate editor data structure
+                            if (!editorData.blocks || !Array.isArray(editorData.blocks)) {
+                                editorData = {
+                                    blocks: [{
+                                        type: 'paragraph',
+                                        data: { text: 'Content structure is invalid' }
+                                    }]
+                                };
+                            }
+                            
+                            await editor.render(editorData);
+                        } else {
+                            // Load empty content
+                            await editor.render({
+                                blocks: [{
+                                    type: 'paragraph',
+                                    data: { text: '' }
+                                }]
+                            });
+                        }
+                    } catch (contentError) {
+                        console.error('Error loading post content:', contentError);
+                        // Fallback to empty editor
+                        try {
+                            await editor.render({
+                                blocks: [{
+                                    type: 'paragraph',
+                                    data: { text: 'Error loading content. Please refresh the page.' }
+                                }]
+                            });
+                        } catch (fallbackError) {
+                            console.error('Even fallback content failed:', fallbackError);
+                        }
+                    }
+
+                    updateDocumentStatus('saved');
+                    
+                    // Update analytics safely
+                    try {
+                        if (typeof updateAnalytics === 'function') {
+                            updateAnalytics();
+                        }
+                    } catch (analyticsError) {
+                        console.warn('Analytics update failed:', analyticsError);
+                    }
+                    
+                    showAutoSaveIndicator('saved');
+                    showNotification('Post loaded successfully', 'success');
+                    return; // Success, exit retry loop
+                    
+                } catch (error) {
+                    loadAttempts++;
+                    console.error(`Load attempt ${loadAttempts} failed:`, error);
+                    
+                    if (loadAttempts >= maxAttempts) {
+                        // All attempts failed, try fallback strategies
+                        if (error.message.includes('Post not found') || error.message.includes('404') || error.type === 'NOT_FOUND') {
+                            console.log('Post not found, trying localStorage fallback');
+                            
+                            // Try to load from localStorage
+                            try {
+                                const localPost = loadFromLocalStorage(postId);
+                                if (localPost) {
+                                    console.log('Found post in localStorage, loading as fallback');
+                                    // Recursively call loadPost with local data (but prevent infinite loop)
+                                    await loadPostFromData(localPost, true);
+                                    showNotification('Post loaded from local storage (may be outdated)', 'warning');
+                                    return;
+                                }
+                            } catch (localError) {
+                                console.error('localStorage fallback also failed:', localError);
+                            }
+                            
+                            // No fallback available, create new post
+                            console.log('No fallback available, creating new post');
+                            showNotification('Post not found. Starting with a new post.', 'warning');
+                            
+                            const newUrl = window.location.pathname;
+                            window.history.replaceState({}, '', newUrl);
+                            currentPostId = null;
+                            isNewPost = true;
+                            
+                            if (typeof setupNewPost === 'function') {
+                                setupNewPost();
+                            }
+                            updateDocumentStatus('draft');
+                            showAutoSaveIndicator('saved');
+                            return;
+                            
+                        } else {
+                            // Other errors
+                            let errorMessage = 'Failed to load post';
+                            if (error.userMessage) {
+                                errorMessage = error.userMessage;
+                            } else if (error.message.includes('Editor')) {
+                                errorMessage = 'Editor initialization failed. Please refresh the page.';
+                            } else if (error.message.includes('network') || error.message.includes('fetch')) {
+                                errorMessage = 'Network error. Please check your connection and try again.';
+                            }
+                            
+                            showNotification(errorMessage, 'error');
+                            showAutoSaveIndicator('error');
+                            
+                            // Offer retry option
+                            setTimeout(() => {
+                                if (confirm('Would you like to try loading the post again?')) {
+                                    loadPost(postId);
+                                }
+                            }, 3000);
+                            return;
+                        }
+                    } else {
+                        // Wait before retry
+                        await new Promise(resolve => setTimeout(resolve, 1000 * loadAttempts));
+                    }
+                }
+            }
+        }
+
+        // Helper function to safely set form values
+        function safeSetValue(elementId, value) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.value = value;
+            } else {
+                console.warn(`Element with ID '${elementId}' not found`);
+            }
+        }
+
+        // Helper function to safely set checkbox values
+        function safeSetChecked(elementId, checked) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.checked = checked;
+            } else {
+                console.warn(`Checkbox with ID '${elementId}' not found`);
+            }
+        }
+
+        // Load post from localStorage
+        function loadFromLocalStorage(postId) {
+            try {
+                const posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || '[]');
+                return posts.find(p => p.id == postId);
+            } catch (error) {
+                console.error('Error loading from localStorage:', error);
+                return null;
+            }
+        }
+
+        // Load post from data object (for fallback scenarios)
+        async function loadPostFromData(post, isFromCache = false) {
+            // This is a simplified version of loadPost that works with data objects
+            // Implementation would be similar to loadPost but without the network call
+            try {
+                safeSetValue('post-title', post.title || '');
+                safeSetValue('post-status', post.status || 'draft');
+                safeSetValue('post-category', post.category || 'Technology');
+                safeSetValue('post-excerpt', post.excerpt || '');
+                
+                if (post.content && editor) {
+                    let editorData = typeof post.content === 'string' ? JSON.parse(post.content) : post.content;
+                    await editor.render(editorData);
+                }
+                
+                updateDocumentStatus(isFromCache ? 'cached' : 'saved');
+                showAutoSaveIndicator(isFromCache ? 'offline' : 'saved');
                 
             } catch (error) {
-                console.error('Error loading post:', error);
-                
-                // If the post is not found, redirect to create a new post
-                if (error.message.includes('Post not found') || error.message.includes('404')) {
-                    console.log('Post not found, creating new post instead');
-                    showNotification('Post not found. Starting with a new post.', 'warning');
-                    
-                    // Clear URL parameters and set up new post
-                    const newUrl = window.location.pathname;
-                    window.history.replaceState({}, '', newUrl);
-                    currentPostId = null;
-                    isNewPost = true;
-                    setupNewPost();
-                    updateDocumentStatus('draft');
-                    showAutoSaveIndicator('saved');
-                } else {
-                    showNotification(`Failed to load post: ${error.message}`, 'error');
-                    showAutoSaveIndicator('error');
-                }
+                console.error('Error loading post from data:', error);
+                throw error;
             }
         }
 
@@ -2569,6 +2740,7 @@
             generateCompleteContent();
         }
 
+        // Generate complete content with comprehensive error handling
         async function generateCompleteContent() {
             const topicInput = document.getElementById('topic-input');
             const topic = topicInput.value.trim();
@@ -2585,11 +2757,132 @@
                 return;
             }
 
-            // Hide the generation interface and start the process
-            hideAIGeneration();
-            
-            // Generate the complete content
-            await generatePostFromTopic(topic);
+            // Check if AI service is available
+            if (!window.aiService) {
+                showNotification('AI service is not available. Please check your configuration.', 'error');
+                return;
+            }
+
+            try {
+                // Hide the generation interface and start the process
+                hideAIGeneration();
+                
+                // Generate the complete content with error handling
+                await generatePostFromTopic(topic);
+                
+                // Clear the input on success
+                topicInput.value = '';
+                
+            } catch (error) {
+                console.error('Complete content generation failed:', error);
+                
+                // Show the generation interface again
+                showAIGeneration();
+                
+                // Provide specific error message
+                let errorMessage = 'Failed to generate content';
+                if (error.message.includes('AI service')) {
+                    errorMessage = 'AI service is unavailable. Please check your API configuration.';
+                } else if (error.message.includes('network') || error.message.includes('fetch')) {
+                    errorMessage = 'Network error. Please check your connection and try again.';
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                showNotification(errorMessage, 'error');
+                
+                // Offer basic content creation as fallback
+                setTimeout(() => {
+                    if (confirm('Would you like to create a basic post template instead?')) {
+                        createBasicPostTemplate(topic);
+                    }
+                }, 2000);
+            }
+        }
+
+        // Create basic post template as fallback
+        function createBasicPostTemplate(topic) {
+            try {
+                // Set basic fields
+                document.getElementById('post-title').value = topic;
+                document.getElementById('post-category').value = 'Technology';
+                document.getElementById('post-excerpt').value = `A comprehensive guide about ${topic}`;
+                
+                // Generate basic slug
+                const slug = generateSlug(topic);
+                document.getElementById('post-slug').value = slug;
+                
+                // Create basic content structure
+                const basicContent = {
+                    blocks: [
+                        {
+                            type: 'header',
+                            data: {
+                                text: topic,
+                                level: 1
+                            }
+                        },
+                        {
+                            type: 'paragraph',
+                            data: {
+                                text: `This is a comprehensive guide about ${topic}. Let's explore this topic in detail.`
+                            }
+                        },
+                        {
+                            type: 'header',
+                            data: {
+                                text: 'Introduction',
+                                level: 2
+                            }
+                        },
+                        {
+                            type: 'paragraph',
+                            data: {
+                                text: 'Start writing your introduction here...'
+                            }
+                        },
+                        {
+                            type: 'header',
+                            data: {
+                                text: 'Main Content',
+                                level: 2
+                            }
+                        },
+                        {
+                            type: 'paragraph',
+                            data: {
+                                text: 'Add your main content here...'
+                            }
+                        },
+                        {
+                            type: 'header',
+                            data: {
+                                text: 'Conclusion',
+                                level: 2
+                            }
+                        },
+                        {
+                            type: 'paragraph',
+                            data: {
+                                text: 'Summarize your key points here...'
+                            }
+                        }
+                    ]
+                };
+                
+                // Load content into editor
+                if (editor && editor.render) {
+                    editor.render(basicContent);
+                    hasUnsavedChanges = true;
+                    showNotification('Basic post template created!', 'success');
+                } else {
+                    throw new Error('Editor is not available');
+                }
+                
+            } catch (error) {
+                console.error('Failed to create basic template:', error);
+                showNotification('Failed to create basic template. Please try again.', 'error');
+            }
         }
 
         // Show AI generation interface for new posts
@@ -2736,16 +3029,34 @@
             return score;
         }
 
-        // Save post to backend
-        async function savePost(status = 'draft') {
+        // Save post to backend with comprehensive error handling
+        async function savePost(status = 'draft', isAutoSave = false) {
             try {
                 showAutoSaveIndicator('saving');
                 
-                const editorData = await editor.save();
+                // Validate editor state
+                if (!editor) {
+                    throw new Error('Editor is not initialized');
+                }
+                
+                // Get editor data with error handling
+                let editorData;
+                try {
+                    editorData = await editor.save();
+                } catch (editorError) {
+                    console.error('Editor save error:', editorError);
+                    throw new Error('Failed to save editor content. Please try again.');
+                }
+                
+                // Validate required fields
+                const title = document.getElementById('post-title').value.trim();
+                if (!title && !isAutoSave) {
+                    throw new Error('Post title is required');
+                }
                 
                 const postData = {
                     id: currentPostId || null,
-                    title: document.getElementById('post-title').value || 'Untitled',
+                    title: title || 'Untitled',
                     content: editorData, // Store as object, backend will handle JSON
                     status: status,
                     category: document.getElementById('post-category').value,
@@ -2756,7 +3067,7 @@
                     author: document.getElementById('author-name').value || 'Admin',
                     author_title: document.getElementById('author-title').value || 'Content Creator',
                     author_avatar: document.getElementById('author-avatar').value || 'AD',
-                    slug: document.getElementById('post-slug').value || generateSlug(document.getElementById('post-title').value),
+                    slug: document.getElementById('post-slug').value || generateSlug(title || 'untitled'),
                     meta_title: document.getElementById('meta-title').value,
                     meta_description: document.getElementById('meta-description').value,
                     keywords: document.getElementById('keywords').value,
@@ -2768,12 +3079,59 @@
                 
                 console.log('Saving post to backend:', postData);
                 
-                // Save to backend
-                const savedPost = await window.postStorage.savePost(postData);
+                // Initialize PostStorageService if not available
+                if (!window.postStorage) {
+                    window.postStorage = new PostStorageService();
+                }
+                
+                // Try to save to backend with retry logic
+                let savedPost;
+                let saveAttempts = 0;
+                const maxAttempts = isAutoSave ? 1 : 3;
+                
+                while (saveAttempts < maxAttempts) {
+                    try {
+                        savedPost = await window.postStorage.savePost(postData);
+                        break; // Success, exit retry loop
+                    } catch (saveError) {
+                        saveAttempts++;
+                        console.error(`Save attempt ${saveAttempts} failed:`, saveError);
+                        
+                        if (saveAttempts >= maxAttempts) {
+                            // Final attempt failed, try localStorage fallback
+                            if (isAutoSave) {
+                                // For auto-save, silently save to localStorage
+                                saveToLocalStorage(postData);
+                                showAutoSaveIndicator('offline');
+                                return false;
+                            } else {
+                                // For manual save, offer fallback option
+                                const useOffline = confirm(
+                                    'Unable to save to server. Would you like to save locally to prevent data loss?'
+                                );
+                                if (useOffline) {
+                                    saveToLocalStorage(postData);
+                                    showNotification('Post saved locally. Will sync when server is available.', 'warning');
+                                    showAutoSaveIndicator('offline');
+                                    return true;
+                                } else {
+                                    throw saveError;
+                                }
+                            }
+                        } else if (!isAutoSave) {
+                            // Wait before retry (only for manual saves)
+                            await new Promise(resolve => setTimeout(resolve, 1000 * saveAttempts));
+                        }
+                    }
+                }
                 
                 // Update current post ID if this was a new post
-                if (!currentPostId) {
+                if (!currentPostId && savedPost && savedPost.id) {
                     currentPostId = savedPost.id;
+                    
+                    // Update URL with post ID
+                    const newUrl = window.location.pathname + '?edit=' + savedPost.id;
+                    window.history.replaceState({}, '', newUrl);
                 }
                 
                 console.log('Post saved to backend:', savedPost);
@@ -2782,25 +3140,64 @@
                 updateDocumentStatus(status);
                 showAutoSaveIndicator('saved');
                 
-                // Update URL with post ID if it's a new post
-                if (savedPost.id && !window.location.search.includes('edit=')) {
-                    const newUrl = window.location.pathname + '?edit=' + savedPost.id;
-                    window.history.replaceState({}, '', newUrl);
+                if (!isAutoSave) {
+                    const isNew = !currentPostId;
+                    showNotification(
+                        isNew ? 'Post created successfully!' : 'Post updated successfully!', 
+                        'success'
+                    );
                 }
-                
-                const isNew = !currentPostId;
-                showNotification(
-                    isNew ? 'Post created successfully!' : 'Post updated successfully!', 
-                    'success'
-                );
                 
                 return true;
                 
             } catch (error) {
                 console.error('Save error:', error);
-                showNotification(`Failed to save post: ${error.message}`, 'error');
+                
+                // Handle different error types
+                let errorMessage = 'Failed to save post';
+                if (error.message.includes('Editor')) {
+                    errorMessage = 'Editor error: ' + error.message;
+                } else if (error.message.includes('required')) {
+                    errorMessage = error.message;
+                } else if (error.message.includes('network') || error.message.includes('fetch')) {
+                    errorMessage = 'Network error. Please check your connection.';
+                } else if (error.userMessage) {
+                    errorMessage = error.userMessage;
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                if (!isAutoSave) {
+                    showNotification(errorMessage, 'error');
+                }
+                
                 showAutoSaveIndicator('error');
                 return false;
+            }
+        }
+
+        // Save to localStorage as fallback
+        function saveToLocalStorage(postData) {
+            try {
+                const posts = JSON.parse(localStorage.getItem('likwid_blog_posts') || '[]');
+                const existingIndex = posts.findIndex(p => p.id === postData.id);
+                
+                if (existingIndex >= 0) {
+                    posts[existingIndex] = { ...posts[existingIndex], ...postData, updated: new Date().toISOString() };
+                } else {
+                    const tempId = postData.id || Date.now();
+                    posts.push({ ...postData, id: tempId, created: new Date().toISOString(), updated: new Date().toISOString() });
+                    if (!currentPostId) {
+                        currentPostId = tempId;
+                    }
+                }
+                
+                localStorage.setItem('likwid_blog_posts', JSON.stringify(posts));
+                console.log('Post saved to localStorage as fallback');
+                
+            } catch (localError) {
+                console.error('Failed to save to localStorage:', localError);
+                throw new Error('Unable to save post anywhere. Please try again.');
             }
         }
 
@@ -2851,40 +3248,178 @@
         }
 
         // Generate SEO fields with AI
+        // Generate SEO fields with AI and comprehensive error handling
         async function generateSEOFields() {
             try {
-                const title = document.getElementById('post-title').value;
+                const title = document.getElementById('post-title').value.trim();
                 if (!title) {
-                    alert('Please enter a title first');
+                    showNotification('Please enter a title first', 'warning');
+                    document.getElementById('post-title').focus();
                     return;
+                }
+                
+                // Check if AI service is available
+                if (!window.aiService) {
+                    throw new Error('AI service is not available. Please check your configuration.');
                 }
                 
                 showAIThinking('Generating SEO fields...');
                 
-                const content = await editor.save();
-                const textContent = extractTextFromEditorJS(content);
+                // Get editor content with error handling
+                let content, textContent;
+                try {
+                    content = await editor.save();
+                    textContent = extractTextFromEditorJS(content);
+                } catch (editorError) {
+                    console.warn('Could not get editor content, using title only:', editorError);
+                    textContent = title; // Fallback to title only
+                }
                 
-                const seoData = await aiService.generateSEO(title, textContent);
+                // Generate SEO data with retry logic
+                let seoData;
+                let attempts = 0;
+                const maxAttempts = 3;
                 
-                document.getElementById('meta-title').value = seoData.meta_title || title;
-                document.getElementById('meta-description').value = seoData.meta_description || '';
-                document.getElementById('keywords').value = seoData.keywords || '';
-                document.getElementById('alt-text').value = seoData.alt_text || '';
-                document.getElementById('post-slug').value = seoData.slug || '';
+                while (attempts < maxAttempts) {
+                    try {
+                        seoData = await aiService.generateSEO(title, textContent);
+                        break; // Success, exit retry loop
+                    } catch (aiError) {
+                        attempts++;
+                        console.error(`SEO generation attempt ${attempts} failed:`, aiError);
+                        
+                        if (attempts >= maxAttempts) {
+                            // All attempts failed, use fallback
+                            console.log('Using fallback SEO generation');
+                            seoData = generateFallbackSEO(title, textContent);
+                            showNotification('AI SEO generation failed, using basic SEO fields', 'warning');
+                            break;
+                        } else {
+                            // Wait before retry
+                            await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+                        }
+                    }
+                }
                 
-                // Update counters
-                updateCharacterCounters();
-                
-                hasUnsavedChanges = true;
-                updateAnalytics();
-                
-                hideAIThinking();
-                showNotification('SEO fields generated successfully!', 'success');
+                // Apply SEO data with validation
+                if (seoData) {
+                    safeSetValue('meta-title', seoData.meta_title || title);
+                    safeSetValue('meta-description', seoData.meta_description || generateFallbackDescription(title));
+                    safeSetValue('keywords', seoData.keywords || generateFallbackKeywords(title));
+                    safeSetValue('alt-text', seoData.alt_text || `Image for ${title}`);
+                    safeSetValue('post-slug', seoData.slug || generateSlug(title));
+                    
+                    // Update counters safely
+                    try {
+                        if (typeof updateCharacterCounters === 'function') {
+                            updateCharacterCounters();
+                        }
+                    } catch (counterError) {
+                        console.warn('Character counter update failed:', counterError);
+                    }
+                    
+                    hasUnsavedChanges = true;
+                    
+                    // Update analytics safely
+                    try {
+                        if (typeof updateAnalytics === 'function') {
+                            updateAnalytics();
+                        }
+                    } catch (analyticsError) {
+                        console.warn('Analytics update failed:', analyticsError);
+                    }
+                    
+                    hideAIThinking();
+                    showNotification('SEO fields generated successfully!', 'success');
+                } else {
+                    throw new Error('No SEO data generated');
+                }
                 
             } catch (error) {
                 hideAIThinking();
                 console.error('SEO generation error:', error);
-                alert('Failed to generate SEO fields: ' + error.message);
+                
+                // Provide specific error messages
+                let errorMessage = 'Failed to generate SEO fields';
+                if (error.message.includes('AI service')) {
+                    errorMessage = 'AI service is unavailable. Please check your API configuration.';
+                } else if (error.message.includes('network') || error.message.includes('fetch')) {
+                    errorMessage = 'Network error. Please check your connection and try again.';
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                showNotification(errorMessage, 'error');
+                
+                // Offer manual fallback
+                setTimeout(() => {
+                    if (confirm('Would you like to generate basic SEO fields instead?')) {
+                        generateBasicSEO();
+                    }
+                }, 2000);
+            }
+        }
+
+        // Generate fallback SEO data when AI fails
+        function generateFallbackSEO(title, content) {
+            return {
+                meta_title: title.length > 60 ? title.substring(0, 57) + '...' : title,
+                meta_description: generateFallbackDescription(title, content),
+                keywords: generateFallbackKeywords(title, content),
+                alt_text: `Image for ${title}`,
+                slug: generateSlug(title)
+            };
+        }
+
+        // Generate fallback description
+        function generateFallbackDescription(title, content = '') {
+            const maxLength = 155;
+            let description = `Learn about ${title}`;
+            
+            if (content && content.length > 50) {
+                // Extract first meaningful sentence from content
+                const sentences = content.split(/[.!?]+/);
+                const firstSentence = sentences[0]?.trim();
+                if (firstSentence && firstSentence.length > 20) {
+                    description = firstSentence;
+                }
+            }
+            
+            return description.length > maxLength ? description.substring(0, maxLength - 3) + '...' : description;
+        }
+
+        // Generate fallback keywords
+        function generateFallbackKeywords(title, content = '') {
+            const words = (title + ' ' + content).toLowerCase()
+                .replace(/[^\w\s]/g, ' ')
+                .split(/\s+/)
+                .filter(word => word.length > 3);
+            
+            // Get unique words and take first 5
+            const uniqueWords = [...new Set(words)].slice(0, 5);
+            return uniqueWords.join(', ');
+        }
+
+        // Generate basic SEO fields without AI
+        function generateBasicSEO() {
+            try {
+                const title = document.getElementById('post-title').value.trim();
+                if (!title) return;
+                
+                const basicSEO = generateFallbackSEO(title, '');
+                
+                safeSetValue('meta-title', basicSEO.meta_title);
+                safeSetValue('meta-description', basicSEO.meta_description);
+                safeSetValue('keywords', basicSEO.keywords);
+                safeSetValue('alt-text', basicSEO.alt_text);
+                safeSetValue('post-slug', basicSEO.slug);
+                
+                hasUnsavedChanges = true;
+                showNotification('Basic SEO fields generated', 'success');
+                
+            } catch (error) {
+                console.error('Basic SEO generation failed:', error);
+                showNotification('Failed to generate basic SEO fields', 'error');
             }
         }
 
@@ -3184,21 +3719,114 @@
             }, 2000);
         }
 
-        // Start auto-save
+        // Start auto-save with error handling and recovery
         function startAutoSave() {
-            autoSaveInterval = setInterval(() => {
+            let autoSaveFailures = 0;
+            const maxFailures = 3;
+            
+            autoSaveInterval = setInterval(async () => {
                 if (hasUnsavedChanges) {
-                    savePost('draft');
+                    try {
+                        const success = await savePost('draft', true); // isAutoSave = true
+                        if (success) {
+                            autoSaveFailures = 0; // Reset failure count on success
+                        } else {
+                            autoSaveFailures++;
+                        }
+                    } catch (error) {
+                        autoSaveFailures++;
+                        console.error(`Auto-save failed (attempt ${autoSaveFailures}):`, error);
+                    }
+                    
+                    // If too many failures, show warning and reduce frequency
+                    if (autoSaveFailures >= maxFailures) {
+                        showNotification(
+                            'Auto-save has failed multiple times. Please save manually to prevent data loss.', 
+                            'warning', 
+                            10000
+                        );
+                        
+                        // Reduce auto-save frequency to avoid spam
+                        stopAutoSave();
+                        setTimeout(() => {
+                            if (hasUnsavedChanges) {
+                                startAutoSave();
+                                autoSaveFailures = 0; // Reset for new interval
+                            }
+                        }, 120000); // Wait 2 minutes before trying again
+                    }
                 }
             }, 30000); // Auto-save every 30 seconds
+            
+            console.log('Auto-save started (every 30 seconds)');
         }
 
         // Stop auto-save
         function stopAutoSave() {
             if (autoSaveInterval) {
                 clearInterval(autoSaveInterval);
+                autoSaveInterval = null;
+                console.log('Auto-save stopped');
             }
         }
+
+        // Enhanced auto-save indicator with more states
+        function showAutoSaveIndicator(status) {
+            const indicator = document.getElementById('auto-save-indicator');
+            const text = indicator.querySelector('span');
+            
+            // Remove all status classes
+            indicator.classList.remove('saving', 'saved', 'error', 'offline', 'loading');
+            
+            switch (status) {
+                case 'saving':
+                    indicator.classList.add('saving');
+                    text.textContent = 'Saving...';
+                    break;
+                case 'saved':
+                    indicator.classList.add('saved');
+                    text.textContent = 'Saved';
+                    break;
+                case 'error':
+                    indicator.classList.add('error');
+                    text.textContent = 'Save failed';
+                    break;
+                case 'offline':
+                    indicator.classList.add('offline');
+                    text.textContent = 'Saved offline';
+                    break;
+                case 'loading':
+                    indicator.classList.add('loading');
+                    text.textContent = 'Loading...';
+                    break;
+                default:
+                    text.textContent = 'Auto-save';
+            }
+        }
+
+        // Prevent data loss on page unload
+        window.addEventListener('beforeunload', function(e) {
+            if (hasUnsavedChanges) {
+                const message = 'You have unsaved changes. Are you sure you want to leave?';
+                e.returnValue = message;
+                return message;
+            }
+        });
+
+        // Handle visibility change to pause/resume auto-save
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Page is hidden, save immediately if there are changes
+                if (hasUnsavedChanges) {
+                    savePost('draft', true);
+                }
+            } else {
+                // Page is visible again, resume auto-save if needed
+                if (!autoSaveInterval && hasUnsavedChanges) {
+                    startAutoSave();
+                }
+            }
+        });
 
         // Update last edited time
         setInterval(() => {

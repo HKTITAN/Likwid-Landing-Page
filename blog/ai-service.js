@@ -5,7 +5,9 @@
 
 class AIService {
     constructor() {
-        this.apiKey = 'AIzaSyCg9fWVr-e4WSbxhVLmqQKNipieztnCi28';
+        // Initialize configuration manager for secure API key storage
+        this.configManager = window.configManager || new ConfigManager();
+        this.apiKey = this.configManager.getApiKey();
         
         // Correct API endpoints for different Gemini models
         this.endpoints = {
@@ -18,6 +20,40 @@ class AIService {
         this.keywords = [];
         this.uploadedFiles = new Map(); // Track uploaded files
         this.loadKeywords();
+        
+        // Validate API key on initialization
+        if (!this.apiKey) {
+            console.warn('⚠️ No API key configured. AI features will not work until an API key is set.');
+        }
+    }
+
+    // Update API key through configuration manager
+    async updateApiKey(newApiKey, confirmCallback = null) {
+        try {
+            const result = await this.configManager.updateApiKey(newApiKey, confirmCallback);
+            this.apiKey = this.configManager.getApiKey();
+            console.log('✅ AI Service API key updated successfully');
+            return result;
+        } catch (error) {
+            console.error('❌ Failed to update API key:', error);
+            throw error;
+        }
+    }
+
+    // Get API key status
+    getApiKeyStatus() {
+        return this.configManager.getStatus();
+    }
+
+    // Test current API key
+    async testApiConnection() {
+        return await this.configManager.testApiKey();
+    }
+
+    // Refresh API key from configuration
+    refreshApiKey() {
+        this.apiKey = this.configManager.getApiKey();
+        return !!this.apiKey;
     }
 
     // Load keywords from CSV data
@@ -55,6 +91,11 @@ class AIService {
     // Generate content using Gemini AI with proper configuration
     async generateContent(prompt, maxTokens = 1000, model = 'text') {
         try {
+            // Validate API key before making request
+            if (!this.apiKey) {
+                throw new Error('No API key configured. Please set up your Gemini API key first.');
+            }
+
             const endpoint = this.endpoints[model] || this.endpoints.text;
             
             const requestBody = {
@@ -128,6 +169,11 @@ class AIService {
     // Upload file to Gemini Files API
     async uploadFile(file) {
         try {
+            // Validate API key before making request
+            if (!this.apiKey) {
+                throw new Error('No API key configured. Please set up your Gemini API key first.');
+            }
+
             const formData = new FormData();
             formData.append('file', file);
 
@@ -165,6 +211,11 @@ class AIService {
     // Generate image using Gemini 2.0 Flash with image generation
     async generateImage(prompt, includeText = true) {
         try {
+            // Validate API key before making request
+            if (!this.apiKey) {
+                throw new Error('No API key configured. Please set up your Gemini API key first.');
+            }
+
             const requestBody = {
                 contents: [{
                     parts: [{
@@ -270,6 +321,11 @@ class AIService {
     // Analyze uploaded image
     async analyzeImage(file, prompt = "Describe this image in detail") {
         try {
+            // Validate API key before making request
+            if (!this.apiKey) {
+                throw new Error('No API key configured. Please set up your Gemini API key first.');
+            }
+
             // Convert file to base64
             const base64Data = await this.fileToBase64(file);
             

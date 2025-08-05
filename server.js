@@ -2,16 +2,53 @@ const express = require('express');
 const fs = require('fs').promises;
 const path = require('path');
 const cors = require('cors');
+const multer = require('multer');
+const crypto = require('crypto');
 const DatabaseService = require('./blog/database');
 
 const app = express();
 const PORT = 3001;
 const db = new DatabaseService();
 
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, 'blog', 'uploads');
+fs.mkdir(uploadsDir, { recursive: true }).catch(console.error);
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, uploadsDir);
+    },
+    filename: function (req, file, cb) {
+        // Generate unique filename
+        const uniqueSuffix = Date.now() + '-' + crypto.randomBytes(6).toString('hex');
+        const ext = path.extname(file.originalname);
+        cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+    }
+});
+
+const upload = multer({ 
+    storage: storage,
+    limits: {
+        fileSize: 10 * 1024 * 1024 // 10MB limit
+    },
+    fileFilter: function (req, file, cb) {
+        // Accept only image files
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only image files are allowed!'), false);
+        }
+    }
+});
+
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.static('.'));
+
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, 'blog', 'uploads')));
 
 // Helper function to generate slug from title
 function generateSlug(title) {
@@ -175,18 +212,43 @@ app.delete('/api/posts/:id', async (req, res) => {
     }
 });
 
+// Image upload endpoint
+app.post('/api/upload/image', upload.single('image'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No image file provided' });
+        }
+
+        const imageUrl = `/uploads/${req.file.filename}`;
+        const imageData = {
+            filename: req.file.filename,
+            originalName: req.file.originalname,
+            mimetype: req.file.mimetype,
+            size: req.file.size,
+            url: imageUrl,
+            uploadedAt: new Date().toISOString()
+        };
+
+        console.log('Image uploaded:', imageData);
+        res.json(imageData);
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        res.status(500).json({ error: 'Failed to upload image' });
+    }
+});
+
 // AI Endpoints for cover image generation
 app.post('/api/ai/generate-cover-image', async (req, res) => {
     try {
-        const { title } = req.body;
+        const { title, prompt } = req.body;
         
-        if (!title) {
-            return res.status(400).json({ error: 'Title is required' });
+        if (!title && !prompt) {
+            return res.status(400).json({ error: 'Title or prompt is required' });
         }
 
-        // Import ai-service dynamically (assuming it's a module)
+        // Import ai-service dynamically
         const aiService = await import('./blog/ai-service.js');
-        const imageUrl = await aiService.generateContentImage(title);
+        const imageUrl = await aiService.generateContentImage(prompt || title);
         
         res.json({ imageUrl });
     } catch (error) {
@@ -197,20 +259,40 @@ app.post('/api/ai/generate-cover-image', async (req, res) => {
 
 app.post('/api/ai/regenerate-cover-image', async (req, res) => {
     try {
-        const { title } = req.body;
+        const { title, prompt } = req.body;
         
-        if (!title) {
-            return res.status(400).json({ error: 'Title is required' });
+        if (!title && !prompt) {
+            return res.status(400).json({ error: 'Title or prompt is required' });
         }
 
         // Import ai-service dynamically
         const aiService = await import('./blog/ai-service.js');
-        const imageUrl = await aiService.regenerateCoverImage(title);
+        const imageUrl = await aiService.regenerateCoverImage(prompt || title);
         
         res.json({ imageUrl });
     } catch (error) {
         console.error('Error regenerating cover image:', error);
         res.status(500).json({ error: 'Failed to regenerate cover image' });
+    }
+});
+
+// AI content generation with images
+app.post('/api/ai/generate-complete-post', async (req, res) => {
+    try {
+        const { prompt } = req.body;
+        
+        if (!prompt) {
+            return res.status(400).json({ error: 'Prompt is required' });
+        }
+
+        // Import ai-service dynamically
+        const aiService = await import('./blog/ai-service.js');
+        const completePost = await aiService.generateCompleteContent(prompt);
+        
+        res.json(completePost);
+    } catch (error) {
+        console.error('Error generating complete post:', error);
+        res.status(500).json({ error: 'Failed to generate complete post' });
     }
 });
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">Blog Post - Likwid.AI</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         /* Blog post page using Likwid landing page design system */
@@ -596,15 +596,15 @@
     <!-- Navigation -->
     <nav id="navbar">
         <div class="nav-container">
-            <a href="index.html" class="logo">
-                <img src="assets/Logo_Typography.png" alt="Likwid.AI" style="height: 40px;">
+            <a href="../index.html" class="logo">
+                <img src="../assets/Logo_Typography.png" alt="Likwid.AI" style="height: 40px;">
             </a>
             <ul class="nav-links">
-                <li><a href="index.html#features">Features</a></li>
-                <li><a href="index.html#benefits">Benefits</a></li>
-                <li><a href="index.html#pricing">Pricing</a></li>
+                <li><a href="../index.html#features">Features</a></li>
+                <li><a href="../index.html#benefits">Benefits</a></li>
+                <li><a href="../index.html#pricing">Pricing</a></li>
                 <li><a href="blog.html">Blog</a></li>
-                <li><a href="onboarding.html" class="nav-cta">Get Started</a></li>
+                <li><a href="../onboarding.html" class="nav-cta">Get Started</a></li>
             </ul>
             <div class="mobile-menu">
                 <i class="fas fa-bars"></i>
@@ -614,7 +614,7 @@
 
     <div class="blog-container">
         <div class="blog-breadcrumb">
-            <a href="index.html">Home</a> / <a href="blog.html">Blog</a> / <span id="current-post">Post</span>
+            <a href="../index.html">Home</a> / <a href="blog.html">Blog</a> / <span id="current-post">Post</span>
         </div>
 
         <a href="blog.html" class="back-button">
@@ -695,7 +695,7 @@
     <script>
         class BlogPost {
             constructor() {
-                this.apiBase = 'blog-serverless.php';
+                this.apiBase = 'http://localhost:3001/api';
                 this.init();
             }
 
@@ -716,21 +716,45 @@
 
             async loadPost() {
                 try {
-                    const response = await fetch(`${this.apiBase}?action=post&slug=${this.slug}`);
+                    const response = await fetch(`${this.apiBase}/posts/slug/${this.slug}`);
                     const data = await response.json();
 
-                    if (data.error) {
+                    if (!data || data.error) {
                         this.showError();
                         return;
                     }
 
-                    this.post = data.post;
+                    this.post = data;
                     this.renderPost();
                     this.loadRelatedPosts();
                 } catch (error) {
                     console.error('Error loading post:', error);
                     this.showError();
                 }
+            }
+
+            renderEditorJSContent(contentData) {
+                if (!contentData.blocks) return '';
+                
+                return contentData.blocks.map(block => {
+                    switch (block.type) {
+                        case 'paragraph':
+                            return `<p>${block.data.text}</p>`;
+                        case 'header':
+                            const level = block.data.level || 2;
+                            return `<h${level}>${block.data.text}</h${level}>`;
+                        case 'list':
+                            const listType = block.data.style === 'ordered' ? 'ol' : 'ul';
+                            const items = block.data.items.map(item => `<li>${item}</li>`).join('');
+                            return `<${listType}>${items}</${listType}>`;
+                        case 'quote':
+                            return `<blockquote>${block.data.text}</blockquote>`;
+                        case 'delimiter':
+                            return '<hr>';
+                        default:
+                            return `<p>${block.data.text || ''}</p>`;
+                    }
+                }).join('');
             }
 
             renderPost() {
@@ -744,13 +768,31 @@
 
                 // Render post content
                 document.getElementById('blog-title').textContent = this.post.title;
-                document.getElementById('blog-excerpt').textContent = this.post.excerpt;
-                document.getElementById('blog-body').innerHTML = this.post.content;
+                document.getElementById('blog-excerpt').textContent = this.post.excerpt || 'No excerpt available';
+                
+                // Handle EditorJS content or plain text
+                let contentHtml = '';
+                if (this.post.content) {
+                    try {
+                        const contentData = typeof this.post.content === 'string' ? JSON.parse(this.post.content) : this.post.content;
+                        if (contentData.blocks) {
+                            // EditorJS format
+                            contentHtml = this.renderEditorJSContent(contentData);
+                        } else {
+                            // Plain text/HTML
+                            contentHtml = this.post.content;
+                        }
+                    } catch (e) {
+                        // Fallback to plain text
+                        contentHtml = this.post.content;
+                    }
+                }
+                document.getElementById('blog-body').innerHTML = contentHtml;
 
                 // Category tag
                 const categoryTag = document.getElementById('category-tag');
                 categoryTag.textContent = this.post.category.charAt(0).toUpperCase() + this.post.category.slice(1);
-                categoryTag.className = `category-tag ${this.post.category}`;
+                categoryTag.className = `category-tag ${this.post.category.toLowerCase()}`;
 
                 // Meta information
                 const publishDate = new Date(this.post.created_at);
@@ -760,15 +802,15 @@
                     day: 'numeric'
                 });
                 document.getElementById('read-time').textContent = `${this.post.read_time} min read`;
-                document.getElementById('view-count').textContent = `${this.post.views.toLocaleString()} views`;
+                document.getElementById('view-count').style.display = 'none'; // Views not implemented yet
 
                 // Author information
                 document.getElementById('author-avatar').textContent = this.post.author_avatar;
-                document.getElementById('author-name').textContent = this.post.author_name;
+                document.getElementById('author-name').textContent = this.post.author;
                 document.getElementById('author-title').textContent = this.post.author_title;
 
-                // Like count
-                document.getElementById('like-count').textContent = this.post.likes;
+                // Like count - hide for now as likes not implemented
+                document.getElementById('like-count').textContent = '0';
 
                 // Featured image
                 const featuredImage = document.getElementById('featured-image');
@@ -782,11 +824,13 @@
 
             async loadRelatedPosts() {
                 try {
-                    const response = await fetch(`${this.apiBase}?action=posts&category=${this.post.category}&limit=3`);
+                    const response = await fetch(`${this.apiBase}/posts/published`);
                     const data = await response.json();
 
-                    if (data.posts && data.posts.length > 0) {
-                        const relatedPosts = data.posts.filter(post => post.slug !== this.slug).slice(0, 3);
+                    if (data && data.length > 0) {
+                        const relatedPosts = data
+                            .filter(post => post.category === this.post.category && post.slug !== this.slug)
+                            .slice(0, 3);
                         if (relatedPosts.length > 0) {
                             this.renderRelatedPosts(relatedPosts);
                         }
@@ -827,22 +871,18 @@
 
             async likePost() {
                 try {
-                    const response = await fetch(this.apiBase, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            action: 'like',
-                            slug: this.slug
-                        })
-                    });
-
-                    const data = await response.json();
-                    if (data.likes !== undefined) {
-                        document.getElementById('like-count').textContent = data.likes;
-                        document.getElementById('like-button').classList.add('liked');
-                    }
+                    // For now, just simulate a like since the backend may not have this endpoint yet
+                    const currentLikes = parseInt(document.getElementById('like-count').textContent);
+                    document.getElementById('like-count').textContent = currentLikes + 1;
+                    document.getElementById('like-button').classList.add('liked');
+                    
+                    // TODO: Implement actual like endpoint when backend supports it
+                    // const response = await fetch(`${this.apiBase}/posts/${this.post.id}/like`, {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json'
+                    //     }
+                    // });
                 } catch (error) {
                     console.error('Error liking post:', error);
                 }

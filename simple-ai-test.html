@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple AI Service Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .loading { background-color: #d1ecf1; color: #0c5460; }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        .response { 
+            background-color: #f8f9fa; 
+            padding: 10px; 
+            border-radius: 4px; 
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Simple AI Service Test</h1>
+    
+    <div id="results"></div>
+    
+    <button onclick="testBasicFunctionality()">Test Basic Functionality</button>
+    <button onclick="testTextGeneration()">Test Text Generation</button>
+    
+    <script src="blog/ai-service.js"></script>
+    <script>
+        function addResult(message, type = 'success') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            document.getElementById('results').appendChild(div);
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        async function testBasicFunctionality() {
+            clearResults();
+            addResult('🔄 Testing basic functionality...', 'loading');
+            
+            try {
+                // Test AI service initialization
+                const aiService = new AIService();
+                addResult('✅ AI Service initialized successfully');
+                
+                // Test API key
+                const expectedKey = 'AIzaSyCwXQak1jfXrALC0Lb5Q4PHLPP_bFxBnfU';
+                if (aiService.apiKey === expectedKey) {
+                    addResult('✅ API key correctly configured');
+                } else {
+                    addResult(`❌ API key mismatch. Expected: ${expectedKey.substring(0, 20)}..., Found: ${aiService.apiKey.substring(0, 20)}...`, 'error');
+                }
+                
+                // Test endpoints
+                if (aiService.endpoints && aiService.endpoints.text) {
+                    addResult('✅ Endpoints configured');
+                } else {
+                    addResult('❌ Endpoints not configured', 'error');
+                }
+                
+                // Test keyword loading
+                await aiService.loadKeywords();
+                if (aiService.keywords && aiService.keywords.length > 0) {
+                    addResult(`✅ Keywords loaded: ${aiService.keywords.length} keywords`);
+                    addResult(`Sample keywords: ${aiService.keywords.slice(0, 5).join(', ')}`);
+                } else {
+                    addResult('❌ Keywords not loaded', 'error');
+                }
+                
+            } catch (error) {
+                addResult(`❌ Basic functionality test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testTextGeneration() {
+            addResult('🔄 Testing text generation...', 'loading');
+            
+            try {
+                const aiService = new AIService();
+                const testPrompt = 'Write one sentence about ERP systems in manufacturing.';
+                
+                addResult('📤 Sending request to Gemini API...');
+                const response = await aiService.generateContent(testPrompt, 100);
+                
+                if (response && response.length > 0) {
+                    addResult('✅ Text generation successful!');
+                    addResult(`<div class="response"><strong>Response:</strong><br>${response}</div>`);
+                } else {
+                    addResult('❌ Text generation returned empty response', 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Text generation failed: ${error.message}`, 'error');
+                console.error('Detailed error:', error);
+            }
+        }
+        
+        // Auto-run basic test on load
+        window.addEventListener('load', () => {
+            setTimeout(testBasicFunctionality, 500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple AI Test</title>
+    <script src="config-manager.js"></script>
+    <script src="ai-service.js"></script>
+    <script src="post-storage.js"></script>
+</head>
+<body>
+    <h1>Simple AI Generation Test</h1>
+    <input type="text" id="topic" placeholder="Enter topic" value="artificial intelligence">
+    <button onclick="testGeneration()">Generate Post</button>
+    <div id="result"></div>
+
+    <script>
+        async function testGeneration() {
+            const topic = document.getElementById('topic').value;
+            const result = document.getElementById('result');
+            
+            result.innerHTML = '<p>Testing...</p>';
+            
+            try {
+                console.log('🧪 Starting AI generation test');
+                console.log('AI Service available:', !!window.aiService);
+                console.log('PostStorage available:', !!window.postStorage);
+                
+                if (!window.aiService) {
+                    if (window.AIService) {
+                        window.aiService = new AIService();
+                        console.log('✅ AI service initialized');
+                    } else {
+                        throw new Error('AI Service class not available');
+                    }
+                }
+                
+                // Test AI generation
+                console.log('🤖 Generating content for:', topic);
+                const aiResult = await window.aiService.generateBlogPost(topic);
+                console.log('✅ AI generation successful:', aiResult);
+                
+                // Create post object
+                const newPost = {
+                    title: aiResult.title || topic,
+                    content: JSON.stringify(aiResult.content || {
+                        blocks: [
+                            { type: "header", data: { text: topic, level: 1 } },
+                            { type: "paragraph", data: { text: "AI-generated content..." } }
+                        ]
+                    }),
+                    excerpt: aiResult.excerpt || `A post about ${topic}`,
+                    category: 'Technology',
+                    status: 'draft',
+                    author_name: 'AI Assistant',
+                    slug: topic.toLowerCase().replace(/\s+/g, '-'),
+                    seo_score: 75,
+                    created: new Date().toISOString(),
+                    updated: new Date().toISOString()
+                };
+                
+                console.log('📝 Created post object:', newPost);
+                
+                // Save to backend
+                if (!window.postStorageService) {
+                    window.postStorageService = new PostStorageService();
+                }
+                
+                console.log('💾 Saving to backend...');
+                const savedPost = await window.postStorageService.savePost(newPost);
+                console.log('✅ Post saved successfully:', savedPost);
+                
+                result.innerHTML = `
+                    <h3>✅ Success!</h3>
+                    <p><strong>Post ID:</strong> ${savedPost.id}</p>
+                    <p><strong>Title:</strong> ${savedPost.title}</p>
+                    <p><strong>Status:</strong> ${savedPost.status}</p>
+                    <p><a href="blog-editor.html?id=${savedPost.id}" target="_blank">Edit Post</a></p>
+                    <p><a href="blog-dashboard.html" target="_blank">View Dashboard</a></p>
+                `;
+                
+            } catch (error) {
+                console.error('❌ Test failed:', error);
+                result.innerHTML = `
+                    <h3>❌ Error</h3>
+                    <p>${error.message}</p>
+                    <pre>${error.stack}</pre>
+                `;
+            }
+        }
+        
+        // Auto-run test on load
+        window.addEventListener('load', function() {
+            console.log('🚀 Simple AI test loaded');
+            console.log('Available services:');
+            console.log('- aiService:', !!window.aiService);
+            console.log('- AIService:', !!window.AIService);
+            console.log('- configManager:', !!window.configManager);
+            console.log('- PostStorageService:', !!window.PostStorageService);
+        });
+    </script>
+</body>
+</html>
